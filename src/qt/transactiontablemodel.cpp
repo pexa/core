@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -265,7 +265,7 @@ TransactionTableModel::~TransactionTableModel()
 /** Updates the column title to "Amount (DisplayUnit)" and emits headerDataChanged() signal for table headers to react. */
 void TransactionTableModel::updateAmountColumnTitle()
 {
-    columns[Amount] = RavenUnits::getAmountColumnTitle(walletModel->getOptionsModel()->getDisplayUnit());
+    columns[Amount] = PexaUnits::getAmountColumnTitle(walletModel->getOptionsModel()->getDisplayUnit());
     Q_EMIT headerDataChanged(Qt::Horizontal,Amount,Amount);
 }
 
@@ -471,7 +471,7 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
     return QVariant();
 }
 
-QString TransactionTableModel::formatTxAmount(const TransactionRecord *wtx, bool showUnconfirmed, RavenUnits::SeparatorStyle separators) const
+QString TransactionTableModel::formatTxAmount(const TransactionRecord *wtx, bool showUnconfirmed, PexaUnits::SeparatorStyle separators) const
 {
     QString str;
     switch(wtx->type) {
@@ -484,7 +484,7 @@ QString TransactionTableModel::formatTxAmount(const TransactionRecord *wtx, bool
             } break;
         default:
             {
-            str = RavenUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), wtx->credit + wtx->debit,
+            str = PexaUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), wtx->credit + wtx->debit,
                                              false, separators);
             } break;
     }
@@ -590,7 +590,7 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
         case ToAddress:
             return formatTxToAddress(rec, false);
         case Amount:
-            return formatTxAmount(rec, true, RavenUnits::separatorAlways);
+            return formatTxAmount(rec, true, PexaUnits::separatorAlways);
         case AssetName:
             return QString::fromStdString(rec->assetName);
         }
@@ -686,14 +686,14 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
                 details.append(QString::fromStdString(rec->address));
                 details.append(" ");
             }
-            details.append(formatTxAmount(rec, false, RavenUnits::separatorNever));
+            details.append(formatTxAmount(rec, false, PexaUnits::separatorNever));
             return details;
         }
     case ConfirmedRole:
         return rec->status.countsForBalance;
     case FormattedAmountRole:
         // Used for copy/export, so don't include separators
-        return formatTxAmount(rec, false, RavenUnits::separatorNever);
+        return formatTxAmount(rec, false, PexaUnits::separatorNever);
     case AssetNameRole:
         {
             QString assetName;
@@ -734,7 +734,7 @@ QVariant TransactionTableModel::headerData(int section, Qt::Orientation orientat
             case Amount:
                 return tr("Amount removed from or added to balance.");
             case AssetName:
-                return tr("The asset (or RVN) removed or added to balance.");
+                return tr("The asset (or PEXA) removed or added to balance.");
             }
         }
     }

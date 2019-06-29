@@ -1,10 +1,10 @@
 // Copyright (c) 2011-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef RAVEN_QT_TRANSACTIONRECORD_H
-#define RAVEN_QT_TRANSACTIONRECORD_H
+#ifndef PEXA_QT_TRANSACTIONRECORD_H
+#define PEXA_QT_TRANSACTIONRECORD_H
 
 #include "amount.h"
 #include "uint256.h"
@@ -91,13 +91,13 @@ public:
     static const int RecommendedNumConfirmations = 6;
 
     TransactionRecord():
-            hash(), time(0), type(Other), address(""), debit(0), credit(0), assetName("RVN"), units(8), idx(0)
+            hash(), time(0), type(Other), address(""), debit(0), credit(0), assetName("PEXA"), units(8), idx(0)
     {
     }
 
     TransactionRecord(uint256 _hash, qint64 _time):
             hash(_hash), time(_time), type(Other), address(""), debit(0),
-            credit(0), assetName("RVN"), units(8), idx(0)
+            credit(0), assetName("PEXA"), units(8), idx(0)
     {
     }
 
@@ -105,7 +105,7 @@ public:
                 Type _type, const std::string &_address,
                 const CAmount& _debit, const CAmount& _credit):
             hash(_hash), time(_time), type(_type), address(_address), debit(_debit), credit(_credit),
-            assetName("RVN"), units(8), idx(0)
+            assetName("PEXA"), units(8), idx(0)
     {
     }
 
@@ -150,4 +150,4 @@ public:
     bool statusUpdateNeeded() const;
 };
 
-#endif // RAVEN_QT_TRANSACTIONRECORD_H
+#endif // PEXA_QT_TRANSACTIONRECORD_H

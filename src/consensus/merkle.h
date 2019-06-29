@@ -1,10 +1,10 @@
 // Copyright (c) 2015 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef RAVEN_MERKLE
-#define RAVEN_MERKLE
+#ifndef PEXA_MERKLE
+#define PEXA_MERKLE
 
 #include <stdint.h>
 #include <vector>

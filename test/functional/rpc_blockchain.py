@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2016 The Bitcoin Core developers
-# Copyright (c) 2017-2018 The Raven Core developers
+# Copyright (c) 2017-2018 The Pexa Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test RPCs related to blockchainstate.
@@ -22,7 +22,7 @@ from decimal import Decimal
 import http.client
 import subprocess
 
-from test_framework.test_framework import RavenTestFramework
+from test_framework.test_framework import PexaTestFramework
 from test_framework.util import (
     assert_equal,
     assert_greater_than,
@@ -33,7 +33,7 @@ from test_framework.util import (
     assert_is_hash_string,
 )
 
-class BlockchainTest(RavenTestFramework):
+class BlockchainTest(PexaTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [['-stopatheight=207', '-prune=1']]

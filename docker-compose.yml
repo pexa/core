@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  pexad:
+    image: pexacoin/core:latest
+    build:
+      context: .
+    volumes:
+      - /home/pexa/.pexa:/root/.pexa
+    ports:
+      - 18235:18235
+      - 8769:8769
+      - 8235:8235

@@ -1,10 +1,10 @@
 // Copyright (c) 2011-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef RAVEN_QT_SENDCOINSDIALOG_H
-#define RAVEN_QT_SENDCOINSDIALOG_H
+#ifndef PEXA_QT_SENDCOINSDIALOG_H
+#define PEXA_QT_SENDCOINSDIALOG_H
 
 #include "walletmodel.h"
 
@@ -26,7 +26,7 @@ QT_BEGIN_NAMESPACE
 class QUrl;
 QT_END_NAMESPACE
 
-/** Dialog for sending ravens */
+/** Dialog for sending pexas */
 class SendCoinsDialog : public QDialog
 {
     Q_OBJECT
@@ -124,4 +124,4 @@ private:
     int secDelay;
 };
 
-#endif // RAVEN_QT_SENDCOINSDIALOG_H
+#endif // PEXA_QT_SENDCOINSDIALOG_H

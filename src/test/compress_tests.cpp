@@ -1,11 +1,11 @@
 // Copyright (c) 2012-2015 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "compressor.h"
 #include "util.h"
-#include "test/test_raven.h"
+#include "test/test_pexa.h"
 
 #include <stdint.h>
 
@@ -18,10 +18,10 @@
 #define NUM_MULTIPLES_CENT 10000
 
 // amounts 1 .. 10000
-#define NUM_MULTIPLES_1RVN 10000
+#define NUM_MULTIPLES_1PEXA 10000
 
-// amounts 50 .. 21000000
-#define NUM_MULTIPLES_50RVN 420000
+// amounts 50 .. 171229
+#define NUM_MULTIPLES_50PEXA 420000
 
 BOOST_FIXTURE_TEST_SUITE(compress_tests, BasicTestingSetup)
 
@@ -49,8 +49,8 @@ BOOST_FIXTURE_TEST_SUITE(compress_tests, BasicTestingSetup)
         BOOST_CHECK(TestPair(1, 0x1));
         BOOST_CHECK(TestPair(CENT, 0x7));
         BOOST_CHECK(TestPair(COIN, 0x9));
-        BOOST_CHECK(TestPair(5000 * COIN, 0x1388));
-        BOOST_CHECK(TestPair(21000000000 * COIN, 0x4E3B29200));
+        BOOST_CHECK(TestPair(50 * COIN , 0x1388));
+        BOOST_CHECK(TestPair(17122989 * COIN, 0x4E3B29200));
 
         for (uint64_t i = 1; i <= NUM_MULTIPLES_UNIT; i++)
             BOOST_CHECK(TestEncode(i));
@@ -58,11 +58,11 @@ BOOST_FIXTURE_TEST_SUITE(compress_tests, BasicTestingSetup)
         for (uint64_t i = 1; i <= NUM_MULTIPLES_CENT; i++)
             BOOST_CHECK(TestEncode(i * CENT));
 
-        for (uint64_t i = 1; i <= NUM_MULTIPLES_1RVN; i++)
+        for (uint64_t i = 1; i <= NUM_MULTIPLES_1PEXA; i++)
             BOOST_CHECK(TestEncode(i * COIN));
 
-        for (uint64_t i = 1; i <= NUM_MULTIPLES_50RVN; i++)
-            BOOST_CHECK(TestEncode(i * 5000 * COIN));
+        for (uint64_t i = 1; i <= NUM_MULTIPLES_50PEXA; i++)
+            BOOST_CHECK(TestEncode(i * 50 * COIN ));
 
         for (uint64_t i = 0; i < 100000; i++)
             BOOST_CHECK(TestDecode(i));

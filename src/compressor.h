@@ -1,11 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef RAVEN_COMPRESSOR_H
-#define RAVEN_COMPRESSOR_H
+#ifndef PEXA_COMPRESSOR_H
+#define PEXA_COMPRESSOR_H
 
 #include "primitives/transaction.h"
 #include "script/script.h"
@@ -119,4 +119,4 @@ public:
     }
 };
 
-#endif // RAVEN_COMPRESSOR_H
+#endif // PEXA_COMPRESSOR_H

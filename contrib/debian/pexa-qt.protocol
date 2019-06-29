@@ -1,0 +1,11 @@
+[Protocol]
+exec=pexa-qt '%u'
+protocol=pexa
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false

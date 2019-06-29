@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -41,7 +41,7 @@
 extern std::vector<CWalletRef> vpwallets;
 //////////////////////////////////////////////////////////////////////////////
 //
-// RavenMiner
+// PexaMiner
 //
 
 //
@@ -507,11 +507,11 @@ CWallet *GetFirstWallet() {
     return(vpwallets[0]);
 }
 
-void static RavenMiner(const CChainParams& chainparams)
+void static PexaMiner(const CChainParams& chainparams)
 {
-    LogPrintf("RavenMiner -- started\n");
+    LogPrintf("PexaMiner -- started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-    RenameThread("raven-miner");
+    RenameThread("pexa-miner");
 
     unsigned int nExtraNonce = 0;
 
@@ -523,7 +523,7 @@ void static RavenMiner(const CChainParams& chainparams)
     #endif
 
     if (!EnsureWalletIsAvailable(pWallet, false)) {
-        LogPrintf("RavenMiner -- Wallet not available\n");
+        LogPrintf("PexaMiner -- Wallet not available\n");
     }
 
     if (pWallet == NULL)
@@ -583,13 +583,13 @@ void static RavenMiner(const CChainParams& chainparams)
 
             if (!pblocktemplate.get())
             {
-                LogPrintf("RavenMiner -- Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
+                LogPrintf("PexaMiner -- Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
                 return;
             }
             CBlock *pblock = &pblocktemplate->block;
             IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
-            LogPrintf("RavenMiner -- Running miner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+            LogPrintf("PexaMiner -- Running miner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
                 ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
             //
@@ -608,7 +608,7 @@ void static RavenMiner(const CChainParams& chainparams)
                     {
                         // Found a solution
                         SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                        LogPrintf("RavenMiner:\n  proof-of-work found\n  hash: %s\n  target: %s\n", hash.GetHex(), hashTarget.GetHex());
+                        LogPrintf("PexaMiner:\n  proof-of-work found\n  hash: %s\n  target: %s\n", hash.GetHex(), hashTarget.GetHex());
                         ProcessBlockFound(pblock, chainparams);
                         SetThreadPriority(THREAD_PRIORITY_LOWEST);
                         coinbaseScript->KeepScript();
@@ -655,17 +655,17 @@ void static RavenMiner(const CChainParams& chainparams)
     }
     catch (const boost::thread_interrupted&)
     {
-        LogPrintf("RavenMiner -- terminated\n");
+        LogPrintf("PexaMiner -- terminated\n");
         throw;
     }
     catch (const std::runtime_error &e)
     {
-        LogPrintf("RavenMiner -- runtime error: %s\n", e.what());
+        LogPrintf("PexaMiner -- runtime error: %s\n", e.what());
         return;
     }
 }
 
-int GenerateRavens(bool fGenerate, int nThreads, const CChainParams& chainparams)
+int GeneratePexas(bool fGenerate, int nThreads, const CChainParams& chainparams)
 {
 
     static boost::thread_group* minerThreads = NULL;
@@ -692,7 +692,7 @@ int GenerateRavens(bool fGenerate, int nThreads, const CChainParams& chainparams
     nHashesPerSec = 0;
 
     for (int i = 0; i < nThreads; i++){
-        minerThreads->create_thread(boost::bind(&RavenMiner, boost::cref(chainparams)));
+        minerThreads->create_thread(boost::bind(&PexaMiner, boost::cref(chainparams)));
     }
 
     return(numCores);

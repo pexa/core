@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/pexa/.pexa" ]; then
+	PEXAD_DEFAULT_DATADIR="/var/lib/pexa/.pexa"
+else
+	PEXAD_DEFAULT_DATADIR="/var/lib/pexad"
+fi
+
+PEXAD_CONFIGFILE=${PEXAD_CONFIGFILE:-/etc/pexa/pexa.conf}
+PEXAD_PIDDIR=${PEXAD_PIDDIR:-/var/run/pexad}
+PEXAD_PIDFILE=${PEXAD_PIDFILE:-${PEXAD_PIDDIR}/pexad.pid}
+PEXAD_DATADIR=${PEXAD_DATADIR:-${PEXAD_DEFAULT_DATADIR}}
+PEXAD_USER=${PEXAD_USER:-${PEXA_USER:-pexa}}
+PEXAD_GROUP=${PEXAD_GROUP:-pexa}
+PEXAD_BIN=${PEXAD_BIN:-/usr/bin/pexad}
+PEXAD_NICE=${PEXAD_NICE:-${NICELEVEL:-0}}
+PEXAD_OPTS="${PEXAD_OPTS:-${PEXA_OPTS}}"
+
+name="Pexa Core Daemon"
+description="Pexa cryptocurrency P2P network daemon"
+
+command="/usr/bin/pexad"
+command_args="-pid=\"${PEXAD_PIDFILE}\" \
+		-conf=\"${PEXAD_CONFIGFILE}\" \
+		-datadir=\"${PEXAD_DATADIR}\" \
+		-daemon \
+		${PEXAD_OPTS}"
+
+required_files="${PEXAD_CONFIGFILE}"
+start_stop_daemon_args="-u ${PEXAD_USER} \
+			-N ${PEXAD_NICE} -w 2000"
+pidfile="${PEXAD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${PEXAD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${PEXAD_USER}:${PEXAD_GROUP}" \
+	"${PEXAD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${PEXAD_USER}:${PEXAD_GROUP}" \
+	"${PEXAD_PIDDIR}"
+
+	checkpath -f \
+	-o ${PEXAD_USER}:${PEXAD_GROUP} \
+	-m 0660 \
+	${PEXAD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${PEXAD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run pexad."
+		eerror "The setting must appear in ${PEXAD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Pexa Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

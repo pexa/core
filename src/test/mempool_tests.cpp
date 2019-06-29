@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@
 #include "txmempool.h"
 #include "util.h"
 
-#include "test/test_raven.h"
+#include "test/test_pexa.h"
 
 #include <boost/test/unit_test.hpp>
 #include <list>
@@ -353,7 +353,7 @@ BOOST_FIXTURE_TEST_SUITE(mempool_tests, TestingSetup)
         CMutableTransaction tx3 = CMutableTransaction();
         tx3.vout.resize(1);
         tx3.vout[0].scriptPubKey = CScript() << OP_11 << OP_EQUAL;
-        tx3.vout[0].nValue = 5 * COIN;
+        tx3.vout[0].nValue = 1 * COIN;
         pool.addUnchecked(tx3.GetHash(), entry.Fee(0LL).FromTx(tx3));
 
         /* 2nd highest fee */

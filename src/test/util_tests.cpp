@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +10,7 @@
 #include "sync.h"
 #include "utilstrencodings.h"
 #include "utilmoneystr.h"
-#include "test/test_raven.h"
+#include "test/test_pexa.h"
 
 #include <stdint.h>
 #include <vector>
@@ -654,7 +654,7 @@ BOOST_FIXTURE_TEST_SUITE(util_tests, BasicTestingSetup)
         BOOST_CHECK(!ParseFixedPoint("1.1e-", 8, &amount));
         BOOST_CHECK(!ParseFixedPoint("1.", 8, &amount));
 
-        BOOST_CHECK(ParseFixedPoint("21000000000", 8, &amount));
+        BOOST_CHECK(ParseFixedPoint("17122989", 8, &amount));
         BOOST_CHECK(ParseFixedPoint("42000000000", 8, &amount));
         BOOST_CHECK(!ParseFixedPoint("42000000001", 8, &amount));
     }

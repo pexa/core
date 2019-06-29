@@ -1,14 +1,14 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 /**
  * Utilities for converting data from/to strings.
  */
-#ifndef RAVEN_UTILSTRENCODINGS_H
-#define RAVEN_UTILSTRENCODINGS_H
+#ifndef PEXA_UTILSTRENCODINGS_H
+#define PEXA_UTILSTRENCODINGS_H
 
 #include <stdint.h>
 #include <string>
@@ -150,4 +150,4 @@ bool TimingResistantEqual(const T& a, const T& b)
  */
 bool ParseFixedPoint(const std::string &val, int decimals, int64_t *amount_out);
 
-#endif // RAVEN_UTILSTRENCODINGS_H
+#endif // PEXA_UTILSTRENCODINGS_H

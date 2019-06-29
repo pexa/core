@@ -1,0 +1,33 @@
+# /etc/conf.d/pexad: config file for /etc/init.d/pexad
+
+# Config file location
+#PEXAD_CONFIGFILE="/etc/pexa/pexa.conf"
+
+# What directory to write pidfile to?  (created and owned by $PEXAD_USER)
+#PEXAD_PIDDIR="/var/run/pexad"
+
+# What filename to give the pidfile
+#PEXAD_PIDFILE="${PEXAD_PIDDIR}/pexad.pid"
+
+# Where to write pexad data (be mindful that the blockchain is large)
+#PEXAD_DATADIR="/var/lib/pexad"
+
+# User and group to own pexad process
+#PEXAD_USER="pexa"
+#PEXAD_GROUP="pexa"
+
+# Path to pexad executable
+#PEXAD_BIN="/usr/bin/pexad"
+
+# Nice value to run pexad under
+#PEXAD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#PEXAD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for pexad to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+PEXAD_SIGTERM_TIMEOUT=60

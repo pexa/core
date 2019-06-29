@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Pexa Core
+Comment=Connect to the Pexa P2P Network
+Comment[de]=Verbinde mit dem Pexa peer-to-peer Netzwerk
+Comment[fr]=Pexa, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Pexa, eşten eşe kriptografik sanal para birimi
+Exec=pexa-qt %u
+Terminal=false
+Type=Application
+Icon=pexa128
+MimeType=x-scheme-handler/pexa;
+Categories=Office;Finance;

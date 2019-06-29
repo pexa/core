@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -214,13 +214,13 @@ int CBase58Data::CompareTo(const CBase58Data& b58) const
 namespace
 {
 
-class CRavenAddressVisitor : public boost::static_visitor<bool>
+class CPexaAddressVisitor : public boost::static_visitor<bool>
 {
 private:
-    CRavenAddress* addr;
+    CPexaAddress* addr;
 
 public:
-    explicit CRavenAddressVisitor(CRavenAddress* addrIn) : addr(addrIn) {}
+    explicit CPexaAddressVisitor(CPexaAddress* addrIn) : addr(addrIn) {}
 
     bool operator()(const CKeyID& id) const { return addr->Set(id); }
     bool operator()(const CScriptID& id) const { return addr->Set(id); }
@@ -229,29 +229,29 @@ public:
 
 } // namespace
 
-bool CRavenAddress::Set(const CKeyID& id)
+bool CPexaAddress::Set(const CKeyID& id)
 {
     SetData(Params().Base58Prefix(CChainParams::PUBKEY_ADDRESS), &id, 20);
     return true;
 }
 
-bool CRavenAddress::Set(const CScriptID& id)
+bool CPexaAddress::Set(const CScriptID& id)
 {
     SetData(Params().Base58Prefix(CChainParams::SCRIPT_ADDRESS), &id, 20);
     return true;
 }
 
-bool CRavenAddress::Set(const CTxDestination& dest)
+bool CPexaAddress::Set(const CTxDestination& dest)
 {
-    return boost::apply_visitor(CRavenAddressVisitor(this), dest);
+    return boost::apply_visitor(CPexaAddressVisitor(this), dest);
 }
 
-bool CRavenAddress::IsValid() const
+bool CPexaAddress::IsValid() const
 {
     return IsValid(Params());
 }
 
-bool CRavenAddress::IsValid(const CChainParams& params) const
+bool CPexaAddress::IsValid(const CChainParams& params) const
 {
     bool fCorrectSize = vchData.size() == 20;
     bool fKnownVersion = vchVersion == params.Base58Prefix(CChainParams::PUBKEY_ADDRESS) ||
@@ -259,7 +259,7 @@ bool CRavenAddress::IsValid(const CChainParams& params) const
     return fCorrectSize && fKnownVersion;
 }
 
-CTxDestination CRavenAddress::Get() const
+CTxDestination CPexaAddress::Get() const
 {
     if (!IsValid())
         return CNoDestination();
@@ -273,7 +273,7 @@ CTxDestination CRavenAddress::Get() const
         return CNoDestination();
 }
 
-bool CRavenAddress::GetIndexKey(uint160& hashBytes, int& type) const
+bool CPexaAddress::GetIndexKey(uint160& hashBytes, int& type) const
 {
     if (!IsValid()) {
         return false;
@@ -290,7 +290,7 @@ bool CRavenAddress::GetIndexKey(uint160& hashBytes, int& type) const
     return false;
 }
 
-void CRavenSecret::SetKey(const CKey& vchSecret)
+void CPexaSecret::SetKey(const CKey& vchSecret)
 {
     assert(vchSecret.IsValid());
     SetData(Params().Base58Prefix(CChainParams::SECRET_KEY), vchSecret.begin(), vchSecret.size());
@@ -298,7 +298,7 @@ void CRavenSecret::SetKey(const CKey& vchSecret)
         vchData.push_back(1);
 }
 
-CKey CRavenSecret::GetKey()
+CKey CPexaSecret::GetKey()
 {
     CKey ret;
     assert(vchData.size() >= 32);
@@ -306,41 +306,41 @@ CKey CRavenSecret::GetKey()
     return ret;
 }
 
-bool CRavenSecret::IsValid() const
+bool CPexaSecret::IsValid() const
 {
     bool fExpectedFormat = vchData.size() == 32 || (vchData.size() == 33 && vchData[32] == 1);
     bool fCorrectVersion = vchVersion == Params().Base58Prefix(CChainParams::SECRET_KEY);
     return fExpectedFormat && fCorrectVersion;
 }
 
-bool CRavenSecret::SetString(const char* pszSecret)
+bool CPexaSecret::SetString(const char* pszSecret)
 {
     return CBase58Data::SetString(pszSecret) && IsValid();
 }
 
-bool CRavenSecret::SetString(const std::string& strSecret)
+bool CPexaSecret::SetString(const std::string& strSecret)
 {
     return SetString(strSecret.c_str());
 }
 
 std::string EncodeDestination(const CTxDestination& dest)
 {
-    CRavenAddress addr(dest);
+    CPexaAddress addr(dest);
     if (!addr.IsValid()) return "";
     return addr.ToString();
 }
 
 CTxDestination DecodeDestination(const std::string& str)
 {
-    return CRavenAddress(str).Get();
+    return CPexaAddress(str).Get();
 }
 
 bool IsValidDestinationString(const std::string& str, const CChainParams& params)
 {
-    return CRavenAddress(str).IsValid(params);
+    return CPexaAddress(str).IsValid(params);
 }
 
 bool IsValidDestinationString(const std::string& str)
 {
-    return CRavenAddress(str).IsValid();
+    return CPexaAddress(str).IsValid();
 }

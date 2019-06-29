@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -38,7 +38,7 @@
 
 std::string AssetActivationWarning()
 {
-    return AreAssetsDeployed() ? "" : "\nTHIS COMMAND IS NOT YET ACTIVE!\nhttps://github.com/RavenProject/rips/blob/master/rip-0002.mediawiki\n";
+    return AreAssetsDeployed() ? "" : "\nTHIS COMMAND IS NOT YET ACTIVE!\nhttps://github.com/PexaProject/rips/blob/master/rip-0002.mediawiki\n";
 }
 
 std::string AssetTypeToString(AssetType& assetType)
@@ -93,7 +93,7 @@ UniValue issue(const JSONRPCRequest& request)
             "1. \"asset_name\"            (string, required) a unique name\n"
             "2. \"qty\"                   (numeric, optional, default=1) the number of units to be issued\n"
             "3. \"to_address\"            (string), optional, default=\"\"), address asset will be sent to, if it is empty, address will be generated for you\n"
-            "4. \"change_address\"        (string), optional, default=\"\"), address the the rvn change will be sent to, if it is empty, change address will be generated for you\n"
+            "4. \"change_address\"        (string), optional, default=\"\"), address the the pexa change will be sent to, if it is empty, change address will be generated for you\n"
             "5. \"units\"                 (integer, optional, default=0, min=0, max=8), the number of decimals precision for the asset (0 for whole units (\"1\"), 8 for max precision (\"1.00000000\")\n"
             "6. \"reissuable\"            (boolean, optional, default=true (false for unique assets)), whether future reissuance is allowed\n"
             "7. \"has_ipfs\"              (boolean, optional, default=false), whether ifps hash is going to be added to the asset\n"
@@ -146,7 +146,7 @@ UniValue issue(const JSONRPCRequest& request)
     if (!address.empty()) {
         CTxDestination destination = DecodeDestination(address);
         if (!IsValidDestination(destination)) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Raven address: ") + address);
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Pexa address: ") + address);
         }
     } else {
         // Create a new address
@@ -175,7 +175,7 @@ UniValue issue(const JSONRPCRequest& request)
         CTxDestination destination = DecodeDestination(changeAddress);
         if (!IsValidDestination(destination)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY,
-                               std::string("Invalid Change Address: Invalid Raven address: ") + changeAddress);
+                               std::string("Invalid Change Address: Invalid Pexa address: ") + changeAddress);
         }
     }
 
@@ -239,14 +239,14 @@ UniValue issueunique(const JSONRPCRequest& request)
                 "root_name must be an asset you own.\n"
                 "An asset will be created for each element of asset_tags.\n"
                 "If provided ipfs_hashes must be the same length as asset_tags.\n"
-                "Five (5) RVN will be burned for each asset created.\n"
+                "Five (5) PEXA will be burned for each asset created.\n"
 
                 "\nArguments:\n"
                 "1. \"root_name\"             (string, required) name of the asset the unique asset(s) are being issued under\n"
                 "2. \"asset_tags\"            (array, required) the unique tag for each asset which is to be issued\n"
                 "3. \"ipfs_hashes\"           (array, optional) ipfs hashes corresponding to each supplied tag (should be same size as \"asset_tags\") (only sha2-256 hashes currently supported -- Qm...)\n"
                 "4. \"to_address\"            (string, optional, default=\"\"), address assets will be sent to, if it is empty, address will be generated for you\n"
-                "5. \"change_address\"        (string, optional, default=\"\"), address the the rvn change will be sent to, if it is empty, change address will be generated for you\n"
+                "5. \"change_address\"        (string, optional, default=\"\"), address the the pexa change will be sent to, if it is empty, change address will be generated for you\n"
 
                 "\nResult:\n"
                 "\"txid\"                     (string) The transaction id\n"
@@ -296,7 +296,7 @@ UniValue issueunique(const JSONRPCRequest& request)
     if (!address.empty()) {
         CTxDestination destination = DecodeDestination(address);
         if (!IsValidDestination(destination)) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Raven address: ") + address);
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Pexa address: ") + address);
         }
     } else {
         // Create a new address
@@ -325,7 +325,7 @@ UniValue issueunique(const JSONRPCRequest& request)
         CTxDestination destination = DecodeDestination(changeAddress);
         if (!IsValidDestination(destination)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY,
-                               std::string("Invalid Change Address: Invalid Raven address: ") + changeAddress);
+                               std::string("Invalid Change Address: Invalid Pexa address: ") + changeAddress);
         }
     }
 
@@ -389,7 +389,7 @@ UniValue listassetbalancesbyaddress(const JSONRPCRequest& request)
             "\nReturns a list of all asset balances for an address.\n"
 
             "\nArguments:\n"
-            "1. \"address\"                  (string, required) a raven address\n"
+            "1. \"address\"                  (string, required) a pexa address\n"
             "2. \"onlytotal\"                (boolean, optional, default=false) when false result is just a list of assets balances -- when true the result is just a single number representing the number of assets\n"
             "3. \"count\"                    (integer, optional, default=50000, MAX=50000) truncates results to include only the first _count_ assets found\n"
             "4. \"start\"                    (integer, optional, default=0) results skip over the first _start_ assets found (if negative it skips back from the end)\n"
@@ -412,7 +412,7 @@ UniValue listassetbalancesbyaddress(const JSONRPCRequest& request)
     std::string address = request.params[0].get_str();
     CTxDestination destination = DecodeDestination(address);
     if (!IsValidDestination(destination)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Raven address: ") + address);
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Pexa address: ") + address);
     }
 
     bool fOnlyTotal = false;

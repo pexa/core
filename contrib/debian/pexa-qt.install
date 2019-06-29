@@ -1,0 +1,6 @@
+usr/local/bin/pexa-qt usr/bin
+share/pixmaps/pexa32.xpm usr/share/pixmaps
+share/pixmaps/pexa16.xpm usr/share/pixmaps
+share/pixmaps/pexa128.png usr/share/pixmaps
+debian/pexa-qt.desktop usr/share/applications
+debian/pexa-qt.protocol usr/share/kde4/services/

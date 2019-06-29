@@ -1,11 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef RAVEN_WALLET_WALLET_H
-#define RAVEN_WALLET_WALLET_H
+#ifndef PEXA_WALLET_WALLET_H
+#define PEXA_WALLET_WALLET_H
 
 #include "amount.h"
 #include "policy/feerate.h"
@@ -187,7 +187,7 @@ struct COutputEntry
     int vout;
 };
 
-/** RVN START */
+/** PEXA START */
 struct CAssetOutputEntry
 {
     txnouttype type;
@@ -196,7 +196,7 @@ struct CAssetOutputEntry
     CAmount nAmount;
     int vout;
 };
-/** RVN END */
+/** PEXA END */
 
 /** A transaction with a merkle branch linking it to the block chain. */
 class CMerkleTx
@@ -327,7 +327,7 @@ public:
     unsigned int nTimeSmart;
     /**
      * From me flag is set to 1 for transactions that were created by the wallet
-     * on this raven node, and set to 0 for transactions that were created
+     * on this pexa node, and set to 0 for transactions that were created
      * externally and came in through the network or sendrawtransaction RPC.
      */
     char fFromMe;
@@ -837,7 +837,7 @@ public:
      * populate vCoins with vector of available COutputs, and populates vAssetCoins in fWithAssets is set to true.
      */
     void AvailableCoinsAll(std::vector<COutput>& vCoins, std::map<std::string, std::vector<COutput> >& mapAssetCoins,
-                            bool fGetRVN = true, bool fOnlyAssets = false,
+                            bool fGetPEXA = true, bool fOnlyAssets = false,
                             bool fOnlySafe = true, const CCoinControl *coinControl = nullptr,
                             const CAmount& nMinimumAmount = 1, const CAmount& nMaximumAmount = MAX_MONEY,
                             const CAmount& nMinimumSumAmount = MAX_MONEY, const uint64_t& nMaximumCount = 0,
@@ -852,7 +852,7 @@ public:
                          const uint64_t &nMaximumCount = 0, const int &nMinDepth = 0, const int &nMaxDepth = 9999999) const;
 
     /**
-     * Helper function that calls AvailableCoinsAll, used to receive all coins, Assets and RVN
+     * Helper function that calls AvailableCoinsAll, used to receive all coins, Assets and PEXA
      */
     void AvailableCoinsWithAssets(std::vector<COutput> &vCoins, std::map<std::string, std::vector<COutput> > &mapAssetCoins,
                                   bool fOnlySafe = true, const CCoinControl *coinControl = nullptr, const CAmount &nMinimumAmount = 1,
@@ -994,7 +994,7 @@ public:
     bool FundTransaction(CMutableTransaction& tx, CAmount& nFeeRet, int& nChangePosInOut, std::string& strFailReason, bool lockUnspents, const std::set<int>& setSubtractFeeFromOutputs, CCoinControl);
     bool SignTransaction(CMutableTransaction& tx);
 
-    /** RVN START */
+    /** PEXA START */
     bool CreateTransactionWithAssets(const std::vector<CRecipient>& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, int& nChangePosInOut,
                                    std::string& strFailReason, const CCoinControl& coin_control, const std::vector<CNewAsset> assets, const CTxDestination dest, const AssetType& assetType, bool sign = true);
 
@@ -1020,7 +1020,7 @@ public:
 
     bool CreateNewChangeAddress(CReserveKey& reservekey, CKeyID& keyID, std::string& strFailReason);
 
-    /** RVN END */
+    /** PEXA END */
 
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, CConnman* connman, CValidationState& state);
 
@@ -1274,4 +1274,4 @@ bool CWallet::DummySignTx(CMutableTransaction &txNew, const ContainerType &coins
     return true;
 }
 
-#endif // RAVEN_WALLET_WALLET_H
+#endif // PEXA_WALLET_WALLET_H

@@ -2,20 +2,20 @@
 # Copyright (c) 2010 ArtForz -- public domain half-a-node
 # Copyright (c) 2012 Jeff Garzik
 # Copyright (c) 2010-2016 The Bitcoin Core developers
-# Copyright (c) 2017 The Raven Core developers
+# Copyright (c) 2019 The Pexa Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-"""Raven P2P network half-a-node.
+"""Pexa P2P network half-a-node.
 
 This python code was modified from ArtForz' public domain  half-a-node, as
 found in the mini-node branch of http://github.com/jgarzik/pynode.
 
-NodeConn: an object which manages p2p connectivity to a raven node
+NodeConn: an object which manages p2p connectivity to a pexa node
 NodeConnCB: a base class that describes the interface for receiving
             callbacks with network messages from a NodeConn
 CBlock, CTransaction, CBlockHeader, CTxIn, CTxOut, etc....:
     data structures that should map to corresponding structures in
-    raven/primitives
+    pexa/primitives
 msg_block, msg_tx, msg_headers, etc.:
     data structures that represent network messages
 ser_*, deser_*: functions that handle serialization/deserialization
@@ -48,7 +48,7 @@ MY_RELAY = 1 # from version 70001 onwards, fRelay should be appended to version 
 MAX_INV_SZ = 50000
 MAX_BLOCK_BASE_SIZE = 1000000
 
-COIN = 100000000 # 1 rvn in corbies
+COIN = 100000000 # 1 pexa in corbies
 
 NODE_NETWORK = (1 << 0)
 # NODE_GETUTXO = (1 << 1)
@@ -82,7 +82,7 @@ def ripemd160(s):
 def hash256(s):
     return sha256(sha256(s))
 
-x16r_hash_cmd = os.path.dirname(os.path.realpath(__file__)) + "/../../../src/test/test_raven_hash"
+x16r_hash_cmd = os.path.dirname(os.path.realpath(__file__)) + "/../../../src/test/test_pexa_hash"
 def hash_x16r(s):
     cmd = [x16r_hash_cmd, s]
     hash = subprocess.run(cmd, stdout=subprocess.PIPE, check=True).stdout.decode('ascii')
@@ -226,7 +226,7 @@ def FromHex(obj, hex_string):
 def ToHex(obj):
     return bytes_to_hex_str(obj.serialize())
 
-# Objects that map to ravend objects, which can be serialized/deserialized
+# Objects that map to pexad objects, which can be serialized/deserialized
 
 class CAddress():
     def __init__(self):
@@ -535,7 +535,7 @@ class CTransaction():
         if len(self.vin) == 0:
             flags = struct.unpack("<B", f.read(1))[0]
             # Not sure why flags can't be zero, but this
-            # matches the implementation in ravend
+            # matches the implementation in pexad
             if (flags != 0):
                 self.vin = deser_vector(f, CTxIn)
                 self.vout = deser_vector(f, CTxOut)
@@ -603,7 +603,7 @@ class CTransaction():
     def is_valid(self):
         self.calc_sha256()
         for tout in self.vout:
-            if tout.nValue < 0 or tout.nValue > 21000000 * COIN:
+            if tout.nValue < 0 or tout.nValue > 171229 * COIN:
                 return False
         return True
 
@@ -1401,7 +1401,7 @@ class msg_headers():
         self.headers = headers if headers is not None else []
 
     def deserialize(self, f):
-        # comment in ravend indicates these should be deserialized as blocks
+        # comment in pexad indicates these should be deserialized as blocks
         blocks = deser_vector(f, CBlock)
         for x in blocks:
             self.headers.append(CBlockHeader(x))
@@ -1542,7 +1542,7 @@ class msg_witness_blocktxn(msg_blocktxn):
         return r
 
 class NodeConnCB():
-    """Callback and helper functions for P2P connection to a ravend node.
+    """Callback and helper functions for P2P connection to a pexad node.
 
     Individual testcases should subclass this and override the on_* methods
     if they want to alter message handling behaviour.
@@ -1763,7 +1763,7 @@ class NodeConn(asyncore.dispatcher):
             vt.addrFrom.port = 0
             self.send_message(vt, True)
 
-        logger.info('Connecting to Raven Node: %s:%d' % (self.dstaddr, self.dstport))
+        logger.info('Connecting to Pexa Node: %s:%d' % (self.dstaddr, self.dstport))
 
         try:
             self.connect((dstaddr, dstport))

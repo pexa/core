@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -166,7 +166,7 @@ void ScriptPubKeyToUniv(const CScript& scriptPubKey,
     out.pushKV("reqSigs", nRequired);
     out.pushKV("type", GetTxnOutputType(type));
 
-    /** RVN START */
+    /** PEXA START */
     if (type == TX_NEW_ASSET || type == TX_TRANSFER_ASSET || type == TX_REISSUE_ASSET) {
         UniValue assetInfo(UniValue::VOBJ);
 
@@ -212,7 +212,7 @@ void ScriptPubKeyToUniv(const CScript& scriptPubKey,
 
         out.pushKV("asset", assetInfo);
     }
-     /** RVN END */
+     /** PEXA END */
 
     UniValue a(UniValue::VARR);
     for (const CTxDestination& addr : addresses) {

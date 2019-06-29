@@ -1,11 +1,11 @@
 Sample configuration files for:
 ```
-SystemD: ravend.service
-Upstart: ravend.conf
-OpenRC:  ravend.openrc
-         ravend.openrcconf
-CentOS:  ravend.init
-OS X:    org.raven.ravend.plist
+SystemD: pexad.service
+Upstart: pexad.conf
+OpenRC:  pexad.openrc
+         pexad.openrcconf
+CentOS:  pexad.init
+OS X:    org.pexa.pexad.plist
 ```
 have been made available to assist packagers in creating node packages here.
 

@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 # Copyright (c) 2017 The Bitcoin Core developers
-# Copyright (c) 2017-2018 The Raven Core developers
+# Copyright (c) 2017-2018 The Pexa Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Testing asset use cases
 
 """
-from test_framework.test_framework import RavenTestFramework
+from test_framework.test_framework import PexaTestFramework
 from test_framework.util import *
 
 
 import string
 
-class AssetTest(RavenTestFramework):
+class AssetTest(PexaTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 3
         self.extra_args = [['-assetindex'], ['-assetindex'], ['-assetindex']]
 
     def activate_assets(self):
-        self.log.info("Generating RVN for node[0] and activating assets...")
+        self.log.info("Generating PEXA for node[0] and activating assets...")
         n0, n1, n2 = self.nodes[0], self.nodes[1], self.nodes[2]
 
         n0.generate(1)
@@ -138,13 +138,13 @@ class AssetTest(RavenTestFramework):
         assert_equal(n0.listassetbalancesbyaddress(address0)["MY_ASSET"], 2000)
 
         self.log.info("Checking listassets()...")
-        n0.issue("RAVEN1", 1000)
-        n0.issue("RAVEN2", 1000)
-        n0.issue("RAVEN3", 1000)
+        n0.issue("PEXA1", 1000)
+        n0.issue("PEXA2", 1000)
+        n0.issue("PEXA3", 1000)
         n0.generate(1)
         self.sync_all()
 
-        n0.listassets(asset="RAVEN*", verbose=False, count=2, start=-2)
+        n0.listassets(asset="PEXA*", verbose=False, count=2, start=-2)
 
         self.log.info("Creating some sub-assets...")
         n0.issue(asset_name="MY_ASSET/SUB1", qty=1000, to_address=address0, change_address=address0,\
@@ -164,10 +164,10 @@ class AssetTest(RavenTestFramework):
         assert_equal(assetdata["has_ipfs"], 1)
         assert_equal(assetdata["ipfs_hash"], ipfs_hash)
 
-        raven_assets = n0.listassets(asset="RAVEN*", verbose=False, count=2, start=-2)
-        assert_equal(len(raven_assets), 2)
-        assert_equal(raven_assets[0], "RAVEN2")
-        assert_equal(raven_assets[1], "RAVEN3")
+        pexa_assets = n0.listassets(asset="PEXA*", verbose=False, count=2, start=-2)
+        assert_equal(len(pexa_assets), 2)
+        assert_equal(pexa_assets[0], "PEXA2")
+        assert_equal(pexa_assets[1], "PEXA3")
         self.sync_all()
 
     def issue_param_checks(self):

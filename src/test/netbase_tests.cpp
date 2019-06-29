@@ -1,10 +1,10 @@
 // Copyright (c) 2012-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "netbase.h"
-#include "test/test_raven.h"
+#include "test/test_pexa.h"
 #include "utilstrencodings.h"
 
 #include <string>
@@ -89,20 +89,20 @@ BOOST_FIXTURE_TEST_SUITE(netbase_tests, BasicTestingSetup)
     {
         BOOST_TEST_MESSAGE("Running NetBase SplitHost Test");
 
-        BOOST_CHECK(TestSplitHost("www.raven.org", "www.raven.org", -1));
-        BOOST_CHECK(TestSplitHost("[www.raven.org]", "www.raven.org", -1));
-        BOOST_CHECK(TestSplitHost("www.raven.org:80", "www.raven.org", 80));
-        BOOST_CHECK(TestSplitHost("[www.raven.org]:80", "www.raven.org", 80));
+        BOOST_CHECK(TestSplitHost("www.pexacore.org", "www.pexacore.org", -1));
+        BOOST_CHECK(TestSplitHost("[www.pexacore.org]", "www.pexacore.org", -1));
+        BOOST_CHECK(TestSplitHost("www.pexacore.org:80", "www.pexacore.org", 80));
+        BOOST_CHECK(TestSplitHost("[www.pexacore.org]:80", "www.pexacore.org", 80));
         BOOST_CHECK(TestSplitHost("127.0.0.1", "127.0.0.1", -1));
-        BOOST_CHECK(TestSplitHost("127.0.0.1:8767", "127.0.0.1", 8767));
+        BOOST_CHECK(TestSplitHost("127.0.0.1:8235", "127.0.0.1", 8235));
         BOOST_CHECK(TestSplitHost("[127.0.0.1]", "127.0.0.1", -1));
-        BOOST_CHECK(TestSplitHost("[127.0.0.1]:8767", "127.0.0.1", 8767));
+        BOOST_CHECK(TestSplitHost("[127.0.0.1]:8235", "127.0.0.1", 8235));
         BOOST_CHECK(TestSplitHost("::ffff:127.0.0.1", "::ffff:127.0.0.1", -1));
-        BOOST_CHECK(TestSplitHost("[::ffff:127.0.0.1]:8767", "::ffff:127.0.0.1", 8767));
-        BOOST_CHECK(TestSplitHost("[::]:8767", "::", 8767));
-        BOOST_CHECK(TestSplitHost("::8767", "::8767", -1));
-        BOOST_CHECK(TestSplitHost(":8767", "", 8767));
-        BOOST_CHECK(TestSplitHost("[]:8767", "", 8767));
+        BOOST_CHECK(TestSplitHost("[::ffff:127.0.0.1]:8235", "::ffff:127.0.0.1", 8235));
+        BOOST_CHECK(TestSplitHost("[::]:8235", "::", 8235));
+        BOOST_CHECK(TestSplitHost("::8235", "::8235", -1));
+        BOOST_CHECK(TestSplitHost(":8235", "", 8235));
+        BOOST_CHECK(TestSplitHost("[]:8235", "", 8235));
         BOOST_CHECK(TestSplitHost("", "", -1));
     }
 
@@ -117,10 +117,10 @@ BOOST_FIXTURE_TEST_SUITE(netbase_tests, BasicTestingSetup)
         BOOST_TEST_MESSAGE("Running NetBase LookUpNumeric Test");
 
         BOOST_CHECK(TestParse("127.0.0.1", "127.0.0.1:65535"));
-        BOOST_CHECK(TestParse("127.0.0.1:8767", "127.0.0.1:8767"));
+        BOOST_CHECK(TestParse("127.0.0.1:8235", "127.0.0.1:8235"));
         BOOST_CHECK(TestParse("::ffff:127.0.0.1", "127.0.0.1:65535"));
         BOOST_CHECK(TestParse("::", "[::]:65535"));
-        BOOST_CHECK(TestParse("[::]:8767", "[::]:8767"));
+        BOOST_CHECK(TestParse("[::]:8235", "[::]:8235"));
         BOOST_CHECK(TestParse("[127.0.0.1]", "127.0.0.1:65535"));
         BOOST_CHECK(TestParse(":::", "[::]:0"));
 
@@ -164,7 +164,7 @@ BOOST_FIXTURE_TEST_SUITE(netbase_tests, BasicTestingSetup)
         BOOST_CHECK(ResolveSubNet("192.168.0.20/29").Match(ResolveIP("192.168.0.18")));
         BOOST_CHECK(ResolveSubNet("1.2.2.1/24").Match(ResolveIP("1.2.2.4")));
         BOOST_CHECK(ResolveSubNet("1.2.2.110/31").Match(ResolveIP("1.2.2.111")));
-        BOOST_CHECK(ResolveSubNet("1.2.2.20/26").Match(ResolveIP("1.2.2.63")));
+        BOOST_CHECK(ResolveSubNet("1.1.0.10/26").Match(ResolveIP("1.2.2.63")));
         // All-Matching IPv6 Matches arbitrary IPv4 and IPv6
         BOOST_CHECK(ResolveSubNet("::/0").Match(ResolveIP("1:2:3:4:5:6:7:1234")));
         BOOST_CHECK(ResolveSubNet("::/0").Match(ResolveIP("1.2.3.4")));

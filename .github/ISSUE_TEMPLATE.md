@@ -2,7 +2,7 @@
 
 This issue tracker is only for technical issues related to bitcoin-core.
 
-General ravencoin questions and/or support requests and are best directed to the [Ravencoin Discord](https://discord.gg/GwtXdyc).
+General pexacoin questions and/or support requests and are best directed to the [pexacoin Discord](https://discord.gg/GwtXdyc).
 
 For reporting security issues, please direct message one of the core developers in discord.
 

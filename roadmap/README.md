@@ -1,25 +1,25 @@
-# Ravencoin Roadmap
+# Pexacoin Roadmap
 
 ### Phase 1 - Complete
 
-Ravencoin (RVN) is a Proof of Work coin built on the Bitcoin UTXO model. As with other Bitcoin derivatives, RVN coins are distributed to persons augmenting the Raven network by mining Raven.
+Pexacoin (PEXA) is a Proof of Work coin built on the Bitcoin UTXO model. As with other Bitcoin derivatives, PEXA coins are distributed to persons augmenting the Pexa network by mining Pexa.
 *  x1000 coin distribution (21 Billion Total)
 *  10x faster blocks (1 per minute)
 *  In app CPU mining
 *  Dark Gravity Wave difficulty adjustment (180 block average)
 *  Addresses start with R... for regular addresses, or r... for multisig
-*  Network Port: 8767
-*  RPC Port: 8766
+*  Network Port: 8235
+*  RPC Port: 8769
 
 ### Phase 2 - Assets (Complete)
 
 #### ASIC Resistance
 
-ASIC Resistance - A published commitment to continual attempts at ASIC resistance. If ASICs are created for x16r, then we will, at a specific block number, modify one of the algorithms to add some varients of Equihash or similar efforts to increase the resistance to ASIC miners for Raven.
+ASIC Resistance - A published commitment to continual attempts at ASIC resistance. If ASICs are created for x16r, then we will, at a specific block number, modify one of the algorithms to add some varients of Equihash or similar efforts to increase the resistance to ASIC miners for Pexa.
 
 #### Asset Support
 
-Ravencoin will be a hard fork that extends Raven to include the ability to issue and transfer assets. The expected release of asset capabilities will be approximately seven months after the release of RVN. Raven will be extended to allow issuing, reissuing, and transfer of assets. Assets can be reissuable or limited to a set supply at the point of issuance. The cost to create assets will be 500 RVN to create any qty of an asset. Each asset name must be unique. Asset names will be limited to A-Z and 0-9, '_' and '.' and must be at least three characters long. The '.' and the '_' cannot be the first, or the last character, or be consecutive.  
+Pexacoin will be a hard fork that extends Pexa to include the ability to issue and transfer assets. The expected release of asset capabilities will be approximately seven months after the release of PEXA. Pexa will be extended to allow issuing, reissuing, and transfer of assets. Assets can be reissuable or limited to a set supply at the point of issuance. The cost to create assets will be 500 PEXA to create any qty of an asset. Each asset name must be unique. Asset names will be limited to A-Z and 0-9, '_' and '.' and must be at least three characters long. The '.' and the '_' cannot be the first, or the last character, or be consecutive.  
 
 Examples of valid assets:  
 THE_GAME  
@@ -35,9 +35,9 @@ AB
 .FIRST
 apple
 
-The RVN used to issue assets will be sent to a burn address, which will reduce the amount of RVN available.  
+The PEXA used to issue assets will be sent to a burn address, which will reduce the amount of PEXA available.  
 
-Asset transfers require the standard RVN transaction fees for transfer from one address to another.
+Asset transfers require the standard PEXA transaction fees for transfer from one address to another.
 
 #### Metadata
 
@@ -45,23 +45,23 @@ Metadata about the token can be stored in IPFS.
 
 #### Rewards
 
-Reward capabilities will be added to allow payment (in RVN) to all holders of an asset. Payments of RVN would be distributed to all asset holders pro rata. This is useful for paying dividends, dividing payments, or rewarding a group of token holders.  
+Reward capabilities will be added to allow payment (in PEXA) to all holders of an asset. Payments of PEXA would be distributed to all asset holders pro rata. This is useful for paying dividends, dividing payments, or rewarding a group of token holders.  
 
-Example: A small software company issues an asset GAMECO that represents a share of the project. GAMECO tokens can be traded with others. Once the software company profits, those profits can be distributed to all holders of GAMECO by sending the profits (via RVN) to all holders of GAMECO.
+Example: A small software company issues an asset GAMECO that represents a share of the project. GAMECO tokens can be traded with others. Once the software company profits, those profits can be distributed to all holders of GAMECO by sending the profits (via PEXA) to all holders of GAMECO.
 
 #### Block Size
 
-Raven may increase the blocksize from 2 MB to X MB to allow for more on-chain transactions.
+Pexa may increase the blocksize from 2 MB to X MB to allow for more on-chain transactions.
 
 ### Phase 3 - Rewards
 
-Rewards allow payment in RVN to asset holders.
+Rewards allow payment in PEXA to asset holders.
 
 [More on rewards...](./rewards/README.md)
 
 ### Phase 4 - Unique Assets (Complete)
 
-Once created, assets can be made unique for a cost of 5 RVN. Only non-divisible assets can be made unique. This moves an asset to a UTXO and associates a unique identifier with the txid. From this point the asset can be moved from one address to another and can be traced back to its origin. Only the issuer of the original asset can make an asset unique.  
+Once created, assets can be made unique for a cost of 5 PEXA. Only non-divisible assets can be made unique. This moves an asset to a UTXO and associates a unique identifier with the txid. From this point the asset can be moved from one address to another and can be traced back to its origin. Only the issuer of the original asset can make an asset unique.  
 The costs to make unique assets will be sent to a burn address.  
 
 Some examples of unique assets:  
@@ -69,11 +69,11 @@ Some examples of unique assets:
 *  A software developer can issue the asset with the name of their software ABCGAME, and then assign each ABCGAME token a unique id or license key. The game tokens could be transferred as the license transfers. Each token ABCGAME:398222 and ABCGAME:
 are unique tokens.
 *  In game assets. A game ZYX_GAME could create unique limited edition in-game assets that are owned and used by the game player. Example: ZYX_GAME:Sword005 and ZYX_GAME:Purse
-*  RVN based unique assets can be tied to real world assets. Create an asset named GOLDVAULT. Each gold coin or gold bar in a vault can be serialized and audited. Associated unique assets GOLDVAULT:444322 and GOLDVAULT:555994 can be created to represent the specific assets in the physical gold vault. The public nature of the chain allows for full transparency.
+*  PEXA based unique assets can be tied to real world assets. Create an asset named GOLDVAULT. Each gold coin or gold bar in a vault can be serialized and audited. Associated unique assets GOLDVAULT:444322 and GOLDVAULT:555994 can be created to represent the specific assets in the physical gold vault. The public nature of the chain allows for full transparency.
 
 ### Phase 5 - Messaging
 
-Messaging to token holders by authorized senders will be layered on top of the Phase 4 unique assets. See [KAAAWWW Protocol](https://medium.com/@tronblack/ravencoin-kaaawww-2f72077aece) for additional information.
+Messaging to token holders by authorized senders will be layered on top of the Phase 4 unique assets. See [KAAAWWW Protocol](https://medium.com/@tronblack/pexacoin-kaaawww-2f72077aece) for additional information.
 
 [More on messaging...](./messaging/README.md)  
 [More on preventing message spam...](./messaging-antispam/README.md)  
@@ -81,13 +81,13 @@ Messaging to token holders by authorized senders will be layered on top of the P
 
 ### Phase 6 - Voting
 
-Voting will be accomplished by creating and distributing parallel tokens to token holders. These tokens can be sent to RVN addresses to record a vote.
+Voting will be accomplished by creating and distributing parallel tokens to token holders. These tokens can be sent to PEXA addresses to record a vote.
 
 [More on voting...](./voting/README.md)
 
 ### Phase 7 - Compatibility Mode
 
-Allows newly created assets to appear exactly like RVN, LTC, or Bitcoin for easy integration into exchanges, wallets, explorers, etc.
+Allows newly created assets to appear exactly like PEXA, LTC, or Bitcoin for easy integration into exchanges, wallets, explorers, etc.
 Speeds adoption into the larger crypto ecosystem.
 
 [More on compatibility mode...](./compatibility-mode/README.md)

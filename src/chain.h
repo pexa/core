@@ -1,11 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef RAVEN_CHAIN_H
-#define RAVEN_CHAIN_H
+#ifndef PEXA_CHAIN_H
+#define PEXA_CHAIN_H
 
 #include "arith_uint256.h"
 #include "primitives/block.h"
@@ -493,4 +493,4 @@ public:
     CBlockIndex* FindEarliestAtLeast(int64_t nTime) const;
 };
 
-#endif // RAVEN_CHAIN_H
+#endif // PEXA_CHAIN_H

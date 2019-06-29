@@ -1,10 +1,10 @@
 // Copyright (c) 2011-2015 The Bitcoin Core developers
-// Copyright (c) 2017 The Raven Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef RAVEN_QT_SENDASSETSENTRY_H
-#define RAVEN_QT_SENDASSETSENTRY_H
+#ifndef PEXA_QT_SENDASSETSENTRY_H
+#define PEXA_QT_SENDASSETSENTRY_H
 
 #include "walletmodel.h"
 
@@ -21,7 +21,7 @@ namespace Ui {
 }
 
 /**
- * A single entry in the dialog for sending ravens.
+ * A single entry in the dialog for sending pexas.
  * Stacked widget, with different UIs for payment requests
  * with a strong payee identity.
  */
@@ -90,4 +90,4 @@ private:
     bool updateLabel(const QString &address);
 };
 
-#endif // RAVEN_QT_SENDASSETSENTRY_H
+#endif // PEXA_QT_SENDASSETSENTRY_H
