@@ -167,6 +167,7 @@ public:
         //vSeeds.emplace_back("seed-pexa.bitactivate.com", false);
         //vSeeds.emplace_back("seed-pexa.pexacoin.com", false);
         vSeeds.emplace_back("dnsseeds.pexaproject.com", false);
+        vSeeds.emplace_back("colorado.dnsseeds.pexaproject.com", false);
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,75);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,122);

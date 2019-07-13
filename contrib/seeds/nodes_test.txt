@@ -1,4 +1,7 @@
 # List of fixed seed nodes for testnet
+159.2.1.115:8235
+71.229.244.32:8235
+165.22.33.131:8235
 
 # Onion nodes
 thfsmmn2jpexa.onion
