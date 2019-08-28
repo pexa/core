@@ -13,7 +13,6 @@
 #include "arith_uint256.h"
 
 #include <assert.h>
-
 #include "chainparamsseeds.h"
 
 //TODO: Take these out
@@ -137,6 +136,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_ASSETS].nStartTime = 1540944000; // Oct 31, 2018
         consensus.vDeployments[Consensus::DEPLOYMENT_ASSETS].nTimeout = 1572480000; // Oct 31, 2019
 
+
+
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
 
@@ -156,7 +157,7 @@ public:
         nPruneAfterHeight = 100000;
 
         genesis = CreateGenesisBlock(1562369695, 33393258, 0x1e00ffff, 4, 50 * COIN );
-        consensus.hashGenesisBlock = genesis.GetHash();
+        consensus.hashGenesisBlock = genesis.GetX16RHash();
 
         printf("%s\n", consensus.hashGenesisBlock.ToString().c_str());
         printf("%s\n", genesis.hashMerkleRoot.ToString().c_str());
@@ -218,6 +219,7 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 12000;
+        nX16RV2ActivationTime = 1569945600; //Tue Oct 01 2019 16:00:00 UTC
 
         nMaxReorganizationDepth = 60; // 60 at 1 minute block timespan is +/- 60 minutes.
         nMinReorganizationPeers = 4;
@@ -332,7 +334,7 @@ public:
     //    /////////////////////////////////////////////////////////////////
 
         genesis = CreateGenesisBlock(nGenesisTime, 8889826, 0x1e00ffff, 2, 50 * COIN );
-        consensus.hashGenesisBlock = genesis.GetHash();
+        consensus.hashGenesisBlock = genesis.GetX16RHash();
 
         printf("%s\n", consensus.hashGenesisBlock.ToString().c_str());
         printf("%s\n", genesis.hashMerkleRoot.ToString().c_str());
@@ -393,6 +395,7 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 200;
+        nX16RV2ActivationTime = 1569931200;
 
         nMaxReorganizationDepth = 60; // 60 at 1 minute block timespan is +/- 60 minutes.
         nMinReorganizationPeers = 4;
@@ -428,6 +431,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_ASSETS].bit = 6;
         consensus.vDeployments[Consensus::DEPLOYMENT_ASSETS].nStartTime = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_ASSETS].nTimeout = 999999999999ULL;
+
+
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -504,7 +509,7 @@ public:
 
 
         genesis = CreateGenesisBlock(1537466400, 309205, 0x207fffff, 4, 50 * COIN );
-        consensus.hashGenesisBlock = genesis.GetHash();
+        consensus.hashGenesisBlock = genesis.GetX16RHash();
 
         assert(consensus.hashGenesisBlock == uint256S("0x00000cb35c53860fb011d1750779e1b0701f5c393fb972c6325c9e8cf729bdad"));
         assert(genesis.hashMerkleRoot == uint256S("0x6fb6a914668b3086790ac435dff5d70be187f47407e7787f991690cb26469ff7"));
@@ -552,6 +557,7 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 200;
+        nX16RV2ActivationTime = 1566571889;
 
         nMaxReorganizationDepth = 60; // 60 at 1 minute block timespan is +/- 60 minutes.
         nMinReorganizationPeers = 4;
@@ -578,9 +584,12 @@ std::unique_ptr<CChainParams> CreateChainParams(const std::string& chain)
     throw std::runtime_error(strprintf("%s: Unknown chain %s.", __func__, chain));
 }
 
-void SelectParams(const std::string& network)
+void SelectParams(const std::string& network, bool fForceBlockNetwork)
 {
     SelectBaseParams(network);
+    if (fForceBlockNetwork) {
+        bNetwork.SetNetwork(network);
+    }
     globalChainParams = CreateChainParams(network);
 }
 
