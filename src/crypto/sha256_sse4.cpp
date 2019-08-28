@@ -1,4 +1,5 @@
-// Copyright (c) 2017 The Bitcoin Core developers
+// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2016 The Bitcoin Core developers
 // Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -959,7 +960,6 @@ void Transform(uint32_t* s, const unsigned char* chunk, size_t blocks)
 
 /*
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Copyright (c) 2012, Intel Corporation 
 ; 
 ; All rights reserved. 
 ; 
