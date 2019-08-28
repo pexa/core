@@ -948,7 +948,7 @@ bool CReissueAsset::IsValid(std::string &strError, CAssetsCache& assetCache, boo
 //! To be called on CTransactions where IsNewAsset returns true
 bool CTransaction::VerifyNewAsset(std::string& strError, NewAssetInfo* newAssetInfo) const
 {
-    // Issuing an Asset must contain at least 3 CTxOut( Raven Burn Tx, Any Number of other Outputs ..., Owner Asset Tx, New Asset Tx)
+    // Issuing an Asset must contain at least 3 CTxOut( Pexa Burn Tx, Any Number of other Outputs ..., Owner Asset Tx, New Asset Tx)
     if (vout.size() < 3) {
         strError  = "bad-txns-issue-vout-size-to-small";
         return false;

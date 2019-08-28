@@ -373,7 +373,7 @@ libpexa_consensus_a_SOURCES = \
   utilstrencodings.cpp \
   utilstrencodings.h \
   version.h \
-  $(RAVEN_CORE_H)
+  $(PEXA_CORE_H)
 
 # common: shared between pexad, and pexa-qt and non-server tools
 libpexa_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(PEXA_INCLUDES)
