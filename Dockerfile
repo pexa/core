@@ -22,7 +22,7 @@ RUN make -j4
 RUN make install
 RUN rm -rf ${BERKELEYDB_PREFIX}/docs
 
-# Build stage for pexa Core
+# Build stage for Pexa Core
 FROM alpine as pexa-core
 
 COPY --from=berkeleydb /opt /opt
@@ -53,7 +53,7 @@ RUN set -ex \
     gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" ; \
   done
 
-ENV PEXA_VERSION=1.3.0
+ENV PEXA_VERSION=1.4.0
 ENV PEXA_PREFIX=/opt/pexa-${PEXA_VERSION}
 
 COPY . /pexa-${PEXA_VERSION}
@@ -81,6 +81,17 @@ RUN strip ${PEXA_PREFIX}/bin/pexad
 RUN strip ${PEXA_PREFIX}/lib/libpexaconsensus.a
 RUN strip ${PEXA_PREFIX}/lib/libpexaconsensus.so.0.0.0
 
+# Build websocat stage
+FROM alpine as websocat
+
+RUN apk update && \
+    apk upgrade && \
+    apk --no-cache add rust cargo git
+
+RUN git clone https://github.com/vi/websocat.git /opt/websocat
+RUN cd /opt/websocat && \
+    cargo install websocat
+
 # Build stage for compiled artifacts
 FROM alpine
 
@@ -96,17 +107,19 @@ RUN apk --no-cache add \
   su-exec
 
 ENV PEXA_DATA=/root/.pexa
-ENV PEXA_VERSION=1.3.0
+ENV PEXA_VERSION=1.4.0
 ENV PEXA_PREFIX=/opt/pexa-${PEXA_VERSION}
 ENV PATH=${PEXA_PREFIX}/bin:$PATH
+ENV PATH=/root/.cargo/bin:$PATH
 
 COPY --from=pexa-core /opt /opt
+COPY --from=websocat /root/.cargo/bin/websocat /root/.cargo/bin/websocat
 COPY docker-entrypoint.sh /entrypoint.sh
 
 VOLUME ["/root/.pexa"]
 
 EXPOSE 8235 8769 18235 2300
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]`
 
 CMD ["pexad"]
