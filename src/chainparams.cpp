@@ -235,6 +235,7 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
         strNetworkID = "test";
+        bNetwork.SetNetwork(strNetworkID);
         consensus.nSubsidyHalvingInterval = 2100000;  //~ 4 yrs at 1 min block time
         consensus.nBIP34Enabled = true;
         consensus.nBIP65Enabled = true; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
@@ -395,8 +396,8 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 200;
-        nX16RV2ActivationTime = 1568039049;
-
+        nX16RV2ActivationTime = 1568158500;
+        
         nMaxReorganizationDepth = 60; // 60 at 1 minute block timespan is +/- 60 minutes.
         nMinReorganizationPeers = 4;
         nMinReorganizationAge = 60 * 60 * 12; // 12 hours
