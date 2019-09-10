@@ -395,7 +395,7 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 200;
-        nX16RV2ActivationTime = 1569931200;
+        nX16RV2ActivationTime = 1568039049;
 
         nMaxReorganizationDepth = 60; // 60 at 1 minute block timespan is +/- 60 minutes.
         nMinReorganizationPeers = 4;
