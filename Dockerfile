@@ -53,7 +53,7 @@ RUN set -ex \
     gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" ; \
   done
 
-ENV PEXA_VERSION=1.4.0
+ENV PEXA_VERSION=1.5.1
 ENV PEXA_PREFIX=/opt/pexa-${PEXA_VERSION}
 
 COPY . /pexa-${PEXA_VERSION}
@@ -107,7 +107,7 @@ RUN apk --no-cache add \
   su-exec
 
 ENV PEXA_DATA=/root/.pexa
-ENV PEXA_VERSION=1.4.0
+ENV PEXA_VERSION=1.5.1
 ENV PEXA_PREFIX=/opt/pexa-${PEXA_VERSION}
 ENV PATH=${PEXA_PREFIX}/bin:$PATH
 ENV PATH=/root/.cargo/bin:$PATH

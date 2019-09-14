@@ -184,9 +184,8 @@ public:
             {
                 { 0, uint256S("0x000000b3f4b347d4a1fb2f2a8f42d5fc33094a49858608e511c0d45f51628b85")},
                 { 15000, uint256S("0x0000000002cea9e1360328a2f74e6c2276b42b95f382063374124b7c05389668")},
-	            { 25000, uint256S("0x000000000071ddf335efe23b771f1b18c0431fcf81293225ede1c860c1f9bcbb")},
-		        { 38720, uint256S("0x0000000000e22e98a33534f18af5d16bd97599ddf5137011f2a0bddeeed524c4")},
-                { 103700, uint256S("0x0000000000579e62a0c8302d43f5d20daa545c7e99adc1a7b256e9bcfaf61864")},
+                { 25000, uint256S("0x000000000071ddf335efe23b771f1b18c0431fcf81293225ede1c860c1f9bcbb")},
+                { 38720, uint256S("0x0000000000e22e98a33534f18af5d16bd97599ddf5137011f2a0bddeeed524c4")},
             }
         };
 
@@ -233,7 +232,6 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
         strNetworkID = "test";
-        bNetwork.SetNetwork(strNetworkID);
         consensus.nSubsidyHalvingInterval = 2100000;  //~ 4 yrs at 1 min block time
         consensus.nBIP34Enabled = true;
         consensus.nBIP65Enabled = true; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0

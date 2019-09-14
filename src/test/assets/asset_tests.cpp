@@ -183,7 +183,7 @@ BOOST_FIXTURE_TEST_SUITE(asset_tests, BasicTestingSetup)
         SelectParams(CBaseChainParams::MAIN);
 
         // Create the asset scriptPubKey
-        CAssetTransfer asset("PEXA", 5);
+        CAssetTransfer asset("PEXA", 1000);
         CScript scriptPubKey = GetScriptForDestination(DecodeDestination(Params().GlobalBurnAddress()));
         asset.ConstructTransaction(scriptPubKey);
 
