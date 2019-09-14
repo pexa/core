@@ -159,9 +159,6 @@ public:
         genesis = CreateGenesisBlock(1562369695, 33393258, 0x1e00ffff, 4, 50 * COIN );
         consensus.hashGenesisBlock = genesis.GetX16RHash();
 
-        printf("%s\n", consensus.hashGenesisBlock.ToString().c_str());
-        printf("%s\n", genesis.hashMerkleRoot.ToString().c_str());
-
         assert(consensus.hashGenesisBlock == uint256S("0x000000b3f4b347d4a1fb2f2a8f42d5fc33094a49858608e511c0d45f51628b85"));
         assert(genesis.hashMerkleRoot == uint256S("0x4e5951cce11bbe8d10e3f9e8b584ee2ed3c80583311e06f40d7e6146f2087f9d"));
 
@@ -187,8 +184,9 @@ public:
             {
                 { 0, uint256S("0x000000b3f4b347d4a1fb2f2a8f42d5fc33094a49858608e511c0d45f51628b85")},
                 { 15000, uint256S("0x0000000002cea9e1360328a2f74e6c2276b42b95f382063374124b7c05389668")},
-	        { 25000, uint256S("0x000000000071ddf335efe23b771f1b18c0431fcf81293225ede1c860c1f9bcbb")},
-		{ 38720, uint256S("0x0000000000e22e98a33534f18af5d16bd97599ddf5137011f2a0bddeeed524c4")},
+	            { 25000, uint256S("0x000000000071ddf335efe23b771f1b18c0431fcf81293225ede1c860c1f9bcbb")},
+		        { 38720, uint256S("0x0000000000e22e98a33534f18af5d16bd97599ddf5137011f2a0bddeeed524c4")},
+                { 103700, uint256S("0x0000000000579e62a0c8302d43f5d20daa545c7e99adc1a7b256e9bcfaf61864")},
             }
         };
 
@@ -219,7 +217,7 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 12000;
-        nX16RV2ActivationTime = 1569945600; //Tue Oct 01 2019 16:00:00 UTC
+        nX16RV2ActivationTime = 1568678400; // Tue 17 Sep 2019 12:00:00 AM UTC
 
         nMaxReorganizationDepth = 60; // 60 at 1 minute block timespan is +/- 60 minutes.
         nMinReorganizationPeers = 4;
@@ -336,9 +334,6 @@ public:
 
         genesis = CreateGenesisBlock(nGenesisTime, 8889826, 0x1e00ffff, 2, 50 * COIN );
         consensus.hashGenesisBlock = genesis.GetX16RHash();
-
-        printf("%s\n", consensus.hashGenesisBlock.ToString().c_str());
-        printf("%s\n", genesis.hashMerkleRoot.ToString().c_str());
 
         //Test MerkleRoot and GenesisBlock
         assert(consensus.hashGenesisBlock == uint256S("0x000000e5c51eb049ef52013df58667cdcdf9fb6a34bc2fdd70a0ea576c207f2a"));

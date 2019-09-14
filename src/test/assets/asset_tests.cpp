@@ -183,7 +183,7 @@ BOOST_FIXTURE_TEST_SUITE(asset_tests, BasicTestingSetup)
         SelectParams(CBaseChainParams::MAIN);
 
         // Create the asset scriptPubKey
-        CAssetTransfer asset("PEXA", 1000);
+        CAssetTransfer asset("PEXA", 5);
         CScript scriptPubKey = GetScriptForDestination(DecodeDestination(Params().GlobalBurnAddress()));
         asset.ConstructTransaction(scriptPubKey);
 
@@ -194,7 +194,7 @@ BOOST_FIXTURE_TEST_SUITE(asset_tests, BasicTestingSetup)
 
         Coin coin(txOut, 0, 0);
 
-        BOOST_CHECK_MESSAGE(coin.IsAsset(), "Transfer Asset Coin isn't as asset");
+        BOOST_CHECK_MESSAGE(coin.IsAsset(), "Transfer Asset Coin isn't an asset.");
     }
 
     BOOST_AUTO_TEST_CASE(new_asset_coin_test)
@@ -214,7 +214,7 @@ BOOST_FIXTURE_TEST_SUITE(asset_tests, BasicTestingSetup)
 
         Coin coin(txOut, 0, 0);
 
-        BOOST_CHECK_MESSAGE(coin.IsAsset(), "New Asset Coin isn't as asset");
+        BOOST_CHECK_MESSAGE(coin.IsAsset(), "New Asset Coin isn't an asset");
     }
 
     BOOST_AUTO_TEST_CASE(dwg_version_test)
