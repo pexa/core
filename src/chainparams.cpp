@@ -206,13 +206,13 @@ public:
         nIssueUniqueAssetBurnAmount = 1 * COIN;
 
         // Burn Addresses
-        strIssueAssetBurnAddress = "RXissueAssetXXXXXXXXXXXXXXXXXhhZGt";
-        strReissueAssetBurnAddress = "RXReissueAssetXXXXXXXXXXXXXXVEFAWu";
-        strIssueSubAssetBurnAddress = "RXissueSubAssetXXXXXXXXXXXXXWcwhwL";
-        strIssueUniqueAssetBurnAddress = "RXissueUniqueAssetXXXXXXXXXXWEAe58";
+        strIssueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
+        strReissueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
+        strIssueSubAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
+        strIssueUniqueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
 
         //Global Burn Address
-        strGlobalBurnAddress = "RXBurnXXXXXXXXXXXXXXXXXXXXXXWUo9FV";
+        strGlobalBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXR2XeUz";
 
         // DGW Activation
         nDGWActivationBlock = 12000;
