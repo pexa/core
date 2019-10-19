@@ -185,7 +185,13 @@ public:
                 { 0, uint256S("0x000000b3f4b347d4a1fb2f2a8f42d5fc33094a49858608e511c0d45f51628b85")},
                 { 15000, uint256S("0x0000000002cea9e1360328a2f74e6c2276b42b95f382063374124b7c05389668")},
                 { 25000, uint256S("0x000000000071ddf335efe23b771f1b18c0431fcf81293225ede1c860c1f9bcbb")},
-                { 38720, uint256S("0x0000000000e22e98a33534f18af5d16bd97599ddf5137011f2a0bddeeed524c4")},
+                { 30000, uint256S("0x0000000001892fd7234514e4a3788aa090fe4f04a33c8407e6c2cf911374574b")},
+                { 50000, uint256S("0x00000000003cc95ac63774699923f74d863ee47d373165fe187ec05cf4c60410")},
+                { 100000, uint256S("0x00000000000447e6cc530f1e5dd634474e8a17c0691f7d71938919684482e37f")},
+                { 110000, uint256S("0x0000000001538cf86005fb3e74e1fce31beca5b91308a8bcad8ed1d443ca6927")},
+                { 120000, uint256S("0x0000000000163cc34a9d9be033461a7b2ae25143269fcfb0c302a15e3184ce51")},
+                { 135000, uint256S("0x0000000001ac44a61d2bfd0642c7a6c06acd6fa2e4825075231f24d87b8c1f1f")},
+                { 158000, uint256S("0x00000000013680071f88508861581cc85d13a47a870108f45d7d5fd1eba06679")}
             }
         };
 
@@ -340,9 +346,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
 
-        //vSeeds.emplace_back("seed-testnet-pexa.bitactivate.com", false);
-        //vSeeds.emplace_back("seed-testnet-pexa.pexacoin.com", false);
-        //vSeeds.emplace_back("seed-testnet-pexa.pexaproject.com", false);
+        vSeeds.emplace_back("seed-testnet.pexa.dev", false);
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,75);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
@@ -359,6 +363,7 @@ public:
 
         checkpointData = (CCheckpointData) {
             {
+                { 230, uint256S("0x000004cce4dd292058ca040ecb6c2d51a970686d10631030216d6849c7a2227d")},
             }
         };
 
@@ -379,13 +384,13 @@ public:
         nIssueUniqueAssetBurnAmount = 1 * COIN;
 
         // Burn Addresses
-        strIssueAssetBurnAddress = "n1issueAssetXXXXXXXXXXXXXXXXWdnemQ";
-        strReissueAssetBurnAddress = "n1ReissueAssetXXXXXXXXXXXXXXWG9NLd";
-        strIssueSubAssetBurnAddress = "n1issueSubAssetXXXXXXXXXXXXXbNiH6v";
-        strIssueUniqueAssetBurnAddress = "n1issueUniqueAssetXXXXXXXXXXS4695i";
+        strIssueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
+        strReissueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
+        strIssueSubAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
+        strIssueUniqueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
 
         // Global Burn Address
-        strGlobalBurnAddress = "n1BurnXXXXXXXXXXXXXXXXXXXXXXU1qejP";
+        strGlobalBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
 
         // DGW Activation
         nDGWActivationBlock = 200;
@@ -541,13 +546,13 @@ public:
         nIssueUniqueAssetBurnAmount = 1 * COIN;
 
         // Burn Addresses
-        strIssueAssetBurnAddress = "n1issueAssetXXXXXXXXXXXXXXXXWdnemQ";
-        strReissueAssetBurnAddress = "n1ReissueAssetXXXXXXXXXXXXXXWG9NLd";
-        strIssueSubAssetBurnAddress = "n1issueSubAssetXXXXXXXXXXXXXbNiH6v";
-        strIssueUniqueAssetBurnAddress = "n1issueUniqueAssetXXXXXXXXXXS4695i";
+        strIssueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
+        strReissueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
+        strIssueSubAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
+        strIssueUniqueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
 
         // Global Burn Address
-        strGlobalBurnAddress = "n1BurnXXXXXXXXXXXXXXXXXXXXXXU1qejP";
+        strGlobalBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
 
         // DGW Activation
         nDGWActivationBlock = 200;
