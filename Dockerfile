@@ -106,7 +106,7 @@ RUN apk --no-cache add \
   libzmq \
   su-exec
 
-ENV PEXA_DATA=/root/.pexa
+ENV DATA_DIR=/home/pexa/.pexa
 ENV PEXA_VERSION=1.6.1
 ENV PEXA_PREFIX=/opt/pexa-${PEXA_VERSION}
 ENV PATH=${PEXA_PREFIX}/bin:$PATH
@@ -116,7 +116,13 @@ COPY --from=pexa-core /opt /opt
 COPY --from=websocat /root/.cargo/bin/websocat /root/.cargo/bin/websocat
 COPY docker-entrypoint.sh /entrypoint.sh
 
-VOLUME ["/root/.pexa"]
+RUN mkdir -p ${DATA_DIR}
+RUN set -x \
+    && addgroup -g 1001 -S pexa \
+    && adduser -u 1001 -D -S -G pexa pexa
+RUN chown -R 1001:1001 ${DATA_DIR}
+USER pexa
+WORKDIR $DATA_DIR
 
 EXPOSE 8235 8769 18235 2300
 

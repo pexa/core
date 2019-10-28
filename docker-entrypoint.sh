@@ -8,18 +8,30 @@ if [ $(echo "$1" | cut -c1) = "-" ]; then
 fi
 
 if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "pexad" ]; then
-  mkdir -p "$PEXA_DATA"
-  chmod 700 "$PEXA_DATA"
-  chown -R root "$PEXA_DATA"
+  mkdir -p "$DATA_DIR"
+  
+  if [ -z "$UID" ]; then
+    UID=0;
+    echo "Acting as user ${UID}.";
+  else 
+    echo "User $UID set.";
+  fi
 
-  echo "$0: setting data directory to $PEXA_DATA"
+  if [ -z "$GID" ]; then
+    GID=0;
+    echo "Acting as group ${GID}.";
+  else 
+    echo "Group $GID set.";
+  fi
 
-  set -- "$@" -datadir="$PEXA_DATA"
+  echo "$0: setting data directory to $DATA_DIR"
+
+  set -- "$@" -datadir="$DATA_DIR"
 fi
 
 if [ "$1" = "pexad" ] || [ "$1" = "pexa-cli" ] || [ "$1" = "pexa-tx" ]; then
   echo
-  exec su-exec root "$@"
+  exec "$@"
 fi
 
 echo

@@ -3,11 +3,16 @@ version: '3'
 services:
   pexad:
     image: pexacoin/core:latest
+    command: pexad --printtoconsole
     build:
       context: .
     volumes:
-      - /home/pexa/.pexa:/root/.pexa
+    #   - /home/pexa/.pexa:/root/.pexa
+      - ./docker-entrypoint.sh:/entrypoint.sh
     ports:
       - 18235:18235
       - 8769:8769
       - 8235:8235
+    environment:
+      - UID=1001 
+      - GID=1001
