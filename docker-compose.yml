@@ -10,8 +10,8 @@ services:
     #   - /home/pexa/.pexa:/root/.pexa
       - ./docker-entrypoint.sh:/entrypoint.sh
     ports:
-      - 18235:18235
-      - 8769:8769
+      - 18770:18770
+      - 2300:2300
       - 8235:8235
     environment:
       - UID=1001 
