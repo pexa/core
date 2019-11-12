@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+dockerize -template /tmp/pexa.conf.tmpl:$DATA_DIR/pexa.conf
+
 if [ $(echo "$1" | cut -c1) = "-" ]; then
   echo "$0: assuming arguments for pexad"
 

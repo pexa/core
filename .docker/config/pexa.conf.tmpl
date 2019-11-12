@@ -1,0 +1,18 @@
+{{ if .Env.RPC_USER }}
+rpcuser={{ .Env.RPC_USER }}
+{{ end }}
+{{ if.Env.RPC_PORT }}
+port={{ .Env.RPC_PORT }}
+{{ end }}
+{{ if .Env.RPC_PASSWORD }}
+rpcpassword={{ .Env.RPC_PASSWORD }}
+{{ end }}
+{{ if .Env.RPC_ALLOWIP }}
+rpcallowip={{ .Env.RPC_ALLOWIP }}
+{{ end }}
+{{ if.Env.LISTEN }}
+listen={{ .Env.LISTEN }}
+{{ end }}
+{{ if.Env.SERVER }}
+server={{ .Env.SERVER }}
+{{ end }}

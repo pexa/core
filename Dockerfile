@@ -111,7 +111,13 @@ ENV PEXA_VERSION=1.6.1
 ENV PEXA_PREFIX=/opt/pexa-${PEXA_VERSION}
 ENV PATH=${PEXA_PREFIX}/bin:$PATH
 ENV PATH=/root/.cargo/bin:$PATH
+ENV DOCKERIZE_VERSION v0.6.1
 
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+COPY ./.docker/config /tmp
 COPY --from=pexa-core /opt /opt
 COPY --from=websocat /root/.cargo/bin/websocat /root/.cargo/bin/websocat
 COPY docker-entrypoint.sh /entrypoint.sh
