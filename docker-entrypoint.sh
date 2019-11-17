@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-dockerize -template /tmp/pexa.conf.tmpl:$DATA_DIR/pexa.conf
-
 if [ $(echo "$1" | cut -c1) = "-" ]; then
   echo "$0: assuming arguments for pexad"
 
@@ -31,10 +29,7 @@ if [ $(echo "$1" | cut -c1) = "-" ] || [ "$1" = "pexad" ]; then
   set -- "$@" -datadir="$DATA_DIR"
 fi
 
-if [ "$1" = "pexad" ] || [ "$1" = "pexa-cli" ] || [ "$1" = "pexa-tx" ]; then
-  echo
-  exec "$@"
-fi
-
 echo
-exec "$@"
+dockerize \
+    -template /tmp/pexa.conf.tmpl:$DATA_DIR/pexa.conf \
+    "$@"
