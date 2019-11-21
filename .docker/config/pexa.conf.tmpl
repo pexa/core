@@ -2,7 +2,7 @@
 rpcuser={{ .Env.RPC_USER }}
 {{ end }}
 {{ if.Env.RPC_PORT }}
-port={{ .Env.RPC_PORT }}
+rpcport={{ .Env.RPC_PORT }}
 {{ end }}
 {{ if .Env.RPC_PASSWORD }}
 rpcpassword={{ .Env.RPC_PASSWORD }}
