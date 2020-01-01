@@ -1,7 +1,7 @@
 {{ if .Env.RPC_USER }}
 rpcuser={{ .Env.RPC_USER }}
 {{ end }}
-{{ if.Env.RPC_PORT }}
+{{ if .Env.RPC_PORT }}
 rpcport={{ .Env.RPC_PORT }}
 {{ end }}
 {{ if .Env.RPC_PASSWORD }}
@@ -10,9 +10,11 @@ rpcpassword={{ .Env.RPC_PASSWORD }}
 {{ if .Env.RPC_ALLOWIP }}
 rpcallowip={{ .Env.RPC_ALLOWIP }}
 {{ end }}
-{{ if.Env.LISTEN }}
+{{ if .Env.LISTEN }}
 listen={{ .Env.LISTEN }}
 {{ end }}
-{{ if.Env.SERVER }}
+{{ if .Env.SERVER }}
 server={{ .Env.SERVER }}
 {{ end }}
+rpcthreads={{ default .Env.RPC_THREADS "15" }}
+rpcworkqueue={{ default .Env.RPC_WORK_QUEUE "100" }}
