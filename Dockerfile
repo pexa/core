@@ -81,17 +81,6 @@ RUN strip ${PEXA_PREFIX}/bin/pexad
 RUN strip ${PEXA_PREFIX}/lib/libpexaconsensus.a
 RUN strip ${PEXA_PREFIX}/lib/libpexaconsensus.so.0.0.0
 
-# Build websocat stage
-FROM alpine as websocat
-
-RUN apk update && \
-    apk upgrade && \
-    apk --no-cache add rust cargo git
-
-RUN git clone https://github.com/vi/websocat.git /opt/websocat
-RUN cd /opt/websocat && \
-    cargo install websocat
-
 # Build stage for compiled artifacts
 FROM alpine
 
@@ -110,7 +99,6 @@ ENV DATA_DIR=/home/pexa/.pexa
 ENV PEXA_VERSION=1.6.1
 ENV PEXA_PREFIX=/opt/pexa-${PEXA_VERSION}
 ENV PATH=${PEXA_PREFIX}/bin:$PATH
-ENV PATH=/root/.cargo/bin:$PATH
 ENV DOCKERIZE_VERSION v0.6.1
 
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
@@ -119,7 +107,6 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 COPY ./.docker/config /tmp
 COPY --from=pexa-core /opt /opt
-COPY --from=websocat /root/.cargo/bin/websocat /root/.cargo/bin/websocat
 COPY docker-entrypoint.sh /entrypoint.sh
 
 RUN mkdir -p ${DATA_DIR}
