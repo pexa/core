@@ -191,7 +191,11 @@ public:
                 { 110000, uint256S("0x0000000001538cf86005fb3e74e1fce31beca5b91308a8bcad8ed1d443ca6927")},
                 { 120000, uint256S("0x0000000000163cc34a9d9be033461a7b2ae25143269fcfb0c302a15e3184ce51")},
                 { 135000, uint256S("0x0000000001ac44a61d2bfd0642c7a6c06acd6fa2e4825075231f24d87b8c1f1f")},
-                { 162000, uint256S("0x0427e4674c6ced3ae678fcbb60c181a6b961a7e908576efaab69c6b25677be72")}
+                { 162000, uint256S("0x0000000002dfacc55ac43107b3df39f3ade1cd9cf7b51f7dd223afe8cd1e6925")},
+                { 200000, uint256S("0x0000000000023dee0c2e55e83a49d59c83f72dd3533eaa031f52138149ac9c12")},
+                { 250000, uint256S("0x00000000009c42e9d918ed2824a7348042358b96e68bba6274e6decbb206dd14")},
+                { 300000, uint256S("0x0000000000225aae3a6bca08335cec757fb35df7e2a1c9b51c5ccc766011af51")},
+                { 339000, uint256S("0x00000000019dbada9e888d005391ee7551724dd16b514cd02a8b05e32d4f7655")},
             }
         };
 
@@ -340,7 +344,7 @@ public:
         consensus.hashGenesisBlock = genesis.GetX16RHash();
 
         //Test MerkleRoot and GenesisBlock
-        assert(consensus.hashGenesisBlock == uint256S("0x000000e5c51eb049ef52013df58667cdcdf9fb6a34bc2fdd70a0ea576c207f2a"));
+        assert(consensus.hashGenesisBlock == uint256S("0x500d7bfd140e3cb24681d334a000d898057250513dc975894009146c61293b3b"));
         assert(genesis.hashMerkleRoot == uint256S("4e5951cce11bbe8d10e3f9e8b584ee2ed3c80583311e06f40d7e6146f2087f9d"));
 
         vFixedSeeds.clear();
@@ -431,8 +435,6 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_ASSETS].nStartTime = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_ASSETS].nTimeout = 999999999999ULL;
 
-
-
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
 
@@ -446,72 +448,11 @@ public:
         nDefaultPort = 18444;
         nPruneAfterHeight = 1000;
 
-        // This is used inorder to mine the genesis block. Once found, we can use the nonce and block hash found to create a valid genesis block
-       /////////////////////////////////////////////////////////////////
-
-
-       arith_uint256 test;
-       bool fNegative;
-       bool fOverflow;
-       test.SetCompact(0x207fffff, &fNegative, &fOverflow);
-       std::cout << "Test threshold: " << test.GetHex() << "\n\n";
-
-       int genesisNonce = 0;
-       uint256 TempHashHolding = uint256S("0x0000000000000000000000000000000000000000000000000000000000000000");
-       uint256 BestBlockHash = uint256S("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-       for (int i=0;i<40000000;i++) {
-           genesis = CreateGenesisBlock(1533751200, i, 0x207fffff, 2, 50 * COIN );
-           //genesis.hashPrevBlock = TempHashHolding;
-           consensus.hashGenesisBlock = genesis.GetHash();
-
-           arith_uint256 BestBlockHashArith = UintToArith256(BestBlockHash);
-           if (UintToArith256(consensus.hashGenesisBlock) < BestBlockHashArith) {
-               BestBlockHash = consensus.hashGenesisBlock;
-               std::cout << BestBlockHash.GetHex() << " Nonce: " << i << "\n";
-               std::cout << "   PrevBlockHash: " << genesis.hashPrevBlock.GetHex() << "\n";
-           }
-
-           TempHashHolding = consensus.hashGenesisBlock;
-
-           if (BestBlockHashArith < test) {
-               genesisNonce = i - 1;
-               break;
-           }
-           //std::cout << consensus.hashGenesisBlock.GetHex() << "\n";
-       }
-       std::cout << "\n";
-       std::cout << "\n";
-       std::cout << "\n";
-
-       std::cout << "hashGenesisBlock to 0x" << BestBlockHash.GetHex() << std::endl;
-       std::cout << "Genesis Nonce to " << genesisNonce << std::endl;
-       std::cout << "Genesis Merkle " << genesis.hashMerkleRoot.GetHex() << std::endl;
-
-       std::cout << "\n";
-       std::cout << "\n";
-       int totalHits = 0;
-       double totalTime = 0.0;
-
-       for(int x = 0; x < 16; x++) {
-           totalHits += algoHashHits[x];
-           totalTime += algoHashTotal[x];
-           std::cout << "hash algo " << x << " hits " << algoHashHits[x] << " total " << algoHashTotal[x] << " avg " << algoHashTotal[x]/algoHashHits[x] << std::endl;
-       }
-
-       std::cout << "Totals: hash algo " <<  " hits " << totalHits << " total " << totalTime << " avg " << totalTime/totalHits << std::endl;
-
-       genesis.hashPrevBlock = TempHashHolding;
-
-       return;
-
-       /////////////////////////////////////////////////////////////////
-
-
-        genesis = CreateGenesisBlock(1537466400, 309205, 0x207fffff, 4, 50 * COIN );
+        genesis = CreateGenesisBlock(1582483185, 2, 0x207fffff, 2, 5000 * COIN);
         consensus.hashGenesisBlock = genesis.GetX16RHash();
 
-        assert(consensus.hashGenesisBlock == uint256S("0x00000cb35c53860fb011d1750779e1b0701f5c393fb972c6325c9e8cf729bdad"));
-        assert(genesis.hashMerkleRoot == uint256S("0x6fb6a914668b3086790ac435dff5d70be187f47407e7787f991690cb26469ff7"));
+        assert(consensus.hashGenesisBlock == uint256S("0x500d7bfd140e3cb24681d334a000d898057250513dc975894009146c61293b3b"));
+        assert(genesis.hashMerkleRoot == uint256S("0x9933ca70914e63d4c81a9d8f2d16263f51b22b3aa2c50f763228d160c06ae84f"));
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds.
@@ -540,10 +481,10 @@ public:
 
         /** PEXA Start **/
         // Burn Amounts
-        nIssueAssetBurnAmount = 1 * COIN;
-        nReissueAssetBurnAmount = 1 * COIN;
-        nIssueSubAssetBurnAmount = 1 * COIN;
-        nIssueUniqueAssetBurnAmount = 1 * COIN;
+        nIssueAssetBurnAmount = 500 * COIN;
+        nReissueAssetBurnAmount = 100 * COIN;
+        nIssueSubAssetBurnAmount = 100 * COIN;
+        nIssueUniqueAssetBurnAmount = 5 * COIN;
 
         // Burn Addresses
         strIssueAssetBurnAddress = "XPexaAssetBurnXXXXXXXXXXXXXXdsLnAz";
@@ -556,7 +497,6 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 200;
-        nX16RV2ActivationTime = 1566571889;
 
         nMaxReorganizationDepth = 60; // 60 at 1 minute block timespan is +/- 60 minutes.
         nMinReorganizationPeers = 4;
