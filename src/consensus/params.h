@@ -48,14 +48,17 @@ struct Params {
     /* Block hash that is excepted from BIP16 enforcement */
     uint256 BIP16Exception;
     /** Block height and hash at which BIP34 becomes active */
-    int BIP34Height;
-    uint256 BIP34Hash;
+    bool nBIP34Enabled;
+    bool nBIP65Enabled;
+    bool nBIP66Enabled;
+    // int BIP34Height;
+    // uint256 BIP34Hash;
     /** Block height at which BIP65 becomes active */
-    int BIP65Height;
+    // int BIP65Height;
     /** Block height at which BIP66 becomes active */
-    int BIP66Height;
+    // int BIP66Height;
     /** Block height at which CSV (BIP68, BIP112 and BIP113) becomes active */
-    int CSVHeight;
+    // int CSVHeight;
     /** Block height at which Segwit (BIP141, BIP143 and BIP147) becomes active.
      * Note that segwit v0 script rules are enforced on all blocks except the
      * BIP 16 exception blocks. */
@@ -80,6 +83,8 @@ struct Params {
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
+    bool nSegwitEnabled;
+    bool nCSVEnabled;
 };
 } // namespace Consensus
 

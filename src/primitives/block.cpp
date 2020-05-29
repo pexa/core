@@ -5,12 +5,31 @@
 
 #include <primitives/block.h>
 
-#include <hash.h>
+#include <versionbits.h>
+
+#include <algo/hash_algos.h>
+#include <chainparams.h>
 #include <tinyformat.h>
+#include <util/strencodings.h>
+#include <crypto/common.h>
 
 uint256 CBlockHeader::GetHash() const
 {
-    return SerializeHash(*this);
+    if (nTime >= Params().X16RV2ActivationTime()) {
+        return HashX16RV2(BEGIN(nVersion), END(nNonce), hashPrevBlock);
+    }
+
+    return HashX16R(BEGIN(nVersion), END(nNonce), hashPrevBlock);
+}
+
+uint256 CBlockHeader::GetX16RHash() const
+{
+    return HashX16R(BEGIN(nVersion), END(nNonce), hashPrevBlock);
+}
+
+uint256 CBlockHeader::GetX16RV2Hash() const
+{
+    return HashX16RV2(BEGIN(nVersion), END(nNonce), hashPrevBlock);
 }
 
 std::string CBlock::ToString() const

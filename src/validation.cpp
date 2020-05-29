@@ -1250,7 +1250,11 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
         return 0;
 
     CAmount nSubsidy = 50 * COIN;
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
+
+    if(nHeight >= 11759){
+        nSubsidy = 5 * COIN;
+    }
+
     nSubsidy >>= halvings;
     return nSubsidy;
 }
@@ -1908,19 +1912,19 @@ static unsigned int GetBlockScriptFlags(const CBlockIndex* pindex, const Consens
     }
 
     // Start enforcing the DERSIG (BIP66) rule
-    if (pindex->nHeight >= consensusparams.BIP66Height) {
-        flags |= SCRIPT_VERIFY_DERSIG;
-    }
+    // if (pindex->nHeight >= consensusparams.BIP66Height) {
+    //     flags |= SCRIPT_VERIFY_DERSIG;
+    // }
 
     // Start enforcing CHECKLOCKTIMEVERIFY (BIP65) rule
-    if (pindex->nHeight >= consensusparams.BIP65Height) {
-        flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
-    }
+    // if (pindex->nHeight >= consensusparams.BIP65Height) {
+    //     flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
+    // }
 
     // Start enforcing BIP112 (CHECKSEQUENCEVERIFY)
-    if (pindex->nHeight >= consensusparams.CSVHeight) {
-        flags |= SCRIPT_VERIFY_CHECKSEQUENCEVERIFY;
-    }
+    // if (pindex->nHeight >= consensusparams.CSVHeight) {
+    //     flags |= SCRIPT_VERIFY_CHECKSEQUENCEVERIFY;
+    // }
 
     // Start enforcing BIP147 NULLDUMMY (activated simultaneously with segwit)
     if (IsWitnessEnabled(pindex->pprev, consensusparams)) {
@@ -2094,30 +2098,30 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
     // post BIP34 before approximately height 486,000,000 and presumably will
     // be reset before it reaches block 1,983,702 and starts doing unnecessary
     // BIP30 checking again.
-    assert(pindex->pprev);
-    CBlockIndex *pindexBIP34height = pindex->pprev->GetAncestor(chainparams.GetConsensus().BIP34Height);
-    //Only continue to enforce if we're below BIP34 activation height or the block hash at that height doesn't correspond.
-    fEnforceBIP30 = fEnforceBIP30 && (!pindexBIP34height || !(pindexBIP34height->GetBlockHash() == chainparams.GetConsensus().BIP34Hash));
+    // assert(pindex->pprev);
+    // CBlockIndex *pindexBIP34height = pindex->pprev->GetAncestor(chainparams.GetConsensus().BIP34Height);
+    // //Only continue to enforce if we're below BIP34 activation height or the block hash at that height doesn't correspond.
+    // fEnforceBIP30 = fEnforceBIP30 && (!pindexBIP34height || !(pindexBIP34height->GetBlockHash() == chainparams.GetConsensus().BIP34Hash));
 
-    // TODO: Remove BIP30 checking from block height 1,983,702 on, once we have a
-    // consensus change that ensures coinbases at those heights can not
-    // duplicate earlier coinbases.
-    if (fEnforceBIP30 || pindex->nHeight >= BIP34_IMPLIES_BIP30_LIMIT) {
-        for (const auto& tx : block.vtx) {
-            for (size_t o = 0; o < tx->vout.size(); o++) {
-                if (view.HaveCoin(COutPoint(tx->GetHash(), o))) {
-                    LogPrintf("ERROR: ConnectBlock(): tried to overwrite transaction\n");
-                    return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-txns-BIP30");
-                }
-            }
-        }
-    }
+    // // TODO: Remove BIP30 checking from block height 1,983,702 on, once we have a
+    // // consensus change that ensures coinbases at those heights can not
+    // // duplicate earlier coinbases.
+    // if (fEnforceBIP30 || pindex->nHeight >= BIP34_IMPLIES_BIP30_LIMIT) {
+    //     for (const auto& tx : block.vtx) {
+    //         for (size_t o = 0; o < tx->vout.size(); o++) {
+    //             if (view.HaveCoin(COutPoint(tx->GetHash(), o))) {
+    //                 LogPrintf("ERROR: ConnectBlock(): tried to overwrite transaction\n");
+    //                 return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-txns-BIP30");
+    //             }
+    //         }
+    //     }
+    // }
 
     // Start enforcing BIP68 (sequence locks)
     int nLockTimeFlags = 0;
-    if (pindex->nHeight >= chainparams.GetConsensus().CSVHeight) {
-        nLockTimeFlags |= LOCKTIME_VERIFY_SEQUENCE;
-    }
+    // if (pindex->nHeight >= chainparams.GetConsensus().CSVHeight) {
+    //     nLockTimeFlags |= LOCKTIME_VERIFY_SEQUENCE;
+    // }
 
     // Get the script flags for this block
     unsigned int flags = GetBlockScriptFlags(pindex, chainparams.GetConsensus());
@@ -3527,16 +3531,24 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "time-too-old", "block's timestamp is too early");
 
     // Check timestamp
-    if (block.GetBlockTime() > nAdjustedTime + MAX_FUTURE_BLOCK_TIME)
-        return state.Invalid(BlockValidationResult::BLOCK_TIME_FUTURE, "time-too-new", "block timestamp too far in the future");
+    if (IsDGWActive(pindexPrev->nHeight+1))
+    {
+        if (block.GetBlockTime() > nAdjustedTime + MAX_FUTURE_BLOCK_TIME_DGW)
+            return state.Invalid(BlockValidationResult::BLOCK_TIME_FUTURE, "time-too-new", "block timestamp too far in the future");
+    }
+    else
+    {
+        if (block.GetBlockTime() > nAdjustedTime + MAX_FUTURE_BLOCK_TIME)
+            return state.Invalid(BlockValidationResult::BLOCK_TIME_FUTURE, "time-too-new", "block timestamp too far in the future");
+    }
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
     // check for version 2, 3 and 4 upgrades
-    if((block.nVersion < 2 && nHeight >= consensusParams.BIP34Height) ||
-       (block.nVersion < 3 && nHeight >= consensusParams.BIP66Height) ||
-       (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height))
-            return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, strprintf("bad-version(0x%08x)", block.nVersion),
-                                 strprintf("rejected nVersion=0x%08x block", block.nVersion));
+    // if((block.nVersion < 2 && nHeight >= consensusParams.BIP34Height) ||
+    //    (block.nVersion < 3 && nHeight >= consensusParams.BIP66Height) ||
+    //    (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height))
+    //         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, strprintf("bad-version(0x%08x)", block.nVersion),
+    //                              strprintf("rejected nVersion=0x%08x block", block.nVersion));
 
     return true;
 }
@@ -3553,10 +3565,10 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
 
     // Start enforcing BIP113 (Median Time Past).
     int nLockTimeFlags = 0;
-    if (nHeight >= consensusParams.CSVHeight) {
-        assert(pindexPrev != nullptr);
-        nLockTimeFlags |= LOCKTIME_MEDIAN_TIME_PAST;
-    }
+    // if (nHeight >= consensusParams.CSVHeight) {
+    //     assert(pindexPrev != nullptr);
+    //     nLockTimeFlags |= LOCKTIME_MEDIAN_TIME_PAST;
+    // }
 
     int64_t nLockTimeCutoff = (nLockTimeFlags & LOCKTIME_MEDIAN_TIME_PAST)
                               ? pindexPrev->GetMedianTimePast()
@@ -3570,14 +3582,14 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
     }
 
     // Enforce rule that the coinbase starts with serialized block height
-    if (nHeight >= consensusParams.BIP34Height)
-    {
-        CScript expect = CScript() << nHeight;
-        if (block.vtx[0]->vin[0].scriptSig.size() < expect.size() ||
-            !std::equal(expect.begin(), expect.end(), block.vtx[0]->vin[0].scriptSig.begin())) {
-            return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cb-height", "block height mismatch in coinbase");
-        }
-    }
+    // if (nHeight >= consensusParams.BIP34Height)
+    // {
+    //     CScript expect = CScript() << nHeight;
+    //     if (block.vtx[0]->vin[0].scriptSig.size() < expect.size() ||
+    //         !std::equal(expect.begin(), expect.end(), block.vtx[0]->vin[0].scriptSig.begin())) {
+    //         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-cb-height", "block height mismatch in coinbase");
+    //     }
+    // }
 
     // Validation for witness commitments.
     // * We compute the witness hash (which is the hash including witnesses) of all the block's transactions, except the
@@ -5190,6 +5202,14 @@ double GuessVerificationProgress(const ChainTxData& data, const CBlockIndex *pin
 
     return std::min<double>(pindex->nChainTx / fTxTotal, 1.0);
 }
+
+/** PEXA START */
+
+bool IsDGWActive(unsigned int nBlockNumber) {
+    return nBlockNumber >= Params().DGWActivationBlock();
+}
+
+/** PEXA END */
 
 class CMainCleanup
 {
