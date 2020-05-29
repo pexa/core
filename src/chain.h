@@ -19,7 +19,8 @@
  * Maximum amount of time that a block timestamp is allowed to exceed the
  * current network-adjusted time before the block will be accepted.
  */
-static constexpr int64_t MAX_FUTURE_BLOCK_TIME = 2 * 60 * 60;
+static const int64_t MAX_FUTURE_BLOCK_TIME = 2 * 60 * 60;
+static const int64_t MAX_FUTURE_BLOCK_TIME_DGW = MAX_FUTURE_BLOCK_TIME / 10;
 
 /**
  * Timestamp window used as a grace period by code that compares external

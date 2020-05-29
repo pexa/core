@@ -6,13 +6,19 @@
 #ifndef BITCOIN_HASH_H
 #define BITCOIN_HASH_H
 
+#include <iostream>
 #include <crypto/common.h>
+#include <chrono>
 #include <crypto/ripemd160.h>
 #include <crypto/sha256.h>
 #include <prevector.h>
 #include <serialize.h>
 #include <uint256.h>
 #include <version.h>
+
+extern "C" {
+#include <algo/sph_sha2.h>
+}
 
 #include <vector>
 

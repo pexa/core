@@ -1246,12 +1246,19 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     obj.pushKV("headers",               pindexBestHeader ? pindexBestHeader->nHeight : -1);
     obj.pushKV("bestblockhash",         tip->GetBlockHash().GetHex());
     obj.pushKV("difficulty",            (double)GetDifficulty(tip));
+    if (IsDGWActive((int)::ChainActive().Height())) {
+        obj.pushKV("difficulty_algorithm", "DGW-180");
+    } else {
+        obj.pushKV("difficulty_algorithm", "BTC");
+        obj.pushKV("DGW_activation_height",    (int)Params().DGWActivationBlock());
+    }
     obj.pushKV("mediantime",            (int64_t)tip->GetMedianTimePast());
     obj.pushKV("verificationprogress",  GuessVerificationProgress(Params().TxData(), tip));
     obj.pushKV("initialblockdownload",  ::ChainstateActive().IsInitialBlockDownload());
     obj.pushKV("chainwork",             tip->nChainWork.GetHex());
     obj.pushKV("size_on_disk",          CalculateCurrentUsage());
     obj.pushKV("pruned",                fPruneMode);
+
     if (fPruneMode) {
         const CBlockIndex* block = tip;
         CHECK_NONFATAL(block);
@@ -1271,11 +1278,11 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
 
     const Consensus::Params& consensusParams = Params().GetConsensus();
     UniValue softforks(UniValue::VOBJ);
-    BuriedForkDescPushBack(softforks, "bip34", consensusParams.BIP34Height);
-    BuriedForkDescPushBack(softforks, "bip66", consensusParams.BIP66Height);
-    BuriedForkDescPushBack(softforks, "bip65", consensusParams.BIP65Height);
-    BuriedForkDescPushBack(softforks, "csv", consensusParams.CSVHeight);
-    BuriedForkDescPushBack(softforks, "segwit", consensusParams.SegwitHeight);
+    // BuriedForkDescPushBack(softforks, "bip34", consensusParams.BIP34Height);
+    // BuriedForkDescPushBack(softforks, "bip66", consensusParams.BIP66Height);
+    // BuriedForkDescPushBack(softforks, "bip65", consensusParams.BIP65Height);
+    // BuriedForkDescPushBack(softforks, "csv", consensusParams.CSVHeight);
+    // BuriedForkDescPushBack(softforks, "segwit", consensusParams.SegwitHeight);
     BIP9SoftForkDescPushBack(softforks, "testdummy", consensusParams, Consensus::DEPLOYMENT_TESTDUMMY);
     obj.pushKV("softforks",             softforks);
 

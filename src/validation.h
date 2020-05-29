@@ -920,4 +920,10 @@ inline bool IsBlockPruned(const CBlockIndex* pblockindex)
     return (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0);
 }
 
+/** PEXA START */
+
+bool IsDGWActive(unsigned int nBlockNumber);
+
+/** PEXA END */
+
 #endif // BITCOIN_VALIDATION_H
