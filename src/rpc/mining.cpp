@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2020 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -242,7 +242,7 @@ static UniValue generatetoaddress(const JSONRPCRequest& request)
                 "\nMine blocks immediately to a specified address (before the RPC call returns)\n",
                 {
                     {"nblocks", RPCArg::Type::NUM, RPCArg::Optional::NO, "How many blocks are generated immediately."},
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The address to send the newly generated bitcoin to."},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The address to send the newly generated pexa to."},
                     {"maxtries", RPCArg::Type::NUM, /* default */ ToString(DEFAULT_MAX_TRIES), "How many iterations to try."},
                 },
                 RPCResult{
@@ -253,7 +253,7 @@ static UniValue generatetoaddress(const JSONRPCRequest& request)
                 RPCExamples{
             "\nGenerate 11 blocks to myaddress\n"
             + HelpExampleCli("generatetoaddress", "11 \"myaddress\"")
-            + "If you are using the " PACKAGE_NAME " wallet, you can get a new address to send the newly generated bitcoin to with:\n"
+            + "If you are using the " PACKAGE_NAME " wallet, you can get a new address to send the newly generated pexa to with:\n"
             + HelpExampleCli("getnewaddress", "")
                 },
             }.Check(request);
@@ -279,7 +279,7 @@ static UniValue generateblock(const JSONRPCRequest& request)
     RPCHelpMan{"generateblock",
         "\nMine a block with a set of ordered transactions immediately to a specified address or descriptor (before the RPC call returns)\n",
         {
-            {"output", RPCArg::Type::STR, RPCArg::Optional::NO, "The address or descriptor to send the newly generated bitcoin to."},
+            {"output", RPCArg::Type::STR, RPCArg::Optional::NO, "The address or descriptor to send the newly generated pexa to."},
             {"transactions", RPCArg::Type::ARR, RPCArg::Optional::NO, "An array of hex strings which are either txids or raw transactions.\n"
                 "Txids must reference transactions currently in the mempool.\n"
                 "All transactions must be valid and in valid order, otherwise the block will be rejected.",
@@ -420,7 +420,7 @@ static UniValue getmininginfo(const JSONRPCRequest& request)
 }
 
 
-// NOTE: Unlike wallet RPC (which use BTC values), mining RPCs follow GBT (BIP 22) in using satoshi amounts
+// NOTE: Unlike wallet RPC (which use PEXA values), mining RPCs follow GBT (BIP 22) in using satoshi amounts
 static UniValue prioritisetransaction(const JSONRPCRequest& request)
 {
             RPCHelpMan{"prioritisetransaction",
@@ -490,10 +490,10 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
                 "\nIf the request parameters include a 'mode' key, that is used to explicitly select between the default 'template' request or a 'proposal'.\n"
                 "It returns data needed to construct a block to work on.\n"
                 "For full specification, see BIPs 22, 23, 9, and 145:\n"
-                "    https://github.com/bitcoin/bips/blob/master/bip-0022.mediawiki\n"
-                "    https://github.com/bitcoin/bips/blob/master/bip-0023.mediawiki\n"
-                "    https://github.com/bitcoin/bips/blob/master/bip-0009.mediawiki#getblocktemplate_changes\n"
-                "    https://github.com/bitcoin/bips/blob/master/bip-0145.mediawiki\n",
+                "    https://github.com/pexa/bips/blob/master/bip-0022.mediawiki\n"
+                "    https://github.com/pexa/bips/blob/master/bip-0023.mediawiki\n"
+                "    https://github.com/pexa/bips/blob/master/bip-0009.mediawiki#getblocktemplate_changes\n"
+                "    https://github.com/pexa/bips/blob/master/bip-0145.mediawiki\n",
                 {
                     {"template_request", RPCArg::Type::OBJ, "{}", "Format of the template",
                         {
@@ -902,7 +902,7 @@ static UniValue submitblock(const JSONRPCRequest& request)
     // We allow 2 arguments for compliance with BIP22. Argument 2 is ignored.
             RPCHelpMan{"submitblock",
                 "\nAttempts to submit new block to network.\n"
-                "See https://en.bitcoin.it/wiki/BIP_0022 for full specification.\n",
+                "See https://en.pexa.it/wiki/BIP_0022 for full specification.\n",
                 {
                     {"hexdata", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "the hex-encoded block data to submit"},
                     {"dummy", RPCArg::Type::STR, /* default */ "ignored", "dummy value, for compatibility with BIP22. This value is ignored."},

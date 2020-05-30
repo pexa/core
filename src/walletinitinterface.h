@@ -1,9 +1,9 @@
-// Copyright (c) 2017-2019 The Bitcoin Core developers
+// Copyright (c) 2017-2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_WALLETINITINTERFACE_H
-#define BITCOIN_WALLETINITINTERFACE_H
+#ifndef PEXA_WALLETINITINTERFACE_H
+#define PEXA_WALLETINITINTERFACE_H
 
 struct NodeContext;
 
@@ -23,4 +23,4 @@ public:
 
 extern const WalletInitInterface& g_wallet_init_interface;
 
-#endif // BITCOIN_WALLETINITINTERFACE_H
+#endif // PEXA_WALLETINITINTERFACE_H

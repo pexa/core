@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2019 The Bitcoin Core developers
+// Copyright (c) 2011-2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_OPENURIDIALOG_H
-#define BITCOIN_QT_OPENURIDIALOG_H
+#ifndef PEXA_QT_OPENURIDIALOG_H
+#define PEXA_QT_OPENURIDIALOG_H
 
 #include <QDialog>
 
@@ -28,4 +28,4 @@ private:
     Ui::OpenURIDialog *ui;
 };
 
-#endif // BITCOIN_QT_OPENURIDIALOG_H
+#endif // PEXA_QT_OPENURIDIALOG_H

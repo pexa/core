@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020 The Bitcoin Core developers
+// Copyright (c) 2011-2020 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -18,7 +18,7 @@
 #include <util/system.h>
 
 #if defined(HAVE_CONSENSUS_LIB)
-#include <script/bitcoinconsensus.h>
+#include <script/pexaconsensus.h>
 #endif
 
 #include <stdint.h>
@@ -149,14 +149,14 @@ void DoTest(const CScript& scriptPubKey, const CScript& scriptSig, const CScript
 #if defined(HAVE_CONSENSUS_LIB)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << tx2;
-    int libconsensus_flags = flags & bitcoinconsensus_SCRIPT_FLAGS_VERIFY_ALL;
+    int libconsensus_flags = flags & pexaconsensus_SCRIPT_FLAGS_VERIFY_ALL;
     if (libconsensus_flags == flags) {
         int expectedSuccessCode = expect ? 1 : 0;
-        if (flags & bitcoinconsensus_SCRIPT_FLAGS_VERIFY_WITNESS) {
-            BOOST_CHECK_MESSAGE(bitcoinconsensus_verify_script_with_amount(scriptPubKey.data(), scriptPubKey.size(), txCredit.vout[0].nValue, (const unsigned char*)&stream[0], stream.size(), 0, libconsensus_flags, nullptr) == expectedSuccessCode, message);
+        if (flags & pexaconsensus_SCRIPT_FLAGS_VERIFY_WITNESS) {
+            BOOST_CHECK_MESSAGE(pexaconsensus_verify_script_with_amount(scriptPubKey.data(), scriptPubKey.size(), txCredit.vout[0].nValue, (const unsigned char*)&stream[0], stream.size(), 0, libconsensus_flags, nullptr) == expectedSuccessCode, message);
         } else {
-            BOOST_CHECK_MESSAGE(bitcoinconsensus_verify_script_with_amount(scriptPubKey.data(), scriptPubKey.size(), 0, (const unsigned char*)&stream[0], stream.size(), 0, libconsensus_flags, nullptr) == expectedSuccessCode, message);
-            BOOST_CHECK_MESSAGE(bitcoinconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), 0, libconsensus_flags, nullptr) == expectedSuccessCode, message);
+            BOOST_CHECK_MESSAGE(pexaconsensus_verify_script_with_amount(scriptPubKey.data(), scriptPubKey.size(), 0, (const unsigned char*)&stream[0], stream.size(), 0, libconsensus_flags, nullptr) == expectedSuccessCode, message);
+            BOOST_CHECK_MESSAGE(pexaconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), 0, libconsensus_flags, nullptr) == expectedSuccessCode, message);
         }
     }
 #endif
@@ -1472,8 +1472,8 @@ BOOST_AUTO_TEST_CASE(script_HasValidOps)
 
 #if defined(HAVE_CONSENSUS_LIB)
 
-/* Test simple (successful) usage of bitcoinconsensus_verify_script */
-BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_returns_true)
+/* Test simple (successful) usage of pexaconsensus_verify_script */
+BOOST_AUTO_TEST_CASE(pexaconsensus_verify_script_returns_true)
 {
     unsigned int libconsensus_flags = 0;
     int nIn = 0;
@@ -1489,14 +1489,14 @@ BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_returns_true)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << spendTx;
 
-    bitcoinconsensus_error err;
-    int result = bitcoinconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
+    pexaconsensus_error err;
+    int result = pexaconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
     BOOST_CHECK_EQUAL(result, 1);
-    BOOST_CHECK_EQUAL(err, bitcoinconsensus_ERR_OK);
+    BOOST_CHECK_EQUAL(err, pexaconsensus_ERR_OK);
 }
 
-/* Test bitcoinconsensus_verify_script returns invalid tx index err*/
-BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_tx_index_err)
+/* Test pexaconsensus_verify_script returns invalid tx index err*/
+BOOST_AUTO_TEST_CASE(pexaconsensus_verify_script_tx_index_err)
 {
     unsigned int libconsensus_flags = 0;
     int nIn = 3;
@@ -1512,14 +1512,14 @@ BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_tx_index_err)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << spendTx;
 
-    bitcoinconsensus_error err;
-    int result = bitcoinconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
+    pexaconsensus_error err;
+    int result = pexaconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
     BOOST_CHECK_EQUAL(result, 0);
-    BOOST_CHECK_EQUAL(err, bitcoinconsensus_ERR_TX_INDEX);
+    BOOST_CHECK_EQUAL(err, pexaconsensus_ERR_TX_INDEX);
 }
 
-/* Test bitcoinconsensus_verify_script returns tx size mismatch err*/
-BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_tx_size)
+/* Test pexaconsensus_verify_script returns tx size mismatch err*/
+BOOST_AUTO_TEST_CASE(pexaconsensus_verify_script_tx_size)
 {
     unsigned int libconsensus_flags = 0;
     int nIn = 0;
@@ -1535,14 +1535,14 @@ BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_tx_size)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << spendTx;
 
-    bitcoinconsensus_error err;
-    int result = bitcoinconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size() * 2, nIn, libconsensus_flags, &err);
+    pexaconsensus_error err;
+    int result = pexaconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size() * 2, nIn, libconsensus_flags, &err);
     BOOST_CHECK_EQUAL(result, 0);
-    BOOST_CHECK_EQUAL(err, bitcoinconsensus_ERR_TX_SIZE_MISMATCH);
+    BOOST_CHECK_EQUAL(err, pexaconsensus_ERR_TX_SIZE_MISMATCH);
 }
 
-/* Test bitcoinconsensus_verify_script returns invalid tx serialization error */
-BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_tx_serialization)
+/* Test pexaconsensus_verify_script returns invalid tx serialization error */
+BOOST_AUTO_TEST_CASE(pexaconsensus_verify_script_tx_serialization)
 {
     unsigned int libconsensus_flags = 0;
     int nIn = 0;
@@ -1558,16 +1558,16 @@ BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_tx_serialization)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << 0xffffffff;
 
-    bitcoinconsensus_error err;
-    int result = bitcoinconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
+    pexaconsensus_error err;
+    int result = pexaconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
     BOOST_CHECK_EQUAL(result, 0);
-    BOOST_CHECK_EQUAL(err, bitcoinconsensus_ERR_TX_DESERIALIZE);
+    BOOST_CHECK_EQUAL(err, pexaconsensus_ERR_TX_DESERIALIZE);
 }
 
-/* Test bitcoinconsensus_verify_script returns amount required error */
-BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_amount_required_err)
+/* Test pexaconsensus_verify_script returns amount required error */
+BOOST_AUTO_TEST_CASE(pexaconsensus_verify_script_amount_required_err)
 {
-    unsigned int libconsensus_flags = bitcoinconsensus_SCRIPT_FLAGS_VERIFY_WITNESS;
+    unsigned int libconsensus_flags = pexaconsensus_SCRIPT_FLAGS_VERIFY_WITNESS;
     int nIn = 0;
 
     CScript scriptPubKey;
@@ -1581,14 +1581,14 @@ BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_amount_required_err)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << spendTx;
 
-    bitcoinconsensus_error err;
-    int result = bitcoinconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
+    pexaconsensus_error err;
+    int result = pexaconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
     BOOST_CHECK_EQUAL(result, 0);
-    BOOST_CHECK_EQUAL(err, bitcoinconsensus_ERR_AMOUNT_REQUIRED);
+    BOOST_CHECK_EQUAL(err, pexaconsensus_ERR_AMOUNT_REQUIRED);
 }
 
-/* Test bitcoinconsensus_verify_script returns invalid flags err */
-BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_invalid_flags)
+/* Test pexaconsensus_verify_script returns invalid flags err */
+BOOST_AUTO_TEST_CASE(pexaconsensus_verify_script_invalid_flags)
 {
     unsigned int libconsensus_flags = 1 << 3;
     int nIn = 0;
@@ -1604,10 +1604,10 @@ BOOST_AUTO_TEST_CASE(bitcoinconsensus_verify_script_invalid_flags)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << spendTx;
 
-    bitcoinconsensus_error err;
-    int result = bitcoinconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
+    pexaconsensus_error err;
+    int result = pexaconsensus_verify_script(scriptPubKey.data(), scriptPubKey.size(), (const unsigned char*)&stream[0], stream.size(), nIn, libconsensus_flags, &err);
     BOOST_CHECK_EQUAL(result, 0);
-    BOOST_CHECK_EQUAL(err, bitcoinconsensus_ERR_INVALID_FLAGS);
+    BOOST_CHECK_EQUAL(err, pexaconsensus_ERR_INVALID_FLAGS);
 }
 
 #endif

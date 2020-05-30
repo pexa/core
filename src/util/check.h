@@ -1,12 +1,12 @@
-// Copyright (c) 2019 The Bitcoin Core developers
+// Copyright (c) 2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UTIL_CHECK_H
-#define BITCOIN_UTIL_CHECK_H
+#ifndef PEXA_UTIL_CHECK_H
+#define PEXA_UTIL_CHECK_H
 
 #if defined(HAVE_CONFIG_H)
-#include <config/bitcoin-config.h>
+#include <config/pexa-config.h>
 #endif
 
 #include <tinyformat.h>
@@ -42,4 +42,4 @@ class NonFatalCheckError : public std::runtime_error
         }                                                         \
     } while (false)
 
-#endif // BITCOIN_UTIL_CHECK_H
+#endif // PEXA_UTIL_CHECK_H

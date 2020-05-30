@@ -1,9 +1,9 @@
-// Copyright (c) 2012-2018 The Bitcoin Core developers
+// Copyright (c) 2012-2018 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_VERSION_H
-#define BITCOIN_VERSION_H
+#ifndef PEXA_VERSION_H
+#define PEXA_VERSION_H
 
 /**
  * network protocol versioning
@@ -45,4 +45,4 @@ static const int INVALID_CB_NO_BAN_VERSION = 70015;
 //! getassetdata reutrn asstnotfound, and assetdata doesn't have blockhash in the data
 static const int X16RV2_VERSION = 70025;
 
-#endif // BITCOIN_VERSION_H
+#endif // PEXA_VERSION_H

@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2019 The Bitcoin Core developers
+// Copyright (c) 2009-2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UINT256_H
-#define BITCOIN_UINT256_H
+#ifndef PEXA_UINT256_H
+#define PEXA_UINT256_H
 
 #include <assert.h>
 #include <cstring>
@@ -177,4 +177,4 @@ public:
         return result;
     }
 };
-#endif // BITCOIN_UINT256_H
+#endif // PEXA_UINT256_H

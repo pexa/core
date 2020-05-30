@@ -1,9 +1,9 @@
-// Copyright (c) 2016-2018 The Bitcoin Core developers
+// Copyright (c) 2016-2018 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CRYPTO_SIPHASH_H
-#define BITCOIN_CRYPTO_SIPHASH_H
+#ifndef PEXA_CRYPTO_SIPHASH_H
+#define PEXA_CRYPTO_SIPHASH_H
 
 #include <stdint.h>
 
@@ -56,4 +56,4 @@ inline int GetHashSelection(const uint256 PrevBlockHash, int index) {
 extern double algoHashTotal[16];
 extern int algoHashHits[16];
 
-#endif // BITCOIN_CRYPTO_SIPHASH_H
+#endif // PEXA_CRYPTO_SIPHASH_H

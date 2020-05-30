@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2020 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_WALLET_DB_H
-#define BITCOIN_WALLET_DB_H
+#ifndef PEXA_WALLET_DB_H
+#define PEXA_WALLET_DB_H
 
 #include <fs.h>
 
@@ -14,4 +14,4 @@
 fs::path WalletDataFilePath(const fs::path& wallet_path);
 void SplitWalletPath(const fs::path& wallet_path, fs::path& env_directory, std::string& database_filename);
 
-#endif // BITCOIN_WALLET_DB_H
+#endif // PEXA_WALLET_DB_H

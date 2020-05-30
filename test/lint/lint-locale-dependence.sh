@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Copyright (c) 2018-2020 The Bitcoin Core developers
+# Copyright (c) 2018-2020 The Pexa Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 export LC_ALL=C
 KNOWN_VIOLATIONS=(
-    "src/bitcoin-tx.cpp.*stoul"
-    "src/bitcoin-tx.cpp.*trim_right"
+    "src/pexa-tx.cpp.*stoul"
+    "src/pexa-tx.cpp.*trim_right"
     "src/dbwrapper.cpp.*stoul"
     "src/dbwrapper.cpp:.*vsnprintf"
     "src/httprpc.cpp.*trim"

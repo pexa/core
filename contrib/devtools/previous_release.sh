@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2018-2020 The Bitcoin Core developers
+# Copyright (c) 2018-2020 The Pexa Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #
@@ -98,7 +98,7 @@ pushd "$TARGET" || exit 1
           exit 1
         fi
 
-        git clone https://github.com/bitcoin/bitcoin "$tag"
+        git clone https://github.com/pexa/pexa "$tag"
         pushd "$tag" || exit 1
         {
           git checkout "$tag"
@@ -120,9 +120,9 @@ pushd "$TARGET" || exit 1
           make
           # Move binaries, so they're in the same place as in the release download:
           mkdir bin
-          mv src/bitcoind src/bitcoin-cli src/bitcoin-tx bin
+          mv src/pexad src/pexa-cli src/pexa-tx bin
           if [ "$FUNCTIONAL_TESTS" -eq "0" ]; then
-            mv src/qt/bitcoin-qt bin
+            mv src/qt/pexa-qt bin
           fi
         }
         popd || exit 1
@@ -133,18 +133,18 @@ pushd "$TARGET" || exit 1
       else
         mkdir "$tag"
         if [[ "$tag" =~ v(.*)(rc[0-9]+)$ ]]; then
-            BIN_PATH="bin/bitcoin-core-${BASH_REMATCH[1]}/test.${BASH_REMATCH[2]}"
+            BIN_PATH="bin/pexa-core-${BASH_REMATCH[1]}/test.${BASH_REMATCH[2]}"
         else
-            BIN_PATH="bin/bitcoin-core-${tag:1}"
+            BIN_PATH="bin/pexa-core-${tag:1}"
         fi
-        URL="https://bitcoincore.org/$BIN_PATH/bitcoin-${tag:1}-$PLATFORM.tar.gz"
+        URL="https://pexaproject.com/$BIN_PATH/pexa-${tag:1}-$PLATFORM.tar.gz"
         echo "Fetching: $URL"
         if ! curl -O -f $URL; then
             echo "Download failed."
             exit 1
         fi
-        tar -zxf "bitcoin-${tag:1}-$PLATFORM.tar.gz" -C "$tag" --strip-components=1 "bitcoin-${tag:1}"
-        rm "bitcoin-${tag:1}-$PLATFORM.tar.gz"
+        tar -zxf "pexa-${tag:1}-$PLATFORM.tar.gz" -C "$tag" --strip-components=1 "pexa-${tag:1}"
+        rm "pexa-${tag:1}-$PLATFORM.tar.gz"
       fi
     fi
   done

@@ -1,5 +1,5 @@
-// Copyright (c) 2009-2016 The Bitcoin Core developers
-// Copyright (c) 2017 The BITCOIN Core developers
+// Copyright (c) 2009-2016 The Pexa Core developers
+// Copyright (c) 2017 The PEXA Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
         std::cout << HashX16R(rawHeader.data(), rawHeader.data() + 80, hashPrevBlock).GetHex();
     } else
     {
-        std::cerr << "Usage: test_BITCOIN_hash blockHex" << std::endl;
+        std::cerr << "Usage: test_PEXA_hash blockHex" << std::endl;
         return 1;
     }
 
