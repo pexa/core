@@ -145,3 +145,5 @@ db4/
 osx_volname
 dist/
 *.background.tiff
+
+.appdata
