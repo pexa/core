@@ -57,69 +57,22 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
-void CChainParams::UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
-{
-    consensus.vDeployments[d].nStartTime = nStartTime;
-    consensus.vDeployments[d].nTimeout = nTimeout;
-}
-
-void CChainParams::TurnOffSegwit() {
-    consensus.nSegwitEnabled = false;
-}
-
-void CChainParams::TurnOffCSV() {
-    consensus.nCSVEnabled = false;
-}
-
-void CChainParams::TurnOffBIP34() {
-    consensus.nBIP34Enabled = false;
-}
-
-void CChainParams::TurnOffBIP65() {
-    consensus.nBIP65Enabled = false;
-}
-
-void CChainParams::TurnOffBIP66() {
-    consensus.nBIP66Enabled = false;
-}
-
-bool CChainParams::BIP34() {
-    return consensus.nBIP34Enabled;
-}
-
-bool CChainParams::BIP65() {
-    return consensus.nBIP34Enabled;
-}
-
-bool CChainParams::BIP66() {
-    return consensus.nBIP34Enabled;
-}
-
-bool CChainParams::CSVEnabled() const{
-    return consensus.nCSVEnabled;
-}
-
 /**
  * Main network
  */
-/**
- * What makes a good checkpoint block?
- * + Is surrounded by blocks with reasonable timestamps
- *   (no blocks before with a timestamp after, none after with
- *    timestamp before)
- * + Contains no strange transactions
- */
-
 class CMainParams : public CChainParams {
 public:
     CMainParams() {
         strNetworkID = CBaseChainParams::MAIN;
-        consensus.nSubsidyHalvingInterval = 1712290;  //~ 3.26 yrs at 1 min block time
-        consensus.nBIP34Enabled = true;
-        consensus.nBIP65Enabled = true; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
-        consensus.nBIP66Enabled = true;
-        consensus.nSegwitEnabled = true;
-        consensus.nCSVEnabled = true;
+        consensus.nSubsidyHalvingInterval = 1712290;
+        consensus.BIP16Exception = uint256S("0x000000b3f4b347d4a1fb2f2a8f42d5fc33094a49858608e511c0d45f51628b85");
+        consensus.BIP34Height = 0;
+        consensus.BIP34Hash = uint256S("0x000000b3f4b347d4a1fb2f2a8f42d5fc33094a49858608e511c0d45f51628b85");
+        consensus.BIP65Height = 0;
+        consensus.BIP66Height = 0;
+        consensus.CSVHeight = 0;
+        consensus.SegwitHeight = 0;
+        consensus.MinBIP9WarningHeight = 0; // segwit activation height + miner confirmation window
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2016 * 60; // 1.4 days
         consensus.nPowTargetSpacing = 1 * 60;
@@ -169,7 +122,7 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
 
-        bech32_hrp = "bc";
+        bech32_hrp = "x";
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
@@ -178,7 +131,7 @@ public:
         m_is_test_chain = false;
         m_is_mockable_chain = false;
 
-        checkpointData = (CCheckpointData) {
+        checkpointData = {
             {
                 { 0, uint256S("0x000000b3f4b347d4a1fb2f2a8f42d5fc33094a49858608e511c0d45f51628b85")},
                 { 15000, uint256S("0x0000000002cea9e1360328a2f74e6c2276b42b95f382063374124b7c05389668")},
@@ -223,14 +176,16 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
         strNetworkID = CBaseChainParams::TESTNET;
-        consensus.nSubsidyHalvingInterval = 2100000;  //~ 4 yrs at 1 min block time
-        consensus.nBIP34Enabled = true;
-        consensus.nBIP65Enabled = true; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
-        consensus.nBIP66Enabled = true;
-        consensus.nSegwitEnabled = true;
-        consensus.nCSVEnabled = true;
-
-        consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.nSubsidyHalvingInterval = 210000;
+        consensus.BIP16Exception = uint256S("0x000000e5c51eb049ef52013df58667cdcdf9fb6a34bc2fdd70a0ea576c207f2a");
+        consensus.BIP34Height = 0;
+        consensus.BIP34Hash = uint256S("0x000000e5c51eb049ef52013df58667cdcdf9fb6a34bc2fdd70a0ea576c207f2a");
+        consensus.BIP65Height = 0;
+        consensus.BIP66Height = 0;
+        consensus.CSVHeight = 0;
+        consensus.SegwitHeight = 0;
+        consensus.MinBIP9WarningHeight = 0;
+        consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2016 * 60; // 1.4 days
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -267,13 +222,13 @@ public:
         // nodes with support for servicebits filtering should be at the top
         vSeeds.emplace_back("seed-testnet.pexa.dev", false);
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,75);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,122);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
-        bech32_hrp = "x";
+        bech32_hrp = "xt";
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
@@ -282,9 +237,8 @@ public:
         m_is_test_chain = true;
         m_is_mockable_chain = false;
 
-        checkpointData = (CCheckpointData) {
+        checkpointData = {
             {
-                { 230, uint256S("0x000004cce4dd292058ca040ecb6c2d51a970686d10631030216d6849c7a2227d")},
             }
         };
 
@@ -299,7 +253,7 @@ public:
 
         // DGW Activation
         nDGWActivationBlock = 1;
-        nAssestDeactivationBlock = 1;
+        nAssetsDeactivationBlock = 0;
         /** PEXA End **/
     }
 };
@@ -311,12 +265,15 @@ class CRegTestParams : public CChainParams {
 public:
     explicit CRegTestParams(const ArgsManager& args) {
         strNetworkID =  CBaseChainParams::REGTEST;
-        consensus.nBIP34Enabled = true;
-        consensus.nBIP65Enabled = true; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
-        consensus.nBIP66Enabled = true;
-        consensus.nSegwitEnabled = true;
-        consensus.nCSVEnabled = true;
         consensus.nSubsidyHalvingInterval = 150;
+        consensus.BIP16Exception = uint256();
+        consensus.BIP34Height = 500; // BIP34 activated on regtest (Used in functional tests)
+        consensus.BIP34Hash = uint256();
+        consensus.BIP65Height = 1; // BIP65 activated on regtest (Used in functional tests)
+        consensus.BIP66Height = 1; // BIP66 activated on regtest (Used in functional tests)
+        consensus.CSVHeight = 1; // CSV activated on regtest (Used in rpc activation tests)
+        consensus.SegwitHeight = 0; // SEGWIT is always activated on regtest unless overridden
+        consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2016 * 60; // 1.4 days
         consensus.nPowTargetSpacing = 1 * 60;
@@ -326,6 +283,7 @@ public:
         consensus.nMinerConfirmationWindow = 144; // Faster than normal for regtest (144 instead of 2016)
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -344,11 +302,10 @@ public:
 
         UpdateActivationParametersFromArgs(args);
 
-        genesis = CreateGenesisBlock(1582483185, 2, 0x207fffff, 2, 5000 * COIN);
+            genesis = CreateGenesisBlock(1582483185, 2, 0x207fffff, 2, 5000 * COIN);
         consensus.hashGenesisBlock = genesis.GetX16RHash();
         assert(consensus.hashGenesisBlock == uint256S("0x500d7bfd140e3cb24681d334a000d898057250513dc975894009146c61293b3b"));
         assert(genesis.hashMerkleRoot == uint256S("0x9933ca70914e63d4c81a9d8f2d16263f51b22b3aa2c50f763228d160c06ae84f"));
-
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds.
@@ -358,7 +315,7 @@ public:
         m_is_test_chain = true;
         m_is_mockable_chain = true;
 
-        checkpointData = (CCheckpointData) {
+        checkpointData = {
             {
             }
         };
@@ -369,17 +326,25 @@ public:
             0
         };
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,75);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,122);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
-        bech32_hrp = "x";
+        bech32_hrp = "xcrt";
 
         // DGW Activation
         nDGWActivationBlock = 200;
+    }
 
+    /**
+     * Allows modifying the Version Bits regtest parameters.
+     */
+    void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
+    {
+        consensus.vDeployments[d].nStartTime = nStartTime;
+        consensus.vDeployments[d].nTimeout = nTimeout;
     }
     void UpdateActivationParametersFromArgs(const ArgsManager& args);
 };
@@ -424,22 +389,17 @@ void CRegTestParams::UpdateActivationParametersFromArgs(const ArgsManager& args)
         if (!found) {
             throw std::runtime_error(strprintf("Invalid deployment (%s)", vDeploymentParams[0]));
         }
-        // Global Burn Address
-
-        // DGW Activation
-        nDGWActivationBlock = 200;
-        /** RVN End **/
     }
 }
 
-static std::unique_ptr<CChainParams> globalChainParams;
+static std::unique_ptr<const CChainParams> globalChainParams;
 
 const CChainParams &Params() {
     assert(globalChainParams);
     return *globalChainParams;
 }
 
-std::unique_ptr<CChainParams> CreateChainParams(const std::string& chain)
+std::unique_ptr<const CChainParams> CreateChainParams(const std::string& chain)
 {
     if (chain == CBaseChainParams::MAIN)
         return std::unique_ptr<CChainParams>(new CMainParams());
@@ -450,33 +410,11 @@ std::unique_ptr<CChainParams> CreateChainParams(const std::string& chain)
     throw std::runtime_error(strprintf("%s: Unknown chain %s.", __func__, chain));
 }
 
-void SelectParams(const std::string& network)
+void SelectParams(const std::string& network, bool fForceBlockNetwork)
 {
     SelectBaseParams(network);
+    if (fForceBlockNetwork) {
+        bNetwork.SetNetwork(network);
+    }
     globalChainParams = CreateChainParams(network);
-}
-
-void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
-{
-    globalChainParams->UpdateVersionBitsParameters(d, nStartTime, nTimeout);
-}
-
-void TurnOffSegwit(){
-    globalChainParams->TurnOffSegwit();
-}
-
-void TurnOffCSV() {
-    globalChainParams->TurnOffCSV();
-}
-
-void TurnOffBIP34() {
-    globalChainParams->TurnOffBIP34();
-}
-
-void TurnOffBIP65() {
-    globalChainParams->TurnOffBIP65();
-}
-
-void TurnOffBIP66() {
-    globalChainParams->TurnOffBIP66();
 }

@@ -923,6 +923,7 @@ inline bool IsBlockPruned(const CBlockIndex* pblockindex)
 /** PEXA START */
 
 bool IsDGWActive(unsigned int nBlockNumber);
+bool AreAssetsDeployed();
 
 /** PEXA END */
 

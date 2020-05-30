@@ -1844,11 +1844,19 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
     LOCK(cs_main);
     int32_t nVersion = VERSIONBITS_TOP_BITS;
 
+    if (AreAssetsDeployed()) {
+        nVersion = VERSIONBITS_TOP_BITS_ASSETS;
+    }
+
     for (int i = 0; i < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; i++) {
         ThresholdState state = VersionBitsState(pindexPrev, params, static_cast<Consensus::DeploymentPos>(i), versionbitscache);
         if (state == ThresholdState::LOCKED_IN || state == ThresholdState::STARTED) {
             nVersion |= VersionBitsMask(params, static_cast<Consensus::DeploymentPos>(i));
         }
+    }
+
+    if (AreAssetsDeployed()) {
+        nVersion |= 1 << 25;
     }
 
     return nVersion;
@@ -1914,19 +1922,19 @@ static unsigned int GetBlockScriptFlags(const CBlockIndex* pindex, const Consens
     }
 
     // Start enforcing the DERSIG (BIP66) rule
-    // if (pindex->nHeight >= consensusparams.BIP66Height) {
-    //     flags |= SCRIPT_VERIFY_DERSIG;
-    // }
+    if (pindex->nHeight >= consensusparams.BIP66Height) {
+        flags |= SCRIPT_VERIFY_DERSIG;
+    }
 
     // Start enforcing CHECKLOCKTIMEVERIFY (BIP65) rule
-    // if (pindex->nHeight >= consensusparams.BIP65Height) {
-    //     flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
-    // }
+    if (pindex->nHeight >= consensusparams.BIP65Height) {
+        flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
+    }
 
     // Start enforcing BIP112 (CHECKSEQUENCEVERIFY)
-    // if (pindex->nHeight >= consensusparams.CSVHeight) {
-    //     flags |= SCRIPT_VERIFY_CHECKSEQUENCEVERIFY;
-    // }
+    if (pindex->nHeight >= consensusparams.CSVHeight) {
+        flags |= SCRIPT_VERIFY_CHECKSEQUENCEVERIFY;
+    }
 
     // Start enforcing BIP147 NULLDUMMY (activated simultaneously with segwit)
     if (IsWitnessEnabled(pindex->pprev, consensusparams)) {
@@ -3622,13 +3630,13 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
     }
 
     // No witness data is allowed in blocks that don't commit to witness data, as this would otherwise leave room for spam
-    if (!fHaveWitness) {
-      for (const auto& tx : block.vtx) {
-            if (tx->HasWitness()) {
-                return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "unexpected-witness", strprintf("%s : unexpected witness data found", __func__));
-            }
-        }
-    }
+    // if (!fHaveWitness && IsWitnessEnabled()) {
+    //   for (const auto& tx : block.vtx) {
+    //         if (tx->HasWitness()) {
+    //             return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "unexpected-witness", strprintf("%s : unexpected witness data found", __func__));
+    //         }
+    //     }
+    // }
 
     // After the coinbase witness reserved value and commitment are verified,
     // we can check if the block weight passes (before we've checked the
@@ -5209,6 +5217,15 @@ double GuessVerificationProgress(const ChainTxData& data, const CBlockIndex *pin
 
 bool IsDGWActive(unsigned int nBlockNumber) {
     return nBlockNumber >= Params().DGWActivationBlock();
+}
+
+bool AreAssetsDeployed() {
+
+    if ((int)::ChainActive().Height() >= Params().AssetsDeactivationBlock()) {
+        return false;
+    }
+
+    return true;
 }
 
 /** PEXA END */
