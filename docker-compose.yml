@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  pexad:
+    image: pexacoin/core:latest
+    build: .
+    restart: always
+    volumes:
+       - ./.appdata/.pexa:/home/pexa/.pexa
+    command: [
+      "pexad",
+      "-printtoconsole",
+      "-rpcuser=root",
+      "-rpcpassword=x",
+      "-rpcallowip=0.0.0.0/0",
+      "-rpcport=2300",
+      "-rpcbind=0.0.0.0",
+      "-server",
+      "-listen",
+      "-addnode=174.138.55.214",
+    ]
+    ports:
+      - "2300:2300"
+    expose:
+      - 2300
+    networks:
+      default:
+        aliases:
+          - pexad.internal
