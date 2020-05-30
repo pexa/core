@@ -1,9 +1,9 @@
-// Copyright (c) 2015-2019 The Bitcoin Core developers
+// Copyright (c) 2015-2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_PLATFORMSTYLE_H
-#define BITCOIN_QT_PLATFORMSTYLE_H
+#ifndef PEXA_QT_PLATFORMSTYLE_H
+#define PEXA_QT_PLATFORMSTYLE_H
 
 #include <QIcon>
 #include <QPixmap>
@@ -48,5 +48,5 @@ private:
     /* ... more to come later */
 };
 
-#endif // BITCOIN_QT_PLATFORMSTYLE_H
+#endif // PEXA_QT_PLATFORMSTYLE_H
 

@@ -1,11 +1,11 @@
-// Copyright (c) 2011-2019 The Bitcoin Core developers
+// Copyright (c) 2011-2019 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <qt/overviewpage.h>
 #include <qt/forms/ui_overviewpage.h>
 
-#include <qt/bitcoinunits.h>
+#include <qt/pexaunits.h>
 #include <qt/clientmodel.h>
 #include <qt/guiconstants.h>
 #include <qt/guiutil.h>
@@ -30,7 +30,7 @@ class TxViewDelegate : public QAbstractItemDelegate
     Q_OBJECT
 public:
     explicit TxViewDelegate(const PlatformStyle *_platformStyle, QObject *parent=nullptr):
-        QAbstractItemDelegate(parent), unit(BitcoinUnits::BTC),
+        QAbstractItemDelegate(parent), unit(PexaUnits::PEXA),
         platformStyle(_platformStyle)
     {
 
@@ -88,7 +88,7 @@ public:
             foreground = option.palette.color(QPalette::Text);
         }
         painter->setPen(foreground);
-        QString amountText = BitcoinUnits::formatWithUnit(unit, amount, true, BitcoinUnits::separatorAlways);
+        QString amountText = PexaUnits::formatWithUnit(unit, amount, true, PexaUnits::separatorAlways);
         if(!confirmed)
         {
             amountText = QString("[") + amountText + QString("]");
@@ -180,25 +180,25 @@ void OverviewPage::setBalance(const interfaces::WalletBalances& balances)
     m_balances = balances;
     if (walletModel->wallet().isLegacy()) {
         if (walletModel->wallet().privateKeysDisabled()) {
-            ui->labelBalance->setText(BitcoinUnits::formatWithPrivacy(unit, balances.watch_only_balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelUnconfirmed->setText(BitcoinUnits::formatWithPrivacy(unit, balances.unconfirmed_watch_only_balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelImmature->setText(BitcoinUnits::formatWithPrivacy(unit, balances.immature_watch_only_balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelTotal->setText(BitcoinUnits::formatWithPrivacy(unit, balances.watch_only_balance + balances.unconfirmed_watch_only_balance + balances.immature_watch_only_balance, BitcoinUnits::separatorAlways, m_privacy));
+            ui->labelBalance->setText(PexaUnits::formatWithPrivacy(unit, balances.watch_only_balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelUnconfirmed->setText(PexaUnits::formatWithPrivacy(unit, balances.unconfirmed_watch_only_balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelImmature->setText(PexaUnits::formatWithPrivacy(unit, balances.immature_watch_only_balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelTotal->setText(PexaUnits::formatWithPrivacy(unit, balances.watch_only_balance + balances.unconfirmed_watch_only_balance + balances.immature_watch_only_balance, PexaUnits::separatorAlways, m_privacy));
         } else {
-            ui->labelBalance->setText(BitcoinUnits::formatWithPrivacy(unit, balances.balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelUnconfirmed->setText(BitcoinUnits::formatWithPrivacy(unit, balances.unconfirmed_balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelImmature->setText(BitcoinUnits::formatWithPrivacy(unit, balances.immature_balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelTotal->setText(BitcoinUnits::formatWithPrivacy(unit, balances.balance + balances.unconfirmed_balance + balances.immature_balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelWatchAvailable->setText(BitcoinUnits::formatWithPrivacy(unit, balances.watch_only_balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelWatchPending->setText(BitcoinUnits::formatWithPrivacy(unit, balances.unconfirmed_watch_only_balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelWatchImmature->setText(BitcoinUnits::formatWithPrivacy(unit, balances.immature_watch_only_balance, BitcoinUnits::separatorAlways, m_privacy));
-            ui->labelWatchTotal->setText(BitcoinUnits::formatWithPrivacy(unit, balances.watch_only_balance + balances.unconfirmed_watch_only_balance + balances.immature_watch_only_balance, BitcoinUnits::separatorAlways, m_privacy));
+            ui->labelBalance->setText(PexaUnits::formatWithPrivacy(unit, balances.balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelUnconfirmed->setText(PexaUnits::formatWithPrivacy(unit, balances.unconfirmed_balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelImmature->setText(PexaUnits::formatWithPrivacy(unit, balances.immature_balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelTotal->setText(PexaUnits::formatWithPrivacy(unit, balances.balance + balances.unconfirmed_balance + balances.immature_balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelWatchAvailable->setText(PexaUnits::formatWithPrivacy(unit, balances.watch_only_balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelWatchPending->setText(PexaUnits::formatWithPrivacy(unit, balances.unconfirmed_watch_only_balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelWatchImmature->setText(PexaUnits::formatWithPrivacy(unit, balances.immature_watch_only_balance, PexaUnits::separatorAlways, m_privacy));
+            ui->labelWatchTotal->setText(PexaUnits::formatWithPrivacy(unit, balances.watch_only_balance + balances.unconfirmed_watch_only_balance + balances.immature_watch_only_balance, PexaUnits::separatorAlways, m_privacy));
         }
     } else {
-        ui->labelBalance->setText(BitcoinUnits::formatWithPrivacy(unit, balances.balance, BitcoinUnits::separatorAlways, m_privacy));
-        ui->labelUnconfirmed->setText(BitcoinUnits::formatWithPrivacy(unit, balances.unconfirmed_balance, BitcoinUnits::separatorAlways, m_privacy));
-        ui->labelImmature->setText(BitcoinUnits::formatWithPrivacy(unit, balances.immature_balance, BitcoinUnits::separatorAlways, m_privacy));
-        ui->labelTotal->setText(BitcoinUnits::formatWithPrivacy(unit, balances.balance + balances.unconfirmed_balance + balances.immature_balance, BitcoinUnits::separatorAlways, m_privacy));
+        ui->labelBalance->setText(PexaUnits::formatWithPrivacy(unit, balances.balance, PexaUnits::separatorAlways, m_privacy));
+        ui->labelUnconfirmed->setText(PexaUnits::formatWithPrivacy(unit, balances.unconfirmed_balance, PexaUnits::separatorAlways, m_privacy));
+        ui->labelImmature->setText(PexaUnits::formatWithPrivacy(unit, balances.immature_balance, PexaUnits::separatorAlways, m_privacy));
+        ui->labelTotal->setText(PexaUnits::formatWithPrivacy(unit, balances.balance + balances.unconfirmed_balance + balances.immature_balance, PexaUnits::separatorAlways, m_privacy));
     }
     // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
     // for the non-mining users
@@ -266,7 +266,7 @@ void OverviewPage::setWalletModel(WalletModel *model)
         });
     }
 
-    // update the display unit, to not use the default ("BTC")
+    // update the display unit, to not use the default ("PEXA")
     updateDisplayUnit();
 }
 

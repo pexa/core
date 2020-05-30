@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2020 The Bitcoin Core developers
+# Copyright (c) 2020 The Pexa Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """
@@ -15,7 +15,7 @@ from test_framework.messages import (
 from test_framework.mininode import (
     P2PInterface,
 )
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import PexaTestFramework
 from test_framework.util import (
     assert_equal,
 )
@@ -39,7 +39,7 @@ class AddrReceiver(P2PInterface):
             assert (8333 <= addr.port < 8343)
 
 
-class AddrTest(BitcoinTestFramework):
+class AddrTest(PexaTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = False
         self.num_nodes = 1

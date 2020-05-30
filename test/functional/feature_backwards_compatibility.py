@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2018-2020 The Bitcoin Core developers
+# Copyright (c) 2018-2020 The Pexa Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Backwards compatibility functional test
@@ -22,18 +22,18 @@ needs an older patch version.
 import os
 import shutil
 
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import PexaTestFramework
 from test_framework.descriptors import descsum_create
 
 from test_framework.util import (
-    adjust_bitcoin_conf_for_pre_17,
+    adjust_pexa_conf_for_pre_17,
     assert_equal,
     sync_blocks,
     sync_mempools,
 )
 
 
-class BackwardsCompatibilityTest(BitcoinTestFramework):
+class BackwardsCompatibilityTest(PexaTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 6
@@ -60,8 +60,8 @@ class BackwardsCompatibilityTest(BitcoinTestFramework):
             170100,
             160300,
         ])
-        # adapt bitcoin.conf, because older bitcoind's don't recognize config sections
-        adjust_bitcoin_conf_for_pre_17(self.nodes[5].bitcoinconf)
+        # adapt pexa.conf, because older pexad's don't recognize config sections
+        adjust_pexa_conf_for_pre_17(self.nodes[5].pexaconf)
 
         self.start_nodes()
 
@@ -305,14 +305,14 @@ class BackwardsCompatibilityTest(BitcoinTestFramework):
         assert info['private_keys_enabled'] == False
         assert info['keypoolsize'] == 0
 
-        # RPC loadwallet failure causes bitcoind to exit, in addition to the RPC
+        # RPC loadwallet failure causes pexad to exit, in addition to the RPC
         # call failure, so the following test won't work:
         # assert_raises_rpc_error(-4, "Wallet loading failed.", node_v17.loadwallet, 'w3_v18')
 
         # Instead, we stop node and try to launch it with the wallet:
         self.stop_node(4)
-        node_v17.assert_start_raises_init_error(["-wallet=w3_v18"], "Error: Error loading w3_v18: Wallet requires newer version of Bitcoin Core")
-        node_v17.assert_start_raises_init_error(["-wallet=w3"], "Error: Error loading w3: Wallet requires newer version of Bitcoin Core")
+        node_v17.assert_start_raises_init_error(["-wallet=w3_v18"], "Error: Error loading w3_v18: Wallet requires newer version of Pexa Core")
+        node_v17.assert_start_raises_init_error(["-wallet=w3"], "Error: Error loading w3: Wallet requires newer version of Pexa Core")
         self.start_node(4)
 
         # Open most recent wallet in v0.16 (no loadwallet RPC)
@@ -331,7 +331,7 @@ class BackwardsCompatibilityTest(BitcoinTestFramework):
         hdkeypath = v17_info["hdkeypath"]
         pubkey = v17_info["pubkey"]
 
-        # Copy the 0.17 wallet to the last Bitcoin Core version and open it:
+        # Copy the 0.17 wallet to the last Pexa Core version and open it:
         node_v17.unloadwallet("u1_v17")
         shutil.copytree(
             os.path.join(node_v17_wallets_dir, "u1_v17"),
@@ -355,7 +355,7 @@ class BackwardsCompatibilityTest(BitcoinTestFramework):
         info = wallet.getaddressinfo(address)
         assert_equal(info, v17_info)
 
-        # Copy the 0.19 wallet to the last Bitcoin Core version and open it:
+        # Copy the 0.19 wallet to the last Pexa Core version and open it:
         shutil.copytree(
             os.path.join(node_v19_wallets_dir, "w1_v19"),
             os.path.join(node_master_wallets_dir, "w1_v19")

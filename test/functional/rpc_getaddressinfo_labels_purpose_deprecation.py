@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2020 The Bitcoin Core developers
+# Copyright (c) 2020 The Pexa Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """
@@ -8,12 +8,12 @@ containing a JSON object of `name` and purpose` key-value pairs. It now
 returns an array containing only the label name.
 
 """
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import PexaTestFramework
 from test_framework.util import assert_equal
 
 LABELS_TO_TEST = frozenset({"" , "New 𝅘𝅥𝅯 $<#>&!рыба Label"})
 
-class GetAddressInfoLabelsPurposeDeprecationTest(BitcoinTestFramework):
+class GetAddressInfoLabelsPurposeDeprecationTest(PexaTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.setup_clean_chain = False

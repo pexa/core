@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Bitcoin Core developers
+// Copyright (c) 2009-2020 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_WALLET_WALLETDB_H
-#define BITCOIN_WALLET_WALLETDB_H
+#ifndef PEXA_WALLET_WALLETDB_H
+#define PEXA_WALLET_WALLETDB_H
 
 #include <amount.h>
 #include <script/sign.h>
@@ -289,4 +289,4 @@ void MaybeCompactWalletDB();
 //! Unserialize a given Key-Value pair and load it into the wallet
 bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, std::string& strType, std::string& strErr);
 
-#endif // BITCOIN_WALLET_WALLETDB_H
+#endif // PEXA_WALLET_WALLETDB_H

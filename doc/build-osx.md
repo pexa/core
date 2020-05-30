@@ -43,17 +43,17 @@ from the root of the repository.
 
 **Note**: You only need Berkeley DB if the wallet is enabled (see [*Disable-wallet mode*](/doc/build-osx.md#disable-wallet-mode)).
 
-## Build Bitcoin Core
+## Build Pexa Core
 
-1. Clone the Bitcoin Core source code:
+1. Clone the Pexa Core source code:
     ```shell
-    git clone https://github.com/bitcoin/bitcoin
-    cd bitcoin
+    git clone https://github.com/pexa/pexa
+    cd pexa
     ```
 
-2.  Build Bitcoin Core:
+2.  Build Pexa Core:
 
-    Configure and build the headless Bitcoin Core binaries as well as the GUI (if Qt is found).
+    Configure and build the headless Pexa Core binaries as well as the GUI (if Qt is found).
 
     You can disable the GUI build by passing `--without-gui` to configure.
     ```shell
@@ -73,7 +73,7 @@ from the root of the repository.
     ```
 
 ## `disable-wallet` mode
-When the intention is to run only a P2P node without a wallet, Bitcoin Core may be
+When the intention is to run only a P2P node without a wallet, Pexa Core may be
 compiled in `disable-wallet` mode with:
 ```shell
 ./configure --disable-wallet
@@ -84,33 +84,33 @@ In this case there is no dependency on Berkeley DB 4.8.
 Mining is also possible in disable-wallet mode using the `getblocktemplate` RPC call.
 
 ## Running
-Bitcoin Core is now available at `./src/bitcoind`
+Pexa Core is now available at `./src/pexad`
 
 Before running, you may create an empty configuration file:
 ```shell
-mkdir -p "/Users/${USER}/Library/Application Support/Bitcoin"
+mkdir -p "/Users/${USER}/Library/Application Support/Pexa"
 
-touch "/Users/${USER}/Library/Application Support/Bitcoin/bitcoin.conf"
+touch "/Users/${USER}/Library/Application Support/Pexa/pexa.conf"
 
-chmod 600 "/Users/${USER}/Library/Application Support/Bitcoin/bitcoin.conf"
+chmod 600 "/Users/${USER}/Library/Application Support/Pexa/pexa.conf"
 ```
 
-The first time you run bitcoind, it will start downloading the blockchain. This process could
+The first time you run pexad, it will start downloading the blockchain. This process could
 take many hours, or even days on slower than average systems.
 
 You can monitor the download process by looking at the debug.log file:
 ```shell
-tail -f $HOME/Library/Application\ Support/Bitcoin/debug.log
+tail -f $HOME/Library/Application\ Support/Pexa/debug.log
 ```
 
 ## Other commands:
 ```shell
-./src/bitcoind -daemon      # Starts the bitcoin daemon.
-./src/bitcoin-cli --help    # Outputs a list of command-line options.
-./src/bitcoin-cli help      # Outputs a list of RPC commands when the daemon is running.
+./src/pexad -daemon      # Starts the pexa daemon.
+./src/pexa-cli --help    # Outputs a list of command-line options.
+./src/pexa-cli help      # Outputs a list of RPC commands when the daemon is running.
 ```
 
 ## Notes
 * Tested on OS X 10.12 Sierra through macOS 10.15 Catalina on 64-bit Intel
 processors only.
-* Building with downloaded Qt binaries is not officially supported. See the notes in [#7714](https://github.com/bitcoin/bitcoin/issues/7714).
+* Building with downloaded Qt binaries is not officially supported. See the notes in [#7714](https://github.com/pexa/pexa/issues/7714).

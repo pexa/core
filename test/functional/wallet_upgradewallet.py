@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2018-2020 The Bitcoin Core developers
+# Copyright (c) 2018-2020 The Pexa Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """upgradewallet RPC functional test
@@ -14,16 +14,16 @@ Only v0.15.2 and v0.16.3 are required by this test. The others are used in featu
 import os
 import shutil
 
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import PexaTestFramework
 from test_framework.util import (
-    adjust_bitcoin_conf_for_pre_17,
+    adjust_pexa_conf_for_pre_17,
     assert_equal,
     assert_greater_than,
     assert_is_hex_string,
 )
 
 
-class UpgradeWalletTest(BitcoinTestFramework):
+class UpgradeWalletTest(PexaTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 3
@@ -46,9 +46,9 @@ class UpgradeWalletTest(BitcoinTestFramework):
             160300,
             150200,
         ])
-        # adapt bitcoin.conf, because older bitcoind's don't recognize config sections
-        adjust_bitcoin_conf_for_pre_17(self.nodes[1].bitcoinconf)
-        adjust_bitcoin_conf_for_pre_17(self.nodes[2].bitcoinconf)
+        # adapt pexa.conf, because older pexad's don't recognize config sections
+        adjust_pexa_conf_for_pre_17(self.nodes[1].pexaconf)
+        adjust_pexa_conf_for_pre_17(self.nodes[2].pexaconf)
         self.start_nodes()
 
     def dumb_sync_blocks(self):
@@ -59,7 +59,7 @@ class UpgradeWalletTest(BitcoinTestFramework):
         v0.15.2 is only being used to test for version upgrade
         and master hash key presence.
         v0.16.3 is being used to test for version upgrade and balances.
-        Further info: https://github.com/bitcoin/bitcoin/pull/18774#discussion_r416967844
+        Further info: https://github.com/pexa/pexa/pull/18774#discussion_r416967844
         """
         node_from = self.nodes[0]
         v16_3_node = self.nodes[1]
@@ -94,7 +94,7 @@ class UpgradeWalletTest(BitcoinTestFramework):
         v15_2_wallet       = os.path.join(v15_2_node.datadir, "regtest/wallet.dat")
         self.stop_nodes()
 
-        # Copy the 0.16.3 wallet to the last Bitcoin Core version and open it:
+        # Copy the 0.16.3 wallet to the last Pexa Core version and open it:
         shutil.rmtree(node_master_wallet_dir)
         os.mkdir(node_master_wallet_dir)
         shutil.copy(
@@ -117,7 +117,7 @@ class UpgradeWalletTest(BitcoinTestFramework):
         assert_equal(wallet.getbalance(), v16_3_balance)
 
         self.stop_node(0)
-        # Copy the 0.15.2 wallet to the last Bitcoin Core version and open it:
+        # Copy the 0.15.2 wallet to the last Pexa Core version and open it:
         shutil.rmtree(node_master_wallet_dir)
         os.mkdir(node_master_wallet_dir)
         shutil.copy(
