@@ -120,21 +120,11 @@ unsigned int GetNextWorkRequiredPEXA(const CBlockIndex* pindexLast, const CBlock
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
-    int dgw = DarkGravityWave(pindexLast, pblock, params);
-    int btc = GetNextWorkRequiredPEXA(pindexLast, pblock, params);
-    int64_t nPrevBlockTime = (pindexLast->pprev ? pindexLast->pprev->GetBlockTime() : pindexLast->GetBlockTime());
-
     if (IsDGWActive(pindexLast->nHeight + 1)) {
-        LogPrint(BCLog::NET, "Block %s - version: %s: found next work required using DGW: [%s] (PEXA would have been [%s]\t(%+d)\t(%0.3f%%)\t(%s sec))\n",
-                 pindexLast->nHeight + 1, pblock->nVersion, dgw, btc, btc - dgw, (float)(btc - dgw) * 100.0 / (float)dgw, pindexLast->GetBlockTime() - nPrevBlockTime);
-        return dgw;
-    }
-    else {
-        LogPrint(BCLog::NET, "Block %s - version: %s: found next work required using PEXA: [%s] (DGW would have been [%s]\t(%+d)\t(%0.3f%%)\t(%s sec))\n",
-                  pindexLast->nHeight + 1, pblock->nVersion, btc, dgw, dgw - btc, (float)(dgw - btc) * 100.0 / (float)btc, pindexLast->GetBlockTime() - nPrevBlockTime);
-        return btc;
+        return DarkGravityWave(pindexLast, pblock, params);
     }
 
+    return GetNextWorkRequiredPEXA(pindexLast, pblock, params);
 }
 
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)

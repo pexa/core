@@ -1,11 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2019 The Pexa Core developers
+// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2017-2019 The Raven Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <primitives/block.h>
-
 #include <versionbits.h>
+#include <primitives/block.h>
 
 #include <algo/hash_algos.h>
 #include <chainparams.h>
@@ -13,9 +13,37 @@
 #include <util/strencodings.h>
 #include <crypto/common.h>
 
+
+static const uint32_t MAINNET_X16RV2ACTIVATIONTIME = 1568678400;
+static const uint32_t TESTNET_X16RV2ACTIVATIONTIME = 1568158500;
+static const uint32_t REGTEST_X16RV2ACTIVATIONTIME = 1568158500;
+
+BlockNetwork bNetwork = BlockNetwork();
+
+BlockNetwork::BlockNetwork()
+{
+    fOnTestnet = false;
+    fOnRegtest = false;
+}
+
+void BlockNetwork::SetNetwork(const std::string& net)
+{
+    if (net == "test") {
+        fOnTestnet = true;
+    } else if (net == "regtest") {
+        fOnRegtest = true;
+    }
+}
+
 uint256 CBlockHeader::GetHash() const
 {
-    if (nTime >= Params().X16RV2ActivationTime()) {
+    uint32_t nTimeToUse = MAINNET_X16RV2ACTIVATIONTIME;
+    if (bNetwork.fOnTestnet) {
+        nTimeToUse = TESTNET_X16RV2ACTIVATIONTIME;
+    } else if (bNetwork.fOnRegtest) {
+        nTimeToUse = REGTEST_X16RV2ACTIVATIONTIME;
+    }
+    if (nTime >= nTimeToUse) {
         return HashX16RV2(BEGIN(nVersion), END(nNonce), hashPrevBlock);
     }
 
