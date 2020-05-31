@@ -326,7 +326,7 @@ def initialize_datadir(dirname, n, chain):
     if not os.path.isdir(datadir):
         os.makedirs(datadir)
     # Translate chain name to config name
-    if chain == 'testnet3':
+    if chain == 'testnet6':
         chain_name_conf_arg = 'testnet'
         chain_name_conf_section = 'test'
     else:

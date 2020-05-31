@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2019 The Pexa Core developers
+# Copyright (c) 2014-2019 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Base class for RPC testing."""
@@ -711,6 +714,13 @@ class PexaTestFramework(metaclass=PexaTestMetaClass):
             import zmq  # noqa
         except ImportError:
             raise SkipTest("python3-zmq module not available.")
+
+    def skip_if_no_pypopminer(self):
+        """Attempt to import the pypopminer package and skip the test if the import fails."""
+        try:
+            import pypopminer  # noqa
+        except ImportError:
+            raise SkipTest("pypopminer module not available.")
 
     def skip_if_no_pexad_zmq(self):
         """Skip the running test if pexad has not been compiled with zmq support."""

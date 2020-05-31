@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2019 The Pexa Core developers
+# Copyright (c) 2014-2019 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the wallet accounts properly when there are cloned transactions with malleated scriptsigs."""
@@ -12,6 +15,7 @@ from test_framework.util import (
     disconnect_nodes,
 )
 from test_framework.messages import CTransaction, COIN
+from test_framework.payout import POW_PAYOUT
 
 class TxnMallTest(PexaTestFramework):
     def set_test_params(self):
@@ -38,8 +42,8 @@ class TxnMallTest(PexaTestFramework):
         else:
             output_type = "legacy"
 
-        # All nodes should start with 1,250 PEXA:
-        starting_balance = 1250
+        # All nodes should start with 750 PEXA:
+        starting_balance = (POW_PAYOUT*25)
         for i in range(4):
             assert_equal(self.nodes[i].getbalance(), starting_balance)
             self.nodes[i].getnewaddress()  # bug workaround, coins generated assigned to first getnewaddress!
@@ -47,11 +51,11 @@ class TxnMallTest(PexaTestFramework):
         self.nodes[0].settxfee(.001)
 
         node0_address1 = self.nodes[0].getnewaddress(address_type=output_type)
-        node0_txid1 = self.nodes[0].sendtoaddress(node0_address1, 1219)
+        node0_txid1 = self.nodes[0].sendtoaddress(node0_address1, ((POW_PAYOUT*25)-29))
         node0_tx1 = self.nodes[0].gettransaction(node0_txid1)
 
         node0_address2 = self.nodes[0].getnewaddress(address_type=output_type)
-        node0_txid2 = self.nodes[0].sendtoaddress(node0_address2, 29)
+        node0_txid2 = self.nodes[0].sendtoaddress(node0_address2, (POW_PAYOUT-21))
         node0_tx2 = self.nodes[0].gettransaction(node0_txid2)
 
         assert_equal(self.nodes[0].getbalance(),
@@ -91,11 +95,11 @@ class TxnMallTest(PexaTestFramework):
         tx1 = self.nodes[0].gettransaction(txid1)
         tx2 = self.nodes[0].gettransaction(txid2)
 
-        # Node0's balance should be starting balance, plus 50PEXA for another
+        # Node0's balance should be starting balance, plus 30 Pexa for another
         # matured block, minus tx1 and tx2 amounts, and minus transaction fees:
         expected = starting_balance + node0_tx1["fee"] + node0_tx2["fee"]
         if self.options.mine_block:
-            expected += 50
+            expected += POW_PAYOUT
         expected += tx1["amount"] + tx1["fee"]
         expected += tx2["amount"] + tx2["fee"]
         assert_equal(self.nodes[0].getbalance(), expected)
@@ -134,11 +138,11 @@ class TxnMallTest(PexaTestFramework):
         assert_equal(tx1_clone["confirmations"], 2)
         assert_equal(tx2["confirmations"], 1)
 
-        # Check node0's total balance; should be same as before the clone, + 100 PEXA for 2 matured,
+        # Check node0's total balance; should be same as before the clone, + 6 Pexa for 2 matured,
         # less possible orphaned matured subsidy
-        expected += 100
+        expected += (POW_PAYOUT * 2)
         if (self.options.mine_block):
-            expected -= 50
+            expected -= POW_PAYOUT
         assert_equal(self.nodes[0].getbalance(), expected)
 
 if __name__ == '__main__':

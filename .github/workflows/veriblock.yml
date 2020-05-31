@@ -95,10 +95,10 @@ jobs:
 #        with:
 #          name: test-suite.log
 #          path: src/test-suite.log
-#      - name: run functional tests
-#        if: always()
-#        timeout-minutes: 60
-#        run: python3 test/functional/test_runner.py --combinedlogslen=4000
+      - name: run functional tests
+        if: always()
+        timeout-minutes: 60
+        run: python3 test/functional/test_runner.py --combinedlogslen=4000
 
   x86_64-w64-mingw32:
     runs-on: ubuntu-latest
@@ -151,20 +151,19 @@ jobs:
         run: ./autogen.sh
       - name: configure
         run: CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/
-          --without-gui
           --disable-bench
           --disable-gmock
       - name: make
         run: make -j2
-#      - name: make deploy
-#        if: success()
-#        run: make deploy
-#      - name: create artifacts
-#        if: success()
-#        run: |
-#          mv ./pexa-1.6.1-win64-setup-unsigned.exe release/
-#          mv ./release pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
-#          zip -r9 pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-win64-qt.zip pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
+      - name: make deploy
+        if: success()
+        run: make deploy
+      - name: create artifacts
+        if: success()
+        run: |
+          mv ./pexa-1.6.1-win64-setup.exe release/
+          mv ./release pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
+          zip -r9 pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-win64-qt.zip pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
 #      - name: upload artifacts
 #        if: success()
 #        uses: appleboy/scp-action@master
@@ -215,9 +214,9 @@ jobs:
         run: sudo apt-get install curl librsvg2-bin libtiff-tools bsdmainutils cmake imagemagick libcap-dev libz-dev libbz2-dev python3-setuptools ccache
       - name: download and extract macos sdk
         run: |
-          wget -P depends/sdk-sources https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.14.sdk.tar.xz
+          wget -P depends/sdk-sources https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
           mkdir -p depends/SDKs
-          tar -xf depends/sdk-sources/MacOSX10.14.sdk.tar.xz -C depends/SDKs
+          tar -xf depends/sdk-sources/MacOSX10.12.sdk.tar.xz -C depends/SDKs
       - name: set variables and build dependencies for x86_64-apple-darwin16
         env:
           BUILD_TYPE: Release
@@ -228,20 +227,19 @@ jobs:
         run: ./autogen.sh
       - name: configure
         run: ./configure --prefix=${PWD}/depends/x86_64-apple-darwin16
-          --without-gui
           --disable-shared
           --disable-bench
           --disable-gmock
           --without-qtdbus
       - name: make
-        run: make -j2
-#      - name: create artifacts
-#        if: success()
-#          mv ./Pexa-Qt.app release/
-#        run: |
-#          mv ./Pexa-Core.dmg release/
-#          mv ./release pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
-#          zip -r9 pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-macos-qt.zip pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
+        run: make -j2 deploy
+      - name: create artifacts
+        if: success()
+        run: |
+          mv ./Pexa-Qt.app release/
+          mv ./Pexa-Core.dmg release/
+          mv ./release pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
+          zip -r9 pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-macos-qt.zip pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
 #      - name: upload artifacts
 #        if: success()
 #        uses: appleboy/scp-action@master
@@ -286,7 +284,9 @@ jobs:
       - name: install homebrew
         run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
       - name: install dependencies
-        run: brew install automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf python3 libevent librsvg ccache qrencode qt zeromq
+        run: |
+          brew install automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf python3 libevent librsvg ccache qrencode zeromq
+          brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/d468bb8c4f5c34b18588e5d1b955021d58e1ff57/Formula/qt.rb
       - name: install veriblock-pop-cpp
         env:
           BUILD_TYPE: Release
@@ -306,15 +306,14 @@ jobs:
         run: ./autogen.sh
       - name: configure
         run: ./configure
-          --without-gui
           --disable-bench
           --disable-gmock
       - name: make
         run: make -j2
-#      - name: run functional tests
-#        if: always()
-#        timeout-minutes: 60
-#        run: python3 test/functional/test_runner.py --combinedlogslen=4000
+      - name: run functional tests
+        if: always()
+        timeout-minutes: 60
+        run: python3 test/functional/test_runner.py --combinedlogslen=4000
 
   linux-asan:
     runs-on: ubuntu-latest

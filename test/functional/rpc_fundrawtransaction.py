@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2020 The Pexa Core developers
+# Copyright (c) 2014-2019 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the fundrawtransaction RPC."""
@@ -16,6 +19,7 @@ from test_framework.util import (
     count_bytes,
     find_vout_for_address,
 )
+from test_framework.payout import POW_PAYOUT
 
 
 def get_unspent(listunspent, amount):
@@ -97,7 +101,7 @@ class RawTransactionsTest(PexaTestFramework):
     def test_change_position(self):
         """Ensure setting changePosition in fundraw with an exact match is handled properly."""
         self.log.info("Test fundrawtxn changePosition option")
-        rawmatch = self.nodes[2].createrawtransaction([], {self.nodes[2].getnewaddress():50})
+        rawmatch = self.nodes[2].createrawtransaction([], {self.nodes[2].getnewaddress():POW_PAYOUT})
         rawmatch = self.nodes[2].fundrawtransaction(rawmatch, {"changePosition":1, "subtractFeeFromOutputs":[0]})
         assert_equal(rawmatch["changepos"], -1)
 
@@ -543,7 +547,7 @@ class RawTransactionsTest(PexaTestFramework):
         self.sync_all()
 
         # Make sure funds are received at node1.
-        assert_equal(oldBalance+Decimal('51.10000000'), self.nodes[0].getbalance())
+        assert_equal(oldBalance+Decimal(str(POW_PAYOUT + 1.1)), self.nodes[0].getbalance())
 
     def test_many_inputs_fee(self):
         """Multiple (~19) inputs tx test | Compare fee."""
@@ -598,7 +602,7 @@ class RawTransactionsTest(PexaTestFramework):
         self.nodes[1].sendrawtransaction(fundedAndSignedTx['hex'])
         self.nodes[1].generate(1)
         self.sync_all()
-        assert_equal(oldBalance+Decimal('50.19000000'), self.nodes[0].getbalance()) #0.19+block reward
+        assert_equal(oldBalance+Decimal(str(POW_PAYOUT + 0.19)), self.nodes[0].getbalance()) #0.19+block reward
 
     def test_op_return(self):
         self.log.info("Test fundrawtxn with OP_RETURN and no vin")

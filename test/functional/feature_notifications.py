@@ -5,7 +5,7 @@
 """Test the -alertnotify, -blocknotify and -walletnotify options."""
 import os
 
-from test_framework.address import ADDRESS_BCRT1_UNSPENDABLE, keyhash_to_p2pkh
+from test_framework.address import ADDRESS_XCRT1_UNSPENDABLE, keyhash_to_p2pkh
 from test_framework.test_framework import PexaTestFramework
 from test_framework.util import (
     assert_equal,
@@ -53,7 +53,7 @@ class NotificationsTest(PexaTestFramework):
     def run_test(self):
         self.log.info("test -blocknotify")
         block_count = 10
-        blocks = self.nodes[1].generatetoaddress(block_count, self.nodes[1].getnewaddress() if self.is_wallet_compiled() else ADDRESS_BCRT1_UNSPENDABLE)
+        blocks = self.nodes[1].generatetoaddress(block_count, self.nodes[1].getnewaddress() if self.is_wallet_compiled() else ADDRESS_XCRT1_UNSPENDABLE)
 
         # wait at most 10 seconds for expected number of files before reading the content
         wait_until(lambda: len(os.listdir(self.blocknotify_dir)) == block_count, timeout=10)
@@ -97,7 +97,7 @@ class NotificationsTest(PexaTestFramework):
 
             # Generate transaction on node 0, sync mempools, and check for
             # notification on node 1.
-            tx1 = self.nodes[0].sendtoaddress(address=ADDRESS_BCRT1_UNSPENDABLE, amount=1, replaceable=True)
+            tx1 = self.nodes[0].sendtoaddress(address=ADDRESS_XCRT1_UNSPENDABLE, amount=1, replaceable=True)
             assert_equal(tx1 in self.nodes[0].getrawmempool(), True)
             self.sync_mempools()
             self.expect_wallet_notify([tx1])
@@ -113,13 +113,13 @@ class NotificationsTest(PexaTestFramework):
 
             # Add bump1 transaction to new block, checking for a notification
             # and the correct number of confirmations.
-            self.nodes[0].generatetoaddress(1, ADDRESS_BCRT1_UNSPENDABLE)
+            self.nodes[0].generatetoaddress(1, ADDRESS_XCRT1_UNSPENDABLE)
             self.sync_blocks()
             self.expect_wallet_notify([bump1])
             assert_equal(self.nodes[1].gettransaction(bump1)["confirmations"], 1)
 
             # Generate a second transaction to be bumped.
-            tx2 = self.nodes[0].sendtoaddress(address=ADDRESS_BCRT1_UNSPENDABLE, amount=1, replaceable=True)
+            tx2 = self.nodes[0].sendtoaddress(address=ADDRESS_XCRT1_UNSPENDABLE, amount=1, replaceable=True)
             assert_equal(tx2 in self.nodes[0].getrawmempool(), True)
             self.sync_mempools()
             self.expect_wallet_notify([tx2])
@@ -129,7 +129,7 @@ class NotificationsTest(PexaTestFramework):
             # about newly confirmed bump2 and newly conflicted tx2.
             disconnect_nodes(self.nodes[0], 1)
             bump2 = self.nodes[0].bumpfee(tx2)["txid"]
-            self.nodes[0].generatetoaddress(1, ADDRESS_BCRT1_UNSPENDABLE)
+            self.nodes[0].generatetoaddress(1, ADDRESS_XCRT1_UNSPENDABLE)
             assert_equal(self.nodes[0].gettransaction(bump2)["confirmations"], 1)
             assert_equal(tx2 in self.nodes[1].getrawmempool(), True)
             connect_nodes(self.nodes[0], 1)

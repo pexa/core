@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2019 The Pexa Core developers
+# Copyright (c) 2014-2018 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test gettxoutproof and verifytxoutproof RPCs."""
@@ -7,6 +10,7 @@
 from test_framework.messages import CMerkleBlock, FromHex, ToHex
 from test_framework.test_framework import PexaTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error, connect_nodes
+from test_framework.payout import POW_PAYOUT
 
 class MerkleBlockTest(PexaTestFramework):
     def set_test_params(self):
@@ -37,9 +41,9 @@ class MerkleBlockTest(PexaTestFramework):
         assert_equal(self.nodes[2].getbalance(), 0)
 
         node0utxos = self.nodes[0].listunspent(1)
-        tx1 = self.nodes[0].createrawtransaction([node0utxos.pop()], {self.nodes[1].getnewaddress(): 49.99})
+        tx1 = self.nodes[0].createrawtransaction([node0utxos.pop()], {self.nodes[1].getnewaddress(): (POW_PAYOUT - 0.01)})
         txid1 = self.nodes[0].sendrawtransaction(self.nodes[0].signrawtransactionwithwallet(tx1)["hex"])
-        tx2 = self.nodes[0].createrawtransaction([node0utxos.pop()], {self.nodes[1].getnewaddress(): 49.99})
+        tx2 = self.nodes[0].createrawtransaction([node0utxos.pop()], {self.nodes[1].getnewaddress(): (POW_PAYOUT - 0.01)})
         txid2 = self.nodes[0].sendrawtransaction(self.nodes[0].signrawtransactionwithwallet(tx2)["hex"])
         # This will raise an exception because the transaction is not yet in a block
         assert_raises_rpc_error(-5, "Transaction not yet in block", self.nodes[0].gettxoutproof, [txid1])

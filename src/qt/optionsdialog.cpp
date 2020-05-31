@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 The Pexa Core developers
+// Copyright (c) 2011-2020 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -116,6 +116,10 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     mapper = new QDataWidgetMapper(this);
     mapper->setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
     mapper->setOrientation(Qt::Vertical);
+
+    /* VBK */
+    QString bfiendpoint = QString::fromStdString(gArgs.GetArg("-bfiendpoint",""));
+    ui->bfiDataSourceUrls->setText(bfiendpoint);
 
     GUIUtil::ItemDelegate* delegate = new GUIUtil::ItemDelegate(mapper);
     connect(delegate, &GUIUtil::ItemDelegate::keyEscapePressed, this, &OptionsDialog::reject);

@@ -1,4 +1,8 @@
 *.tar.gz
+.vscode
+
+src/vbk/grpc_integration/*.pb.cc
+src/vbk/grpc_integration/*.pb.h
 
 *.exe
 *.pdb
@@ -147,3 +151,6 @@ dist/
 *.background.tiff
 
 .appdata
+
+pexa_state
+pexa_state_test

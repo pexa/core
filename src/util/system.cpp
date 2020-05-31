@@ -886,7 +886,7 @@ void ArgsManager::logArgsPrefix(
         }
     }
 }
-
+// TODO: Update for Pexa to remove pop config printing on init
 void ArgsManager::LogArgs() const
 {
     LOCK(cs_args);

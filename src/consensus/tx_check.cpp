@@ -6,9 +6,18 @@
 
 #include <primitives/transaction.h>
 #include <consensus/validation.h>
+#include <vbk/service_locator.hpp>
+#include <vbk/util.hpp>
+#include <vbk/pop_service.hpp>
 
 bool CheckTransaction(const CTransaction& tx, TxValidationState& state)
 {
+    // if it is pop tx, use separate validation function
+    if(VeriBlock::isPopTx(tx)) {
+        auto& util = VeriBlock::getService<VeriBlock::PopService>();
+        return util.validatePopTx(tx, state);
+    }
+
     // Basic checks that don't depend on any context
     if (tx.vin.empty())
         return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-txns-vin-empty");

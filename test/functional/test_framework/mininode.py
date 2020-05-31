@@ -2,6 +2,9 @@
 # Copyright (c) 2010 ArtForz -- public domain half-a-node
 # Copyright (c) 2012 Jeff Garzik
 # Copyright (c) 2010-2020 The Pexa Core developers
+# Copyright (c) 2010-2019 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Pexa P2P network half-a-node.
@@ -98,9 +101,9 @@ MESSAGEMAP = {
 }
 
 MAGIC_BYTES = {
-    "mainnet": b"\xf9\xbe\xb4\xd9",   # mainnet
-    "testnet3": b"\x0b\x11\x09\x07",  # testnet3
-    "regtest": b"\xfa\xbf\xb5\xda",   # regtest
+    "mainnet": b"\x50\x45\x58\x41",   # mainnet
+    "testnet6": b"\x50\x43\x54\x4e",  # testnet6
+    "regtest": b"\x50\x43\x52\x44",   # regtest
 }
 
 

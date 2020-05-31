@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2015-2019 The Pexa Core developers
+# Copyright (c) 2015-2019 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test multisig RPCs"""
@@ -118,7 +121,7 @@ class RpcCreateMultiSigTest(PexaTestFramework):
 
         height = node0.getblockchaininfo()["blocks"]
         assert 150 < height < 350
-        total = 149 * 50 + (height - 149 - 100) * 25
+        total = 149 * POW_PAYOUT + (height - 149 - 100) * (POW_PAYOUT/2)
         assert bal1 == 0
         assert bal2 == self.moved
         assert bal0 + bal1 + bal2 == total
@@ -150,7 +153,7 @@ class RpcCreateMultiSigTest(PexaTestFramework):
         mredeem = msig["redeemScript"]
         assert_equal(desc, msig['descriptor'])
         if self.output_type == 'bech32':
-            assert madd[0:4] == "bcrt"  # actually a bech32 address
+            assert madd[0:4] == "xcrt"  # actually a bech32 address
 
         # compare against addmultisigaddress
         msigw = wmulti.addmultisigaddress(self.nsigs, self.pub, None, self.output_type)

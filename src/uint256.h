@@ -102,6 +102,10 @@ public:
     {
         s.read((char*)data, sizeof(data));
     }
+
+    std::vector<uint8_t> asVector() const {
+        return std::vector<uint8_t>{begin(), end()};
+    }
 };
 
 /** 160-bit opaque blob.

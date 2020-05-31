@@ -36,6 +36,9 @@
 #include <versionbitsinfo.h>
 #include <warnings.h>
 
+#include <vbk/service_locator.hpp>
+#include <vbk/merkle.hpp>
+
 #include <memory>
 #include <stdint.h>
 
@@ -563,6 +566,7 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
                         {RPCResult::Type::NUM_TIME, "curtime", "current timestamp in " + UNIX_EPOCH_TIME},
                         {RPCResult::Type::STR, "bits", "compressed target of next block"},
                         {RPCResult::Type::NUM, "height", "The height of the next block"},
+                        {RPCResult::Type::STR, "pop_witness_commitment", "xxxx", "(string) coinbase pop witness commitment (VERIBLOCK SECURITY)"},
                     }},
                 RPCExamples{
                     HelpExampleCli("getblocktemplate", "'{\"rules\": [\"segwit\"]}'")
@@ -641,8 +645,9 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     if(!node.connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
 
-    if (node.connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0)
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, PACKAGE_NAME " is not connected!");
+    // VERIBLOCK: when node does not have other peers, this disables certain RPCs. Disable this condition for now.
+    //  if (g_rpc_node->connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0)
+    //      throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, PACKAGE_NAME " is not connected!");
 
     if (::ChainstateActive().IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, PACKAGE_NAME " is in initial sync and waiting for blocks...");
@@ -875,6 +880,28 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     if (!pblocktemplate->vchCoinbaseCommitment.empty()) {
         result.pushKV("default_witness_commitment", HexStr(pblocktemplate->vchCoinbaseCommitment.begin(), pblocktemplate->vchCoinbaseCommitment.end()));
     }
+
+    //VeriBlock Data
+    UniValue keystoneArray(UniValue::VARR);
+    VeriBlock::KeystoneArray keystones = VeriBlock::getKeystoneHashesForTheNextBlock(pindexPrev);
+    for (const auto& keystone : keystones) {
+        keystoneArray.push_back(keystone.GetHex());
+    }
+
+    CTxOut popCoinbaseCommitment = VeriBlock::addPopTransactionRootIntoCoinbaseCommitment(*pblock);
+
+    result.pushKV("keystone_hashes", keystoneArray);
+    result.pushKV("pop_witness_commitment", HexStr(popCoinbaseCommitment.scriptPubKey.begin(), popCoinbaseCommitment.scriptPubKey.end()));
+
+    UniValue popRewardsArray(UniValue::VARR);
+    VeriBlock::PoPRewards popRewards = VeriBlock::getService<VeriBlock::PopService>().getPopRewards(*pindexPrev, Params().GetConsensus());
+    for (const auto& itr : popRewards) {
+        UniValue popRewardValue(UniValue::VOBJ);
+        popRewardValue.pushKV("payout_info", HexStr(itr.first.begin(), itr.first.end()));
+        popRewardValue.pushKV("amount", itr.second);
+        popRewardsArray.push_back(popRewardValue);
+    }
+    result.pushKV("pop_rewards", popRewardsArray);
 
     return result;
 }

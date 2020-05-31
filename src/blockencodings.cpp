@@ -1,4 +1,7 @@
-// Copyright (c) 2016-2019 The Pexa Core developers
+// Copyright (c) 2016-2020 The Pexa Core developers
+// Copyright (c) 2016-2018 The Bitcoin Core developers
+// Copyright (c) 2019-2020 Xenios SEZC
+// https://www.veriblock.org
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,6 +16,9 @@
 #include <txmempool.h>
 #include <validation.h>
 #include <util/system.h>
+
+#include <vbk/config.hpp>
+#include <vbk/service_locator.hpp>
 
 #include <unordered_map>
 
@@ -49,7 +55,7 @@ uint64_t CBlockHeaderAndShortTxIDs::GetShortID(const uint256& txhash) const {
 ReadStatus PartiallyDownloadedBlock::InitData(const CBlockHeaderAndShortTxIDs& cmpctblock, const std::vector<std::pair<uint256, CTransactionRef>>& extra_txn) {
     if (cmpctblock.header.IsNull() || (cmpctblock.shorttxids.empty() && cmpctblock.prefilledtxn.empty()))
         return READ_STATUS_INVALID;
-    if (cmpctblock.shorttxids.size() + cmpctblock.prefilledtxn.size() > MAX_BLOCK_WEIGHT / MIN_SERIALIZABLE_TRANSACTION_WEIGHT)
+    if (cmpctblock.shorttxids.size() + cmpctblock.prefilledtxn.size() > MAX_BLOCK_WEIGHT / MIN_SERIALIZABLE_TRANSACTION_WEIGHT + VeriBlock::getService<VeriBlock::Config>().max_pop_tx_amount)
         return READ_STATUS_INVALID;
 
     assert(header.IsNull() && txn_available.empty());

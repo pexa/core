@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2017-2020 The Pexa Core developers
+# Copyright (c) 2017-2019 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Class for pexad node under test"""
@@ -130,22 +133,22 @@ class TestNode():
 
         self.p2ps = []
         self.timeout_factor = timeout_factor
-
+    """TODO: Update these for PEXA"""
     AddressKeyPair = collections.namedtuple('AddressKeyPair', ['address', 'key'])
     PRIV_KEYS = [
-            # address , privkey
-            AddressKeyPair('mjTkW3DjgyZck4KbiRusZsqTgaYTxdSz6z', 'cVpF924EspNh8KjYsfhgY96mmxvT6DgdWiTYMtMjuM74hJaU5psW'),
-            AddressKeyPair('msX6jQXvxiNhx3Q62PKeLPrhrqZQdSimTg', 'cUxsWyKyZ9MAQTaAhUQWJmBbSvHMwSmuv59KgxQV7oZQU3PXN3KE'),
-            AddressKeyPair('mnonCMyH9TmAsSj3M59DsbH8H63U3RKoFP', 'cTrh7dkEAeJd6b3MRX9bZK8eRmNqVCMH3LSUkE3dSFDyzjU38QxK'),
-            AddressKeyPair('mqJupas8Dt2uestQDvV2NH3RU8uZh2dqQR', 'cVuKKa7gbehEQvVq717hYcbE9Dqmq7KEBKqWgWrYBa2CKKrhtRim'),
-            AddressKeyPair('msYac7Rvd5ywm6pEmkjyxhbCDKqWsVeYws', 'cQDCBuKcjanpXDpCqacNSjYfxeQj8G6CAtH1Dsk3cXyqLNC4RPuh'),
-            AddressKeyPair('n2rnuUnwLgXqf9kk2kjvVm8R5BZK1yxQBi', 'cQakmfPSLSqKHyMFGwAqKHgWUiofJCagVGhiB4KCainaeCSxeyYq'),
-            AddressKeyPair('myzuPxRwsf3vvGzEuzPfK9Nf2RfwauwYe6', 'cQMpDLJwA8DBe9NcQbdoSb1BhmFxVjWD5gRyrLZCtpuF9Zi3a9RK'),
-            AddressKeyPair('mumwTaMtbxEPUswmLBBN3vM9oGRtGBrys8', 'cSXmRKXVcoouhNNVpcNKFfxsTsToY5pvB9DVsFksF1ENunTzRKsy'),
-            AddressKeyPair('mpV7aGShMkJCZgbW7F6iZgrvuPHjZjH9qg', 'cSoXt6tm3pqy43UMabY6eUTmR3eSUYFtB2iNQDGgb3VUnRsQys2k'),
-            AddressKeyPair('mq4fBNdckGtvY2mijd9am7DRsbRB4KjUkf', 'cN55daf1HotwBAgAKWVgDcoppmUNDtQSfb7XLutTLeAgVc3u8hik'),
-            AddressKeyPair('mpFAHDjX7KregM3rVotdXzQmkbwtbQEnZ6', 'cT7qK7g1wkYEMvKowd2ZrX1E5f6JQ7TM246UfqbCiyF7kZhorpX3'),
-            AddressKeyPair('mzRe8QZMfGi58KyWCse2exxEFry2sfF2Y7', 'cPiRWE8KMjTRxH1MWkPerhfoHFn5iHPWVK5aPqjW8NxmdwenFinJ'),
+        # address , privkey
+        AddressKeyPair('mvw4FsFdvjC54pF7HPSedBs1RRvnmeD5JQ', 'cNWBFwpdVB8mSqqXjjGveanwhyjVDV7CwpzXVbvPfYqDR5As1rNc'),
+        AddressKeyPair('n3Hq4z5W3hSWf2XLbndmU2M5PUqzCmKrFC', 'cMgDc3syuNfUehUPT6W9r1H64TNt6hy3wTpJkSDDZDr5WR42rEAE'),
+        AddressKeyPair('miCeEDAYqJ9HarZ4ZF7drBY5z8oJFEpP5j', 'cNBgwXFECCgyUJAY4csgTMpQ8P9wrqnKRERdHGPvuunGn2LWmpCK'),
+        AddressKeyPair('mvsxuatgeD3VfAEjQep56bJPFtqeKSPyDW', 'cNfHw2izzS8ekhfpP6mEzo9jgZ6MHBxDBQHLWK6hnFNy2it7fGtT'),
+        AddressKeyPair('n3C5gaYRY9A8HkJBZqG18EGsgQhauQTnbX', 'cQ9DHXTEkQr8YYkNw8DgCToW875kTJkjYj3etXzxiBvhzqnCDdPo'),
+        AddressKeyPair('mgw9G4csn8RLV43pPhVBL41x8ZwhAoQKqU', 'cVQCnVLza4haoUhkPJdbtfA1KKCEDNwcS7vXwdV5VsdVHxcsaaFb'),
+        AddressKeyPair('mmn95xGnB6et1XHwjUtdpvmXd7xk3EhP8d', 'cQc9ZpduDECRoCWjzLaTE76MRouxQ7pJtR1Dpq78N2nzB69NkRUq'),
+        AddressKeyPair('mhju84h1jqvrvDJ2UGophK3VETngpSUU8D', 'cSktbg3yf74aXnKNnG1r7HU4JWxeQig36UyZYjWjWddoemJr1DEf'),
+        AddressKeyPair('n2mLhCRMf69hyf922H4miJKrmtgfGXtDrZ', 'cNoZXLge5skSHYxkYQLZLCaB3FHkgB3VKqmuZWgv2TLVQgKFcgLu'),
+        AddressKeyPair('n1xXhJ3zuxWuxecF4qyEaT1uutcdYuWezt', 'cQB7qW89w8x5QyCK9TTfBr9KmDYUMAvh8S8Ntpx6d1hwnkGR52gJ'),
+        AddressKeyPair('n3A3rbSTd4BjoRfD6ShCntUxBhicPCuK4c', 'cS83NBqqFrQr7QCEh1PsUhbDQeCvjQRrSYWd2DC7w67PTh9kkFcf'),
+        AddressKeyPair('mm3rSx55JHwvDkfFpzXHVEjhfuU9dAfmSe', 'cS46Sd6e1AjzmDFaeEQAoZRhTZB7Y5igrnkL4mg6wWSSVip7fDBs'),
     ]
 
     def get_deterministic_priv_key(self):

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2019-2020 The Pexa Core developers
+# Copyright (c) 2019 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """
@@ -24,7 +27,8 @@ from test_framework.util import (
     assert_equal,
     wait_until,
 )
-from test_framework.address import ADDRESS_BCRT1_UNSPENDABLE
+from test_framework.address import ADDRESS_XCRT1_UNSPENDABLE
+from test_framework.payout import POW_PAYOUT
 
 import time
 
@@ -93,7 +97,7 @@ class TxDownloadTest(PexaTestFramework):
                 "txid": self.nodes[0].getblock(self.nodes[0].getblockhash(1))['tx'][0],
                 "vout": 0
             }],
-            outputs={ADDRESS_BCRT1_UNSPENDABLE: 50 - 0.00025},
+            outputs={ADDRESS_XCRT1_UNSPENDABLE: POW_PAYOUT - 0.00025},
         )
         tx = self.nodes[0].signrawtransactionwithkey(
             hexstring=tx,

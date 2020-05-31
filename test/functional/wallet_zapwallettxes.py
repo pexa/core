@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2018 The Pexa Core developers
+# Copyright (c) 2014-2018 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the zapwallettxes functionality.
@@ -20,6 +23,7 @@ from test_framework.util import (
     assert_raises_rpc_error,
     wait_until,
 )
+from test_framework.payout import POW_PAYOUT
 
 class ZapWalletTXesTest (PexaTestFramework):
     def set_test_params(self):
@@ -37,13 +41,13 @@ class ZapWalletTXesTest (PexaTestFramework):
         self.sync_all()
 
         # This transaction will be confirmed
-        txid1 = self.nodes[0].sendtoaddress(self.nodes[1].getnewaddress(), 10)
+        txid1 = self.nodes[0].sendtoaddress(self.nodes[1].getnewaddress(), (POW_PAYOUT*0.2))
 
         self.nodes[0].generate(1)
         self.sync_all()
 
         # This transaction will not be confirmed
-        txid2 = self.nodes[0].sendtoaddress(self.nodes[1].getnewaddress(), 20)
+        txid2 = self.nodes[0].sendtoaddress(self.nodes[1].getnewaddress(), (POW_PAYOUT*0.4))
 
         # Confirmed and unconfirmed transactions are now in the wallet.
         assert_equal(self.nodes[0].gettransaction(txid1)['txid'], txid1)

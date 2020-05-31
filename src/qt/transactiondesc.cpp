@@ -1,10 +1,20 @@
-// Copyright (c) 2011-2019 The Pexa Core developers
+// Copyright (c) 2011-2020 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifdef HAVE_CONFIG_H
 #include <config/pexa-config.h>
 #endif
+
+// VBK
+#include <QIODevice>
+#include <QtNetwork>
+#include <QByteArray>
+#include <QEventLoop>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QNetworkAccessManager>
+// VBK
 
 #include <qt/transactiondesc.h>
 
@@ -77,6 +87,40 @@ bool GetPaymentRequestMerchant(const std::string& pr, QString& merchant)
     return false;
 }
 
+
+////////////////////////////
+// VBK
+
+QJsonObject TransactionDesc::objectFromString(const QString& in)
+{
+    QJsonObject obj;
+
+    QJsonDocument doc = QJsonDocument::fromJson(in.toUtf8());
+
+    // check validity of the document
+    if(!doc.isNull())
+    {
+        if(doc.isObject())
+        {
+            obj = doc.object();
+        }
+        else
+        {
+            qDebug() << "Document is not an object" << endl;
+        }
+    }
+    else
+    {
+        qDebug() << "Invalid JSON...\n" << in << endl;
+    }
+
+    return obj;
+}
+
+
+// VBK
+////////////////////////////
+
 QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wallet, TransactionRecord *rec, int unit)
 {
     int numBlocks;
@@ -95,7 +139,84 @@ QString TransactionDesc::toHTML(interfaces::Node& node, interfaces::Wallet& wall
     CAmount nDebit = wtx.debit;
     CAmount nNet = nCredit - nDebit;
 
+
+    // VBK -->
+
+    int spFinality = 0;
+    bool isAttackInProgress = false;
+    QString vbkMessage = "";
+    int nDepth = status.depth_in_main_chain;
+
+    try { 
+        ///////////////////////////////////////////////
+        // VBK NETWORK
+
+        std::string stdVbkEndPoint = gArgs.GetArg("-bfiendpoint", "");// read from conf.
+        
+        QString vbkEndPoint = QString::fromStdString(stdVbkEndPoint);
+        QString url = vbkEndPoint;
+        try { 
+            // if BFI end point does not contain an argument, append to end of URL.
+            if( !url.contains("%1") ) {
+                url = url + "%1";
+            }
+            url = url.arg(nDepth); // + numBlocks for live.
+        } catch(...) { }
+
+        QEventLoop loop;
+        QNetworkAccessManager nam;
+        QNetworkRequest req;
+        req.setRawHeader("Content-Type", "application/json");
+        req.setRawHeader("Accept-Encoding", "gzip, deflate");
+        req.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/json"));
+        req.setRawHeader("User-Agent", "VeriBlock AltIntegrationLib");
+        req.setUrl(QUrl(url));
+        QNetworkReply *reply = nam.get(req);
+        connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+
+        loop.exec();
+        QString dataLine = "";
+        bool err = false;
+        
+        if (reply->error()) {
+            err = true;
+            vbkMessage = "BFI not setup yet, specify -bfiendpoint=url in pexa.conf";
+        } else {
+            QByteArray buffer = reply->readAll();
+            dataLine = buffer.constData();
+        }
+        
+        // VBK NETWORK
+        ///////////////////////////////////////////////
+    
+        // VBK
+        QJsonObject o = objectFromString(dataLine.toUtf8().constData());
+
+        spFinality = o.value("spFinality").toInt();
+        isAttackInProgress = o.value("isAttackInProgress").toBool();
+        
+        // VBK LOGIC
+        if(isAttackInProgress == true ) {
+            vbkMessage = "Alternate Chain Detected, wait for Bitcoin Finality";
+        }
+        else {
+            if( !err ) { 
+                if( spFinality > 0 ) {
+                    vbkMessage = "" + QString::number(spFinality) + tr(" blocks of Bitcoin Finality") ;
+                } else if( spFinality <= 0 ) { 
+                    vbkMessage = "" + QString::number(spFinality) + tr(" blocks until Bitcoin Finality") ;
+                }
+            }
+        }
+    } catch(...) { 
+    }
+    // VBK <--
+
     strHTML += "<b>" + tr("Status") + ":</b> " + FormatTxStatus(wtx, status, inMempool, numBlocks);
+    strHTML += "<br>";
+    // VBK -->
+    strHTML += "<b>" + tr("BFI Status") + ":</b> " + vbkMessage;
+    // VBK <--
     strHTML += "<br>";
 
     strHTML += "<b>" + tr("Date") + ":</b> " + (nTime ? GUIUtil::dateTimeStr(nTime) : "") + "<br>";

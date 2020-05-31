@@ -1,4 +1,7 @@
-// Copyright (c) 2012-2019 The Pexa Core developers
+// Copyright (c) 2016-2020 The Pexa Core developers
+// Copyright (c) 2012-2018 The Bitcoin Core developers
+// Copyright (c) 2019-2020 Xenios SEZC
+// https://www.veriblock.org
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,6 +11,8 @@
 #include <logging.h>
 #include <random.h>
 #include <version.h>
+
+#include <vbk/util.hpp>
 
 bool CCoinsView::GetCoin(const COutPoint &outpoint, Coin &coin) const { return false; }
 uint256 CCoinsView::GetBestBlock() const { return uint256(); }
@@ -235,7 +240,7 @@ unsigned int CCoinsViewCache::GetCacheSize() const {
 
 bool CCoinsViewCache::HaveInputs(const CTransaction& tx) const
 {
-    if (!tx.IsCoinBase()) {
+    if (!tx.IsCoinBase() && !VeriBlock::isPopTx(tx)) {
         for (unsigned int i = 0; i < tx.vin.size(); i++) {
             if (!HaveCoin(tx.vin[i].prevout)) {
                 return false;

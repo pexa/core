@@ -7,6 +7,8 @@
 #endif
 
 #include <qt/faststart.h>
+#include <vbk/init.hpp>
+
 #include <qt/pexa.h>
 #include <qt/pexagui.h>
 
@@ -429,6 +431,7 @@ int GuiMain(int argc, char* argv[])
     util::WinCmdLineArgs winArgs;
     std::tie(argc, argv) = winArgs.get();
 #endif
+    VeriBlock::InitConfig();
     SetupEnvironment();
     util::ThreadSetInternalName("main");
 

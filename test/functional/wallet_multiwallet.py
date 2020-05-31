@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2017-2020 The Pexa Core developers
+# Copyright (c) 2017-2019 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test multiwallet.
@@ -17,6 +20,7 @@ from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
 )
+from test_framework.payout import POW_PAYOUT
 
 FEATURE_LATEST = 169900
 
@@ -136,7 +140,7 @@ class MultiWalletTest(PexaTestFramework):
         assert_equal(set(node.listwallets()), {"w4", "w5"})
         w5 = wallet("w5")
         w5_info = w5.getwalletinfo()
-        assert_equal(w5_info['immature_balance'], 50)
+        assert_equal(w5_info['immature_balance'], POW_PAYOUT)
 
         competing_wallet_dir = os.path.join(self.options.tmpdir, 'competing_walletdir')
         os.mkdir(competing_wallet_dir)
@@ -155,7 +159,7 @@ class MultiWalletTest(PexaTestFramework):
         node.generatetoaddress(nblocks=1, address=wallets[0].getnewaddress())
         for wallet_name, wallet in zip(wallet_names, wallets):
             info = wallet.getwalletinfo()
-            assert_equal(info['immature_balance'], 50 if wallet is wallets[0] else 0)
+            assert_equal(info['immature_balance'], POW_PAYOUT if wallet is wallets[0] else 0)
             assert_equal(info['walletname'], wallet_name)
 
         # accessing invalid wallet fails
@@ -166,7 +170,7 @@ class MultiWalletTest(PexaTestFramework):
 
         w1, w2, w3, w4, *_ = wallets
         node.generatetoaddress(nblocks=101, address=w1.getnewaddress())
-        assert_equal(w1.getbalance(), 100)
+        assert_equal(w1.getbalance(), (POW_PAYOUT * 2))
         assert_equal(w2.getbalance(), 0)
         assert_equal(w3.getbalance(), 0)
         assert_equal(w4.getbalance(), 0)

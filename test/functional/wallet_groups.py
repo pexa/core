@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2018-2020 The Pexa Core developers
+# Copyright (c) 2018 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test wallet group functionality."""
@@ -10,6 +13,7 @@ from test_framework.util import (
     assert_approx,
     assert_equal,
 )
+from test_framework.payout import POW_PAYOUT
 
 
 class WalletGroupTest(PexaTestFramework):
@@ -72,7 +76,7 @@ class WalletGroupTest(PexaTestFramework):
         # Fill node2's wallet with 10000 outputs corresponding to the same
         # scriptPubKey
         for i in range(5):
-            raw_tx = self.nodes[0].createrawtransaction([{"txid":"0"*64, "vout":0}], [{addr2[0]: 0.05}])
+            raw_tx = self.nodes[0].createrawtransaction([{"txid":"0"*64, "vout":0}], [{addr2[0]: (POW_PAYOUT*0.001)}])
             tx = FromHex(CTransaction(), raw_tx)
             tx.vin = []
             tx.vout = [tx.vout[0]] * 2000

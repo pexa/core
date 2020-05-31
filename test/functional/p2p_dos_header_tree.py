@@ -20,7 +20,7 @@ import os
 class RejectLowDifficultyHeadersTest(PexaTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
-        self.chain = 'testnet3'  # Use testnet chain because it has an early checkpoint
+        self.chain = 'testnet6'  # Use testnet chain because it has an early checkpoint
         self.num_nodes = 2
 
     def add_options(self, parser):
@@ -36,7 +36,7 @@ class RejectLowDifficultyHeadersTest(PexaTestFramework):
         with open(self.headers_file_path, encoding='utf-8') as headers_data:
             h_lines = [l.strip() for l in headers_data.readlines()]
 
-        # The headers data is taken from testnet3 for early blocks from genesis until the first checkpoint. There are
+        # The headers data is taken from testnet6 for early blocks from genesis until the first checkpoint. There are
         # two headers with valid POW at height 1 and 2, forking off from genesis. They are indicated by the FORK_PREFIX.
         FORK_PREFIX = 'fork:'
         self.headers = [l for l in h_lines if not l.startswith(FORK_PREFIX)]

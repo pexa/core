@@ -5,7 +5,7 @@
 """Test the ZMQ notification interface."""
 import struct
 
-from test_framework.address import ADDRESS_BCRT1_UNSPENDABLE
+from test_framework.address import ADDRESS_XCRT1_UNSPENDABLE
 from test_framework.test_framework import PexaTestFramework
 from test_framework.messages import CTransaction, hash256
 from test_framework.util import assert_equal, connect_nodes
@@ -81,7 +81,7 @@ class ZMQTest (PexaTestFramework):
 
         num_blocks = 5
         self.log.info("Generate %(n)d blocks (and %(n)d coinbase txes)" % {"n": num_blocks})
-        genhashes = self.nodes[0].generatetoaddress(num_blocks, ADDRESS_BCRT1_UNSPENDABLE)
+        genhashes = self.nodes[0].generatetoaddress(num_blocks, ADDRESS_XCRT1_UNSPENDABLE)
 
         self.sync_all()
 
@@ -144,11 +144,11 @@ class ZMQTest (PexaTestFramework):
         sleep(0.2)
 
         # Generate 1 block in nodes[0] and receive all notifications
-        self.nodes[0].generatetoaddress(1, ADDRESS_BCRT1_UNSPENDABLE)
+        self.nodes[0].generatetoaddress(1, ADDRESS_XCRT1_UNSPENDABLE)
         assert_equal(self.nodes[0].getbestblockhash(), hashblock.receive().hex())
 
         # Generate 2 blocks in nodes[1]
-        self.nodes[1].generatetoaddress(2, ADDRESS_BCRT1_UNSPENDABLE)
+        self.nodes[1].generatetoaddress(2, ADDRESS_XCRT1_UNSPENDABLE)
 
         # nodes[0] will reorg chain after connecting back nodes[1]
         connect_nodes(self.nodes[0], 1)

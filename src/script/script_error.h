@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2018 The Pexa Core developers
+// Copyright (c) 2009-2020 The Pexa Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -69,6 +69,11 @@ typedef enum ScriptError_t
     /* Constant scriptCode */
     SCRIPT_ERR_OP_CODESEPARATOR,
     SCRIPT_ERR_SIG_FINDANDDELETE,
+
+    /* VeriBlock */
+    SCRIPT_ERR_VBK_ATVFAIL,
+    SCRIPT_ERR_VBK_VTBFAIL,
+    SCRIPT_ERR_VBK_EXTRA_OPCODE,
 
     SCRIPT_ERR_ERROR_COUNT
 } ScriptError;

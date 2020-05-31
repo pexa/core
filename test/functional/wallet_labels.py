@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # Copyright (c) 2016-2020 The Pexa Core developers
+# Copyright (c) 2016-2018 The Bitcoin Core developers
+# Copyright (c) 2019-2020 Xenios SEZC
+# https://www.veriblock.org
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test label RPCs.
@@ -14,7 +17,7 @@ from collections import defaultdict
 from test_framework.test_framework import PexaTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error
 from test_framework.wallet_util import test_address
-
+from test_framework.payout import POW_PAYOUT
 
 class WalletLabelsTest(PexaTestFramework):
     def set_test_params(self):
@@ -30,13 +33,13 @@ class WalletLabelsTest(PexaTestFramework):
         assert_equal(len(node.listunspent()), 0)
 
         # Note each time we call generate, all generated coins go into
-        # the same address, so we call twice to get two addresses w/50 each
+        # the same address, so we call twice to get two addresses w/POW_PAYOUT each
         node.generatetoaddress(nblocks=1, address=node.getnewaddress(label='coinbase'))
         node.generatetoaddress(nblocks=101, address=node.getnewaddress(label='coinbase'))
-        assert_equal(node.getbalance(), 100)
+        assert_equal(node.getbalance(), (POW_PAYOUT*2))
 
         # there should be 2 address groups
-        # each with 1 address with a balance of 50 Pexas
+        # each with 1 address with a balance of POW_PAYOUT Pexas
         address_groups = node.listaddressgroupings()
         assert_equal(len(address_groups), 2)
         # the addresses aren't linked now, but will be after we send to the
@@ -45,14 +48,14 @@ class WalletLabelsTest(PexaTestFramework):
         for address_group in address_groups:
             assert_equal(len(address_group), 1)
             assert_equal(len(address_group[0]), 3)
-            assert_equal(address_group[0][1], 50)
+            assert_equal(address_group[0][1], POW_PAYOUT)
             assert_equal(address_group[0][2], 'coinbase')
             linked_addresses.add(address_group[0][0])
 
-        # send 50 from each address to a third address not in this wallet
+        # send POW_PAYOUT from each address to a third address not in this wallet
         common_address = "msf4WtN1YQKXvNtvdFYt9JBnUD2FB41kjr"
         node.sendmany(
-            amounts={common_address: 100},
+            amounts={common_address: (POW_PAYOUT * 2)},
             subtractfeefrom=[common_address],
             minconf=1,
         )
@@ -138,13 +141,13 @@ class WalletLabelsTest(PexaTestFramework):
         node.createwallet(wallet_name='watch_only', disable_private_keys=True, descriptors=False)
         wallet_watch_only = node.get_wallet_rpc('watch_only')
         BECH32_VALID = {
-            '✔️_VER15_PROG40': 'bcrt10qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqn2cjv3',
-            '✔️_VER16_PROG03': 'bcrt1sqqqqqjq8pdp',
-            '✔️_VER16_PROB02': 'bcrt1sqqqqqjq8pv',
+            '✔️_VER15_PROG40': 'xcrt10qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqn2cjv3',
+            '✔️_VER16_PROG03': 'xcrt1sqqqqqjq8pdp',
+            '✔️_VER16_PROB02': 'xcrt1sqqqqqjq8pv',
         }
         BECH32_INVALID = {
-            '❌_VER15_PROG41': 'bcrt10qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzc7xyq',
-            '❌_VER16_PROB01': 'bcrt1sqqpl9r5c',
+            '❌_VER15_PROG41': 'xcrt10qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzc7xyq',
+            '❌_VER16_PROB01': 'xcrt1sqqpl9r5c',
         }
         for l in BECH32_VALID:
             ad = BECH32_VALID[l]

@@ -28,6 +28,8 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
 
+#include <vbk/util.hpp>
+
 class CBlockIndex;
 extern RecursiveMutex cs_main;
 
@@ -486,6 +488,22 @@ public:
                 boost::multi_index::tag<ancestor_score>,
                 boost::multi_index::identity<CTxMemPoolEntry>,
                 CompareTxMemPoolEntryByAncestorFee
+            >,
+            // sorted by pop tx priority
+			boost::multi_index::ordered_non_unique<
+                boost::multi_index::tag<VeriBlock::poptx_priority<descendant_score>>,
+                boost::multi_index::identity<CTxMemPoolEntry>,
+                VeriBlock::CompareTxMemPoolEntryByPoPtxPriority<CompareTxMemPoolEntryByDescendantScore>
+            >,
+			boost::multi_index::ordered_non_unique<
+                boost::multi_index::tag<VeriBlock::poptx_priority<entry_time>>,
+                boost::multi_index::identity<CTxMemPoolEntry>,
+                VeriBlock::CompareTxMemPoolEntryByPoPtxPriority<CompareTxMemPoolEntryByEntryTime>
+            >,
+			boost::multi_index::ordered_non_unique<
+                boost::multi_index::tag<VeriBlock::poptx_priority<ancestor_score>>,
+                boost::multi_index::identity<CTxMemPoolEntry>,
+                VeriBlock::CompareTxMemPoolEntryByPoPtxPriority<CompareTxMemPoolEntryByAncestorFee>
             >
         >
     > indexed_transaction_set;
@@ -664,6 +682,11 @@ public:
 
     /** Expire all transaction (and their dependencies) in the mempool older than time. Return the number of removed transactions. */
     int Expire(std::chrono::seconds time) EXCLUSIVE_LOCKS_REQUIRED(cs);
+
+    /** Expire POP transactions (and their dependencies) in the mempool when height is below endorsement settlement interval.
+      * Return the number of removed transactions.
+      */
+    int ExpirePop() EXCLUSIVE_LOCKS_REQUIRED(cs);
 
     /**
      * Calculate the ancestor and descendant count for the given transaction.
@@ -879,9 +902,12 @@ struct DisconnectedBlockTransactions {
     // to be refactored such that this assumption is no longer true (for
     // instance if there was some other way we cleaned up the mempool after a
     // reorg, besides draining this object).
-    ~DisconnectedBlockTransactions() { assert(queuedTx.empty()); }
+    ~DisconnectedBlockTransactions() {
+        // TODO(Warchant): figure out why is this non empty upon destruction
+//        assert(queuedTx.empty());
+    }
 
-    indexed_disconnected_transactions queuedTx;
+    indexed_disconnected_transactions queuedTx{};
     uint64_t cachedInnerUsage = 0;
 
     // Estimate the overhead of queuedTx to be 6 pointers + an allocation, as

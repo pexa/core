@@ -12,6 +12,9 @@
 #include <primitives/transaction.h>
 #include <primitives/block.h>
 
+#include <vbk/util.hpp>
+#include <veriblock/validation_state.hpp>
+
 /** A "reason" why a transaction was invalid, suitable for determining whether the
   * provider of the transaction should be banned/ignored/disconnected/etc.
   */
@@ -42,6 +45,7 @@ enum class TxValidationResult {
      */
     TX_CONFLICT,
     TX_MEMPOOL_POLICY,        //!< violated mempool's fee/size/descendant/RBF/etc limits
+    TX_BAD_POP_DATA           //!< data that is stored inside pop tx is invalid
 };
 
 /** A "reason" why a block was invalid, suitable for determining whether the
@@ -121,6 +125,21 @@ public:
 
         return m_reject_reason;
     }
+
+    operator altintegration::ValidationState() {
+        altintegration::ValidationState v;
+        if(IsInvalid()) {
+            v.Invalid(m_reject_reason, m_debug_message);
+            return v;
+        }
+        if(IsError()) {
+            v.Error(m_reject_reason);
+            return v;
+        }
+
+        return v;
+
+    }
 };
 
 class TxValidationState : public ValidationState<TxValidationResult> {};
@@ -136,7 +155,15 @@ static inline int64_t GetTransactionWeight(const CTransaction& tx)
 }
 static inline int64_t GetBlockWeight(const CBlock& block)
 {
-    return ::GetSerializeSize(block, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * (WITNESS_SCALE_FACTOR - 1) + ::GetSerializeSize(block, PROTOCOL_VERSION);
+    int64_t txsPoPsize = 0;
+    for (const auto& tx : block.vtx)
+	{
+        if (VeriBlock::isPopTx(*tx)) {
+            txsPoPsize += GetTransactionWeight(*tx);
+        }
+	}
+
+    return ::GetSerializeSize(block, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * (WITNESS_SCALE_FACTOR - 1) + ::GetSerializeSize(block, PROTOCOL_VERSION) - txsPoPsize;
 }
 static inline int64_t GetTransactionInputWeight(const CTxIn& txin)
 {
