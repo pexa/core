@@ -99,7 +99,6 @@ void BlockAssembler::resetBlock()
 
     // These counters do not include coinbase tx
     nBlockTx = 0;
-    nPopTx = 0;
     nFees = 0;
 }
 
@@ -124,7 +123,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     pblocktemplate->vTxSigOpsCost.push_back(-1); // updated at end
 
     LOCK2(cs_main, m_mempool.cs);
-    auto* pindexPrev = ::ChainActive().Tip();
+    CBlockIndex* pindexPrev = ::ChainActive().Tip();
     assert(pindexPrev != nullptr);
     nHeight = pindexPrev->nHeight + 1;
 
@@ -154,7 +153,13 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
 
     int nPackagesSelected = 0;
     int nDescendantsUpdated = 0;
-    addPackageTxs<VeriBlock::poptx_priority<ancestor_score>>(nPackagesSelected, nDescendantsUpdated, *pindexPrev);
+    addPackageTxs(nPackagesSelected, nDescendantsUpdated);
+
+    // VeriBlock: add PopData into the block
+    pblock->v_popData = VeriBlock::getService<VeriBlock::PopService>().getPopData(*pindexPrev);
+    if (!pblock->v_popData.empty()) {
+        pblock->nVersion |= VeriBlock::POP_BLOCK_VERSION_BIT;
+    }
 
     int64_t nTime1 = GetTimeMicros();
 
@@ -236,9 +241,6 @@ bool BlockAssembler::TestPackageTransactions(const CTxMemPool::setEntries& packa
 
 void BlockAssembler::AddToBlock(CTxMemPool::txiter iter)
 {
-    if (VeriBlock::isPopTx(*iter->GetSharedTx())) {
-        ++nPopTx;
-    }
     pblock->vtx.emplace_back(iter->GetSharedTx());
     pblocktemplate->vTxFees.push_back(iter->GetFee());
     pblocktemplate->vTxSigOpsCost.push_back(iter->GetSigOpCost());
@@ -319,48 +321,8 @@ void BlockAssembler::SortForBlock(const CTxMemPool::setEntries& package, std::ve
 // Each time through the loop, we compare the best transaction in
 // mapModifiedTxs with the next transaction in the mempool to decide what
 // transaction package to work on next.
-template <typename MempoolComparatorTagName>
-void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpdated, CBlockIndex& prevIndex)
+void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpdated)
 {
-    auto& config = VeriBlock::getService<VeriBlock::Config>();
-    auto& pop = VeriBlock::getService<VeriBlock::PopService>();
-
-    // do a full copy of alt tree, and do stateful validation against this tree.
-    // then, discard this copy
-    altintegration::AltTree& altTree = pop.getAltTree();
-
-    // dummy pop tx containing block
-    altintegration::AltBlock dummyContainingBlock{};
-    dummyContainingBlock.hash = std::vector<uint8_t>(32, 1);
-    dummyContainingBlock.height = prevIndex.nHeight + 1;
-    dummyContainingBlock.previousBlock = prevIndex.GetBlockHash().asVector();
-    dummyContainingBlock.timestamp = pblock->GetBlockTime();
-
-    {
-        altintegration::ValidationState state;
-        bool ret = altTree.acceptBlock(dummyContainingBlock, state);
-        assert(ret);
-        (void)ret;
-    }
-
-    auto refreshDummy = [&](const std::vector<altintegration::AltPayloads>& p) {
-        auto* index = altTree.getBlockIndex(dummyContainingBlock.hash);
-        assert(index);
-        index->status = altintegration::BLOCK_VALID_TREE;
-        altTree.removePayloads(dummyContainingBlock.hash, p);
-    };
-
-    CTxMemPool::setEntries failedPopTx;
-
-    auto finalized = altintegration::Finalizer([&]() {
-        LOCK(mempool.cs);
-        // delete invalid PoP transactions
-        for (auto& tx : failedPopTx) {
-            mempool.removeRecursive(tx->GetTx(), MemPoolRemovalReason::BLOCK); // FIXME: a more appropriate removal reason
-        }
-
-        altTree.removeSubtree(dummyContainingBlock.hash);
-    });
 
     // mapModifiedTx will store sorted packages after they are modified
     // because some of their txs are already in the block
@@ -372,7 +334,7 @@ void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpda
     // and modifying them for their already included ancestors
     UpdatePackagesForAdded(inBlock, mapModifiedTx);
 
-    auto mi = mempool.mapTx.get<MempoolComparatorTagName>().begin();
+    CTxMemPool::indexed_transaction_set::index<ancestor_score>::type::iterator mi = m_mempool.mapTx.get<ancestor_score>().begin();
     CTxMemPool::txiter iter;
 
     // Limit the number of attempts to add transactions to the block when it is
@@ -381,10 +343,10 @@ void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpda
     const int64_t MAX_CONSECUTIVE_FAILURES = 1000;
     int64_t nConsecutiveFailed = 0;
 
-    while (mi != mempool.mapTx.get<MempoolComparatorTagName>().end() || !mapModifiedTx.empty()) {
+    while (mi != m_mempool.mapTx.get<ancestor_score>().end() || !mapModifiedTx.empty()) {
         // First try to find a new transaction in mapTx to evaluate.
-        if (mi != mempool.mapTx.get<MempoolComparatorTagName>().end() &&
-            SkipMapTxEntry(mempool.mapTx.project<0>(mi), mapModifiedTx, failedTx)) {
+        if (mi != m_mempool.mapTx.get<ancestor_score>().end() &&
+            SkipMapTxEntry(m_mempool.mapTx.project<0>(mi), mapModifiedTx, failedTx)) {
             ++mi;
             continue;
         }
@@ -393,15 +355,15 @@ void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpda
         // the next entry from mapTx, or the best from mapModifiedTx?
         bool fUsingModified = false;
 
-        auto modit = mapModifiedTx.get<MempoolComparatorTagName>().begin();
-        if (mi == mempool.mapTx.get<MempoolComparatorTagName>().end()) {
+        modtxscoreiter modit = mapModifiedTx.get<ancestor_score>().begin();
+        if (mi == m_mempool.mapTx.get<ancestor_score>().end()) {
             // We're out of entries in mapTx; use the entry from mapModifiedTx
             iter = modit->iter;
             fUsingModified = true;
         } else {
             // Try to compare the mapTx entry to the mapModifiedTx entry
-            iter = mempool.mapTx.project<0>(mi);
-            if (modit != mapModifiedTx.get<MempoolComparatorTagName>().end() &&
+            iter = m_mempool.mapTx.project<0>(mi);
+            if (modit != mapModifiedTx.get<ancestor_score>().end() &&
                     CompareTxMemPoolEntryByAncestorFee()(*modit, CTxMemPoolModifiedEntry(iter))) {
                 // The best entry in mapModifiedTx has higher score
                 // than the one from mapTx.
@@ -428,7 +390,7 @@ void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpda
             packageSigOpsCost = modit->nSigOpCostWithAncestors;
         }
 
-        if (packageFees < blockMinFeeRate.GetFee(packageSize) && !VeriBlock::isPopTx(*iter->GetSharedTx())) {
+        if (packageFees < blockMinFeeRate.GetFee(packageSize)) {
             // Everything else we might consider has a lower fee rate
             return;
         }
@@ -438,7 +400,7 @@ void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpda
                 // Since we always look at the best entry in mapModifiedTx,
                 // we must erase failed entries so that we can consider the
                 // next best entry on the next loop iteration
-                mapModifiedTx.get<MempoolComparatorTagName>().erase(modit);
+                mapModifiedTx.get<ancestor_score>().erase(modit);
                 failedTx.insert(iter);
             }
 
@@ -463,37 +425,10 @@ void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpda
         // Test if all tx's are Final
         if (!TestPackageTransactions(ancestors)) {
             if (fUsingModified) {
-                mapModifiedTx.get<MempoolComparatorTagName>().erase(modit);
+                mapModifiedTx.get<ancestor_score>().erase(modit);
                 failedTx.insert(iter);
             }
             continue;
-        }
-
-        if (VeriBlock::isPopTx(*iter->GetSharedTx())) {
-            // contextual PoP validation
-            assert(ancestors.size() == 1);
-            TxValidationState txstate;
-
-            if (nPopTx < config.max_pop_tx_amount) {
-                altintegration::AltPayloads p;
-                altintegration::ValidationState _state;
-                // do a stateless validation of pop payloads
-                if (!VeriBlock::parseTxPopPayloadsImpl(iter->GetTx(), chainparams.GetConsensus(), txstate, p)) {
-                    LogPrint(BCLog::POP, "VeriBlock-PoP: %s: tx %s is statelessly invalid: %s\n", __func__, iter->GetTx().GetHash().ToString(), txstate.GetRejectReason());
-                    failedTx.insert(iter);
-                    failedPopTx.insert(iter);
-                    refreshDummy({p});
-                    continue;
-                }
-                p.containingBlock = dummyContainingBlock;
-                if (!altTree.validatePayloads(p.containingBlock.hash, p, _state)) {
-                    LogPrint(BCLog::POP, "VeriBlock-PoP: %s: tx %s is statefully invalid: %s\n", __func__, iter->GetTx().GetHash().ToString(), _state.toString());
-                    failedTx.insert(iter);
-                    failedPopTx.insert(iter);
-                    refreshDummy({p});
-                    continue;
-                }
-            }
         }
 
         // This transaction will make it in; reset the failed counter.
@@ -503,10 +438,8 @@ void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpda
         std::vector<CTxMemPool::txiter> sortedEntries;
         SortForBlock(ancestors, sortedEntries);
 
-        for (size_t i = 0; i < sortedEntries.size(); ++i) {
-            if (!(nPopTx >= config.max_pop_tx_amount && VeriBlock::isPopTx(*sortedEntries[i]->GetSharedTx()))) {
-                AddToBlock(sortedEntries[i]);
-            }
+        for (size_t i=0; i<sortedEntries.size(); ++i) {
+            AddToBlock(sortedEntries[i]);
             // Erase from the modified set, if present
             mapModifiedTx.erase(sortedEntries[i]);
         }
@@ -517,8 +450,6 @@ void BlockAssembler::addPackageTxs(int &nPackagesSelected, int &nDescendantsUpda
         nDescendantsUpdated += UpdatePackagesForAdded(ancestors, mapModifiedTx);
     }
 }
-
-template void BlockAssembler::addPackageTxs<ancestor_score>(int& nPackagesSelected, int& nDescendantsUpdated, CBlockIndex& prevIndex);
 
 void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned int& nExtraNonce)
 {

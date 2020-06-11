@@ -5,9 +5,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <bootstraps.h>
 #include <chain.h>
-#include <test/util/setup_common.h>
 #include <validation.h>
 #include <vbk/init.hpp>
 #include <vbk/test/util/e2e_fixture.hpp>
@@ -32,8 +30,7 @@ BOOST_FIXTURE_TEST_CASE(ValidBlockIsAccepted, E2eFixture)
 
     // endorse tip
     CBlock block = endorseAltBlockAndMine(tip->GetBlockHash(), 10);
-    BOOST_REQUIRE(block.vtx.size() == 2);
-
+    BOOST_CHECK(block.v_popData.size() != 0);
     {
         BOOST_REQUIRE(ChainActive().Tip()->GetBlockHash() == block.GetHash());
         auto btc = pop->getLastKnownBTCBlocks(1)[0];
@@ -44,6 +41,7 @@ BOOST_FIXTURE_TEST_CASE(ValidBlockIsAccepted, E2eFixture)
 
     // endorse another tip
     block = endorseAltBlockAndMine(tip->GetBlockHash(), 1);
+    BOOST_CHECK(block.v_popData.size() != 0);
     auto lastHash = ChainActive().Tip()->GetBlockHash();
     {
         BOOST_REQUIRE(lastHash == block.GetHash());
@@ -58,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(ValidBlockIsAccepted, E2eFixture)
 
     // endorse block that is not on main chain
     block = endorseAltBlockAndMine(fork1tip.GetHash(), 1);
-    BOOST_CHECK(ChainActive().Tip()->GetBlockHash() == lastHash);
+    BOOST_CHECK(block.v_popData.size() == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

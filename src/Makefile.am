@@ -113,7 +113,8 @@ VBK_H = \
   vbk/merkle.hpp \
   vbk/genesis.hpp \
   vbk/altchainparam.hpp \
-  vbk/util.hpp
+  vbk/util.hpp \
+  vbk/adaptors/univalue_json.hpp
 ### VeriBlock section end
 
 .PHONY: FORCE check-symbols check-security

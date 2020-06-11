@@ -18,6 +18,9 @@ src/test/fuzz
 src/test/test_pexa
 src/qt/test/test_pexa-qt
 
+# functional tests
+test/functional/temp
+
 # autoreconf
 Makefile.in
 aclocal.m4
