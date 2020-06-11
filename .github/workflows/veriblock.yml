@@ -3,11 +3,11 @@ name: CI (veriblock)
 on:
   push:
     branches:
-      - veriblock
+      - veriblock*
 
   pull_request:
     branches:
-      - veriblock
+      - veriblock*
 
 jobs:
   linux-native:
