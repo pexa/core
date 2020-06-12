@@ -214,9 +214,9 @@ jobs:
         run: sudo apt-get install curl librsvg2-bin libtiff-tools bsdmainutils cmake imagemagick libcap-dev libz-dev libbz2-dev python3-setuptools ccache
       - name: download and extract macos sdk
         run: |
-          wget -P depends/sdk-sources https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
+          wget -P depends/sdk-sources https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.14.sdk.tar.xz
           mkdir -p depends/SDKs
-          tar -xf depends/sdk-sources/MacOSX10.12.sdk.tar.xz -C depends/SDKs
+          tar -xf depends/sdk-sources/MacOSX10.14.sdk.tar.xz -C depends/SDKs
       - name: set variables and build dependencies for x86_64-apple-darwin16
         env:
           BUILD_TYPE: Release
