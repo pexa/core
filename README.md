@@ -1,5 +1,6 @@
 Pexa Core integration/staging tree
 =====================================
+![.github/workflows/ci.yml](https://github.com/VeriBlock/pop-pexa/workflows/.github/workflows/ci.yml/badge.svg?branch=master)
 
 https://pexacore.org
 
