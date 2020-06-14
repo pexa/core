@@ -80,7 +80,7 @@ Build requirements:
 
 Now, you can either build from self-compiled [depends](/depends/README.md) or install the required dependencies:
 
-    sudo apt-get install libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev
+    sudo apt-get install libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev libarchive-devel
 
 BerkeleyDB is required for the wallet.
 
@@ -110,7 +110,7 @@ To build without GUI pass `--without-gui`.
 
 To build with Qt 5 you need the following:
 
-    sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools
+    sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools el
 
 libqrencode (optional) can be installed with:
 
@@ -138,7 +138,7 @@ ZMQ dependencies (provides ZMQ API):
 
 To build with Qt 5 you need the following:
 
-    sudo dnf install qt5-qttools-devel qt5-qtbase-devel
+    sudo dnf install qt5-qttools-devel qt5-qtbase-devel libarchive-devel
 
 libqrencode (optional) can be installed with:
 
