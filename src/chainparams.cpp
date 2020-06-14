@@ -165,6 +165,12 @@ public:
         nDGWActivationBlock = 12000;
         nAssetsDeactivationBlock = 508000;
 
+        #ifndef WIN32
+        snapshotUrl = "https://snapshots.pexaproject.com/mainnet/current";
+        #else
+        snapshotUrl = "http://snapshots.pexaproject.com/mainnet/current";
+        #endif // WIN 32
+
         /** PEXA End **/
     }
 };
@@ -254,6 +260,13 @@ public:
         // DGW Activation
         nDGWActivationBlock = 1;
         nAssetsDeactivationBlock = 0;
+
+        #ifndef WIN32
+        snapshotUrl = "https://snapshots.pexaproject.com/testnet/current";
+        #else
+        snapshotUrl = "http://snapshots.pexaproject.com/testnet/current";
+        #endif // WIN 32
+
         /** PEXA End **/
     }
 };

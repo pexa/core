@@ -6,6 +6,7 @@
 #include <config/pexa-config.h>
 #endif
 
+#include <qt/faststart.h>
 #include <qt/pexa.h>
 #include <qt/pexagui.h>
 
@@ -536,6 +537,9 @@ int GuiMain(int argc, char* argv[])
     QApplication::setApplicationName(networkStyle->getAppName());
     // Re-initialize translations after changing application name (language in network-specific settings can be different)
     initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
+
+    if (!FastStart::DoDownloadSnapshot())
+        return EXIT_SUCCESS;
 
 #ifdef ENABLE_WALLET
     /// 8. URI IPC sending
