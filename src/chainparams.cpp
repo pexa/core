@@ -64,6 +64,7 @@ class CMainParams : public CChainParams {
 public:
     CMainParams() {
         strNetworkID = CBaseChainParams::MAIN;
+        snapshotUrl = "https://snapshots.pexaproject.com/mainnet/current";
         consensus.nSubsidyHalvingInterval = 1712290;
         consensus.BIP16Exception = uint256S("0x000000b3f4b347d4a1fb2f2a8f42d5fc33094a49858608e511c0d45f51628b85");
         consensus.BIP34Height = 0;

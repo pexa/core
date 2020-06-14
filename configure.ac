@@ -638,12 +638,17 @@ case $host in
 
          bdb_prefix=$($BREW --prefix berkeley-db4 2>/dev/null)
          qt5_prefix=$($BREW --prefix qt5 2>/dev/null)
+         libarchive_prefix=$($BREW --prefix libarchive 2>/dev/null)
          if test x$bdb_prefix != x; then
            CPPFLAGS="$CPPFLAGS -I$bdb_prefix/include"
            LIBS="$LIBS -L$bdb_prefix/lib"
          fi
          if test x$qt5_prefix != x; then
            PKG_CONFIG_PATH="$qt5_prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
+           export PKG_CONFIG_PATH
+         fi
+         if test x$libarchive_prefix != x; then
+           PKG_CONFIG_PATH="$libarchive_prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
            export PKG_CONFIG_PATH
          fi
        fi
@@ -1316,6 +1321,10 @@ if test x$use_pkgconfig = xyes; then
         fi
       fi
 
+      if test x$pexa_enable_qt != xno; then
+        PEXA_QT_CHECK([PKG_CHECK_MODULES([ARCHIVE], [libarchive], [have_libarchive=yes], [have_libarchive=no])])
+      fi
+
       if test "x$use_zmq" = "xyes"; then
         PKG_CHECK_MODULES([ZMQ],[libzmq >= 4],
           [AC_DEFINE([ENABLE_ZMQ],[1],[Define to 1 to enable ZMQ functions])],
@@ -1363,6 +1372,12 @@ else
   if test x$use_qr != xno; then
     PEXA_QT_CHECK([AC_CHECK_LIB([qrencode], [main],[QR_LIBS=-lqrencode], [have_qrencode=no])])
     PEXA_QT_CHECK([AC_CHECK_HEADER([qrencode.h],, have_qrencode=no)])
+  fi
+
+  if test x$pexa_enable_qt != xno; then
+    PEXA_QT_CHECK([AC_CHECK_LIB([archive], [main],[ARCHIVE_LIBS=-larchive], [have_libarchive=no])])
+    PEXA_QT_CHECK([AC_CHECK_HEADER([archive.h],, have_libarchive=no)])
+    PEXA_QT_CHECK([AC_CHECK_HEADER([archive_entry.h],, have_libarchive=no)])
   fi
 fi
 
@@ -1567,6 +1582,10 @@ if test x$pexa_enable_qt != xno; then
     AC_MSG_WARN("xgettext is required to update qt translations")
   fi
 
+  if test x$have_libarchive = xno; then
+    AC_MSG_ERROR("libarchive not found")
+  fi
+
   AC_MSG_CHECKING([whether to build test_pexa-qt])
   if test x$use_gui_tests$pexa_enable_qt_test = xyesyes; then
     AC_MSG_RESULT([yes])
@@ -1678,6 +1697,7 @@ AC_SUBST(EVENT_LIBS)
 AC_SUBST(EVENT_PTHREADS_LIBS)
 AC_SUBST(ZMQ_LIBS)
 AC_SUBST(QR_LIBS)
+AC_SUBST(ARCHIVE_LIBS)
 AC_SUBST(HAVE_GMTIME_R)
 AC_SUBST(HAVE_FDATASYNC)
 AC_SUBST(HAVE_FULLFSYNC)
