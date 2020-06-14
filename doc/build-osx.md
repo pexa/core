@@ -22,6 +22,10 @@ Then install [Homebrew](https://brew.sh).
 brew install automake berkeley-db4 libtool boost miniupnpc pkg-config python qt libevent qrencode
 ```
 
+If you want to build with Pexa-Qt GUI app, you need additional libraries:
+
+    brew install qt qrencode libarchive
+
 If you run into issues, check [Homebrew's troubleshooting page](https://docs.brew.sh/Troubleshooting).
 See [dependencies.md](dependencies.md) for a complete overview.
 
