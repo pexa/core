@@ -62,12 +62,13 @@ jobs:
       - name: create artifacts
         if: success()
         run: |
+          chmod +x ./release/pexa*
           mv ./release Pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
       - name: upload artifacts
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: Linux x64
+          name: pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-x86_64-linux-gnu
           path: Pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
 
   x86_64-w64-mingw32:
@@ -133,13 +134,13 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: Windows x64
+          name: pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-win64
           path: Pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
       - name: upload pexa-${{ steps.extract_branch.outputs.version }}-win64-setup.exe
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: Windows x64 Setup
+          name: pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-win64-setup
           path: pexa-${{ steps.extract_branch.outputs.version }}-win64-setup.exe
 
   x86_64-apple-darwin16:
