@@ -120,6 +120,16 @@ MESSAGEMAP = {
     b"gVBK": msg_get_vbk,
 }
 
+# Edit these parameters to match src/chainparams.cpp
+VBK_ALPHA = 0x50
+VBK_BETA  = 0xa0
+VBK_NETWORK = (VBK_BETA + 0x1)
+
+
+def calculate_network_magic(index):
+    return bytes([index, index, index, index + VBK_NETWORK])
+
+
 MAGIC_BYTES = {
     "mainnet": b"\x50\x45\x58\x41",   # mainnet
     "testnet6": b"\x50\x43\x54\x4e",  # testnet6
