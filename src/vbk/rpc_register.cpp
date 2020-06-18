@@ -26,6 +26,7 @@
 #include "vbk/adaptors/univalue_json.hpp"
 #include "vbk/config.hpp"
 #include "veriblock/entities/test_case_entity.hpp"
+#include "veriblock/mempool_result.hpp"
 
 namespace VeriBlock {
 
@@ -81,15 +82,14 @@ void SaveState(std::string file_name)
 
     for (const auto& index : block_index) {
         auto alt_block = blockToAltBlock(*index);
-        std::vector<altintegration::AltPayloads> payloads;
+        altintegration::PopData popData;
         if (index->pprev) {
             CBlock block;
             if (ReadBlockFromDisk(block, index, Params().GetConsensus())) {
-                bool res = popDataToPayloads(block, *index->pprev, state, payloads);
-                assert(res);
+                popData = block.popData;
             }
         }
-        pexa_state.alt_tree.push_back(std::make_pair(alt_block, payloads));
+        pexa_state.alt_tree.push_back(std::make_pair(alt_block, popData));
     }
 
     std::ofstream file(file_name, std::ios::binary);
@@ -180,63 +180,60 @@ UniValue getpopdata(const JSONRPCRequest& request)
     return result;
 }
 
-UniValue submitpop(const JSONRPCRequest& request)
+template <typename pop_t>
+std::vector<pop_t> parsePayloads(const UniValue& array)
 {
-    if (request.fHelp || request.params.size() > 2)
-        throw std::runtime_error(
-            "submitpop [vtbs] (atv)\n"
-            "\nCreates and submits a PoP transaction constructed from the provided ATV and VTBs.\n"
-            "\nArguments:\n"
-            "1. atv       (string, required) Hex-encoded ATV record.\n"
-            "2. vtbs      (array, required) Array of hex-encoded VTB records.\n"
-            "\nResult:\n"
-            "             (string) Transaction hash\n"
-            "\nExamples:\n" +
-            HelpExampleCli("submitpop", "ATV_HEX [VTB_HEX VTB_HEX]") + HelpExampleRpc("submitpop", "ATV_HEX [VTB_HEX, VTB_HEX]"));
-
-    RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VARR});
-
-    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    if (!wallet) return NullUniValue;
-    wallet->BlockUntilSyncedToCurrentChain();
-
-    CScript script;
-
-    const UniValue& vtb_array = request.params[1].get_array();
-    LogPrint(BCLog::POP, "VeriBlock-PoP: submitpop RPC called with 1 ATV and %d VTBs\n", vtb_array.size());
-    std::vector<altintegration::VTB> vtbs;
-    for (uint32_t idx = 0u, size = vtb_array.size(); idx < size; ++idx) {
-        auto& vtbhex = vtb_array[idx];
+    std::vector<pop_t> payloads;
+    LogPrint(BCLog::POP, "VeriBlock-PoP: submitpop RPC called with %s, amount %d \n", pop_t::name(), array.size());
+    for (uint32_t idx = 0u, size = array.size(); idx < size; ++idx) {
+        auto& vtbhex = array[idx];
         auto vtb_bytes = ParseHexV(vtbhex, "vtb[" + std::to_string(idx) + "]");
-        vtbs.push_back(altintegration::VTB::fromVbkEncoding(vtb_bytes));
+        altintegration::ReadStream stream(vtb_bytes);
+        payloads.push_back(pop_t::fromVbkEncoding(stream));
     }
 
-    auto& atvhex = request.params[0];
-    auto atv_bytes = ParseHexV(atvhex, "atv");
+    return payloads;
+}
+
+UniValue submitpop(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() > 3)
+        throw std::runtime_error(
+            "submitpop [vbk_blocks] [vtbs] [atvs]\n"
+            "\nCreates and submits a PoP transaction constructed from the provided ATV and VTBs.\n"
+            "\nArguments:\n"
+            "1. vbk_blocks      (array, required) Array of hex-encoded VbkBlocks records.\n"
+            "2. vtbs      (array, required) Array of hex-encoded VTB records.\n"
+            "3. atvs      (array, required) Array of hex-encoded ATV records.\n"
+            "\nResult:\n"
+            "             (string) MempoolResult\n"
+            "\nExamples:\n" +
+            HelpExampleCli("submitpop", " [VBK_HEX VBK_HEX] [VTB_HEX VTB_HEX] [ATV_HEX ATV_HEX]") + HelpExampleRpc("submitpop", "[VBK_HEX] [] [ATV_HEX ATV_HEX]"));
+
+    RPCTypeCheck(request.params, {UniValue::VARR, UniValue::VARR, UniValue::VARR});
+
+
+    altintegration::PopData popData;
+    popData.context = parsePayloads<altintegration::VbkBlock>(request.params[0].get_array());
+    popData.vtbs = parsePayloads<altintegration::VTB>(request.params[1].get_array());
+    popData.atvs = parsePayloads<altintegration::ATV>(request.params[2].get_array());
 
     auto& pop_service = VeriBlock::getService<VeriBlock::PopService>();
     auto& pop_mempool = pop_service.getMemPool();
+    auto& alt_tree = pop_service.getAltTree();
 
     {
         LOCK(cs_main);
-        altintegration::ValidationState state;
-        altintegration::ATV atv = altintegration::ATV::fromVbkEncoding(atv_bytes);
-        if (!pop_mempool.submitATV({atv}, state)) {
-            LogPrint(BCLog::POP, "VeriBlock-PoP: %s ", state.GetPath());
-            return "ivalid ATV";
-        }
-        if (!pop_mempool.submitVTB(vtbs, state)) {
-            LogPrint(BCLog::POP, "VeriBlock-PoP: %s ", state.GetPath());
-            return "invalid oone of the VTB";
-        }
+        altintegration::MempoolResult result = pop_mempool.submitAll(popData, alt_tree);
 
         const CNetMsgMaker msgMaker(PROTOCOL_VERSION);
-        NodeContext& node = EnsureNodeContext(request.context);
-        VeriBlock::p2p::sendPopData<altintegration::ATV>(node.connman.get(), msgMaker, {atv});
-        VeriBlock::p2p::sendPopData<altintegration::VTB>(node.connman.get(), msgMaker, vtbs);
-    }
 
-    return "successful added";
+        NodeContext& node = EnsureNodeContext(request.context);
+        VeriBlock::p2p::sendPopData<altintegration::ATV>(node->connman.get(), msgMaker, popData.atvs);
+        VeriBlock::p2p::sendPopData<altintegration::VTB>(node->connman.get(), msgMaker, popData.vtbs);
+
+        return altintegration::ToJSON<UniValue>(result);
+    }
 }
 
 UniValue debugpop(const JSONRPCRequest& request)
@@ -595,7 +592,16 @@ UniValue getrawpayload(const JSONRPCRequest& request, const std::string& name)
     }
 
     UniValue result(UniValue::VOBJ);
-    if (blockindex) result.pushKV("in_active_chain", in_active_chain);
+    if (blockindex) {
+        result.pushKV("in_active_chain", in_active_chain);
+        result.pushKV("blockheight", blockindex->nHeight);
+        if (::ChainActive().Contains(blockindex)) {
+            result.pushKV("confirmations", 1 + ::ChainActive().Height() - blockindex->nHeight);
+            result.pushKV("blocktime", blockindex->GetBlockTime());
+        } else {
+            result.pushKV("confirmations", 0);
+        }
+    }
 
     result.pushKV(name, altintegration::ToJSON<UniValue>(out));
     result.pushKV("blockhash", hash_block.GetHex());

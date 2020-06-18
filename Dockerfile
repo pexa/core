@@ -42,6 +42,9 @@ RUN apk --no-cache add libtool
 RUN apk --no-cache add linux-headers
 RUN apk --no-cache add protobuf-dev
 RUN apk --no-cache add zeromq-dev
+RUN apk --no-cache add cmake
+RUN apk --no-cache add git
+
 RUN set -ex \
   && for key in \
     90C8019E36C2E964 \
@@ -93,7 +96,8 @@ RUN apk --no-cache add \
   libevent \
   libressl \
   libzmq \
-  su-exec
+  su-exec \
+  git
 
 ENV DATA_DIR=/home/pexa/.pexa
 ENV PEXA_VERSION=1.7.0

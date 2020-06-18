@@ -54,7 +54,7 @@ public:
     uint256 blockhash;
     std::vector<CTransactionRef> txn;
     // VeriBlock data
-    std::vector<altintegration::PopData> v_popData;
+    altintegration::PopData popData;
 
     BlockTransactions() {}
     explicit BlockTransactions(const BlockTransactionsRequest& req) :
@@ -63,6 +63,21 @@ public:
     SERIALIZE_METHODS(BlockTransactions, obj)
     {
         READWRITE(obj.blockhash, Using<VectorFormatter<TransactionCompression>>(obj.txn));
+        uint64_t txn_size = (uint64_t)obj.txn.size();
+        READWRITE(COMPACTSIZE(txn_size));
+        if (ser_action.ForRead()) {
+            size_t i = 0;
+            while (obj.txn.size() < txn_size) {
+                obj.txn.resize(std::min((uint64_t)(1000 + obj.txn.size()), txn_size));
+                for (; i < obj.txn.size(); i++)
+                    READWRITE(TransactionCompressor(obj.txn[i]));
+            }
+        } else {
+            for (size_t i = 0; i < obj.txn.size(); i++)
+                READWRITE(TransactionCompressor(obj.txn[i]));
+        }
+        // VeriBlock data
+        READWRITE(obj.popData);
     }
 };
 
@@ -103,7 +118,7 @@ public:
 
     CBlockHeader header;
     // VeriBlock data
-    std::vector<altintegration::PopData> v_popData;
+    altintegration::PopData popData;
 
     // Dummy for deserialization
     CBlockHeaderAndShortTxIDs() {}
@@ -125,7 +140,7 @@ public:
         }
 
         if (obj.header.nVersion & VeriBlock::POP_BLOCK_VERSION_BIT) {
-            READWRITE(obj.v_popData);
+            READWRITE(obj.popData);
         }
 
     }
@@ -147,7 +162,7 @@ public:
     ReadStatus InitData(const CBlockHeaderAndShortTxIDs& cmpctblock, const std::vector<std::pair<uint256, CTransactionRef>>& extra_txn);
     bool IsTxAvailable(size_t index) const;
     ReadStatus FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing);
-    ReadStatus FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing, const std::vector<altintegration::PopData>& v_popData);
+    ReadStatus FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing, const altintegration::PopData& popData);
 };
 
 #endif // PEXA_BLOCKENCODINGS_H

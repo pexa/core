@@ -16,6 +16,7 @@
 #include <vbk/test/util/mock.hpp>
 #include <vbk/test/util/util.hpp>
 
+#include <vbk/pop_service_impl.hpp>
 #include <vbk/test/util/e2e_fixture.hpp>
 
 #include <string>
@@ -77,7 +78,7 @@ static altintegration::PopData generateRandPopData()
 
 
     altintegration::PopData popData;
-    popData.atv = atv;
+    popData.atvs = {atv};
     popData.vtbs = {vtb, vtb, vtb};
 
     return popData;
@@ -105,7 +106,7 @@ BOOST_AUTO_TEST_CASE(GetBlockWeight_test)
     BOOST_CHECK(popDataWeight > 0);
 
     // put PopData into block
-    block.v_popData = {popData, popData};
+    block.popData = popData;
 
     int64_t new_block_weight = GetBlockWeight(block);
     BOOST_CHECK_EQUAL(new_block_weight, expected_block_weight);
@@ -124,7 +125,7 @@ BOOST_AUTO_TEST_CASE(block_serialization_test)
 
     altintegration::PopData popData = generateRandPopData();
 
-    block.v_popData = {popData, popData};
+    block.popData = popData;
 
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     BOOST_CHECK(stream.size() == 0);
@@ -135,28 +136,25 @@ BOOST_AUTO_TEST_CASE(block_serialization_test)
     stream >> decoded_block;
 
     BOOST_CHECK(decoded_block.GetHash() == block.GetHash());
-    BOOST_CHECK(decoded_block.v_popData[0] == block.v_popData[0]);
-    BOOST_CHECK(decoded_block.v_popData[1] == block.v_popData[1]);
+    BOOST_CHECK(decoded_block.popData == block.popData);
 }
 
-BOOST_AUTO_TEST_CASE(block_network_passing_test) {
+BOOST_AUTO_TEST_CASE(block_network_passing_test)
+{
+    // Create random block
+    CBlock block;
+    block.hashMerkleRoot.SetNull();
+    block.hashPrevBlock.SetNull();
+    block.nBits = 10000;
+    block.nNonce = 10000;
+    block.nTime = 10000;
+    block.nVersion = 1 | VeriBlock::POP_BLOCK_VERSION_BIT;
 
-        // Create random block
-        CBlock block;
-        block.hashMerkleRoot.SetNull();
-        block.hashPrevBlock.SetNull();
-        block.nBits = 10000;
-        block.nNonce = 10000;
-        block.nTime = 10000;
-        block.nVersion = 1 | VeriBlock::POP_BLOCK_VERSION_BIT;
+    altintegration::PopData popData = generateRandPopData();
 
-        altintegration::PopData popData = generateRandPopData();
+    block.popData = popData;
 
-        block.v_popData = {popData, popData};
-
-        CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
-
-
+    CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
 }
 
 BOOST_FIXTURE_TEST_CASE(BlockPoPVersion_test, E2eFixture)
@@ -166,6 +164,66 @@ BOOST_FIXTURE_TEST_CASE(BlockPoPVersion_test, E2eFixture)
     }
 
     auto block = CreateAndProcessBlock({}, ChainActive().Tip()->GetBlockHash(), cbKey);
+}
+
+BOOST_FIXTURE_TEST_CASE(PopData_payloads_stateless_invalid, E2eFixture)
+{
+    altintegration::PopData popData;
+
+    popData.vtbs.push_back(endorseVbkTip());
+
+    BOOST_CHECK_EQUAL(popData.vtbs.size(), 1);
+
+    altintegration::ValidationState state;
+    BOOST_CHECK(VeriBlock::popdataStatelessValidation(popData, state));
+
+    //corrupt vtb
+    popData.vtbs[0].checked = false;
+    popData.vtbs[0].transaction.signature = {1, 2, 3};
+
+    BOOST_CHECK(!VeriBlock::popdataStatelessValidation(popData, state));
+
+    CBlock block;
+    block.popData = popData;
+    block.popData.vtbs[0].checked = false;
+
+    CBlockIndex prevIndex;
+    BlockValidationState blockState;
+    {
+        LOCK(cs_main);
+        auto& pop_service = VeriBlock::getService<VeriBlock::PopService>();
+        BOOST_CHECK(!pop_service.addAllBlockPayloads(&prevIndex, block, blockState));
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(PopData_oversized_test, E2eFixture)
+{
+    altintegration::PopData popData;
+
+    auto& config = VeriBlock::getService<VeriBlock::Config>();
+
+    uint32_t popDataSize = 0;
+    while (popDataSize < (1.2 * config.popconfig.alt->getMaxPopDataSize())) {
+        altintegration::VTB vtb = endorseVbkTip();
+        popDataSize += vtb.toVbkEncoding().size();
+        popData.vtbs.push_back(vtb);
+    }
+
+    BOOST_CHECK(popDataSize > config.popconfig.alt->getMaxPopDataSize());
+
+    altintegration::ValidationState state;
+    BOOST_CHECK(!VeriBlock::checkPopDataSize(popData, state));
+
+    CBlock block;
+    block.popData = popData;
+
+    CBlockIndex prevIndex;
+    BlockValidationState blockState;
+    {
+        LOCK(cs_main);
+        auto& pop_service = VeriBlock::getService<VeriBlock::PopService>();
+        BOOST_CHECK(!pop_service.addAllBlockPayloads(&prevIndex, block, blockState));
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

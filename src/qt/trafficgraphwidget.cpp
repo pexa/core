@@ -10,6 +10,10 @@
 #include <QPainterPath>
 #include <QColor>
 #include <QTimer>
+#if QT_VERSION_MAJOR == 5
+#include <QPainterPath>
+#endif
+
 
 #include <cmath>
 

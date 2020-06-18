@@ -24,17 +24,9 @@
 #include <veriblock/altintegration.hpp>
 #include <veriblock/finalizer.hpp>
 #include <veriblock/stateless_validation.hpp>
+#include <veriblock/storage/payloads_storage.hpp>
+#include <veriblock/storage/storage_manager.hpp>
 #include <veriblock/validation_state.hpp>
-
-namespace {
-
-std::vector<uint8_t> HashFunction(const std::vector<uint8_t>& data)
-{
-    return VeriBlock::headerFromBytes(data).GetHash().asVector();
-}
-
-} // namespace
-
 
 namespace VeriBlock {
 
@@ -198,10 +190,14 @@ int PopServiceImpl::compareForks(const CBlockIndex& leftForkTip, const CBlockInd
 
 PopServiceImpl::PopServiceImpl(const altintegration::Config& config)
 {
-    payloads_store = std::make_shared<altintegration::PayloadsStorage>();
+    altintegration::StorageManager store_man("");
+
+    payloads_store =
+        std::make_shared<altintegration::PayloadsStorage>(store_man.newPayloadsStorageInmem());
     config.validate();
+
     altTree = altintegration::Altintegration::create(config, *payloads_store);
-    mempool = std::make_shared<altintegration::MemPool>(altTree->getParams(), altTree->vbk().getParams(), altTree->btc().getParams(), HashFunction);
+    mempool = std::make_shared<altintegration::MemPool>(altTree->getParams(), altTree->vbk().getParams(), altTree->btc().getParams());
 }
 
 bool PopServiceImpl::setState(const uint256& block, altintegration::ValidationState& state) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
@@ -210,52 +206,50 @@ bool PopServiceImpl::setState(const uint256& block, altintegration::ValidationSt
     return altTree->setState(block.asVector(), state);
 }
 
-std::vector<altintegration::PopData> PopServiceImpl::getPopData(const CBlockIndex& currentBlockIndex)
+altintegration::PopData PopServiceImpl::getPopData(const CBlockIndex& currentBlockIndex) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
 {
     AssertLockHeld(cs_main);
     return mempool->getPop(*this->altTree);
 }
 
-void PopServiceImpl::removePayloadsFromMempool(const std::vector<altintegration::PopData>& v_popData)
+void PopServiceImpl::removePayloadsFromMempool(const altintegration::PopData& popData) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
 {
     AssertLockHeld(cs_main);
-    mempool->removePayloads(v_popData);
+    mempool->removePayloads(popData);
 }
 
-bool popDataToPayloads(const CBlock& block, const CBlockIndex& indexPrev, BlockValidationState& state, std::vector<altintegration::AltPayloads>& payloads)
+bool checkPopDataSize(const altintegration::PopData& popData, altintegration::ValidationState& state)
 {
-    auto containing = VeriBlock::blockToAltBlock(indexPrev.nHeight + 1, block.GetBlockHeader());
+    uint32_t nPopDataSize = ::GetSerializeSize(popData, CLIENT_VERSION);
+    auto& config = getService<Config>();
 
-    payloads.resize(block.v_popData.size());
-    // transform v_popData to the AltPayloads
-    for (size_t i = 0; i < payloads.size(); ++i) {
-        auto& pop_data = block.v_popData[i];
+    if (nPopDataSize >= config.popconfig.alt->getMaxPopDataSize()) {
+        return state.Invalid("popdata-overisize", "popData raw size more than allowed");
+    }
 
-        const altintegration::PublicationData& publicationData = pop_data.atv.transaction.publicationData;
-        CBlockHeader endorsedHeader;
+    return true;
+}
 
-        try {
-            endorsedHeader = headerFromBytes(publicationData.header);
-        } catch (const std::exception& e) {
-            return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "pop-data-alt-block-invalid", "[" + pop_data.atv.getId().asString() + "] can't deserialize endorsed block header: " + e.what());
+bool popdataStatelessValidation(const altintegration::PopData& popData, altintegration::ValidationState& state)
+{
+    auto& config = getService<Config>();
+
+    for (const auto& b : popData.context) {
+        if (!altintegration::checkBlock(b, state, *config.popconfig.vbk.params)) {
+            return state.Invalid("pop-vbkblock-statelessly-invalid");
         }
+    }
 
-        // set endorsed header
-        AssertLockHeld(cs_main);
-        CBlockIndex* endorsedIndex = LookupBlockIndex(endorsedHeader.GetHash());
-        if (!endorsedIndex) {
-            return state.Invalid(
-                BlockValidationResult::BLOCK_INVALID_HEADER,
-                "pop-data-endorsed-block-missing",
-                "[ " + pop_data.atv.getId().asString() + "]: endorsed block " + endorsedHeader.GetHash().ToString() + " is missing");
+    for (const auto& vtb : popData.vtbs) {
+        if (!altintegration::checkVTB(vtb, state, *config.popconfig.vbk.params, *config.popconfig.btc.params)) {
+            return state.Invalid("pop-vtb-statelessly-invalid");
         }
+    }
 
-        altintegration::AltPayloads p;
-        p.containingBlock = containing;
-        p.endorsed = blockToAltBlock(*endorsedIndex);
-        p.popData = pop_data;
-
-        payloads[i] = p;
+    for (const auto& atv : popData.atvs) {
+        if (!altintegration::checkATV(atv, state, *config.popconfig.alt, *config.popconfig.vbk.params)) {
+            return state.Invalid("pop-atv-statelessly-invalid");
+        }
     }
 
     return true;
@@ -265,6 +259,13 @@ bool addAllPayloadsToBlockImpl(altintegration::AltTree& tree, const CBlockIndex*
 {
     AssertLockHeld(cs_main);
 
+    altintegration::ValidationState instate;
+
+    /*if (!checkPopDataSize(block.popData, instate) || !popdataStatelessValidation(block.popData, instate)) {
+        return error("[%s] block %s is not accepted by popData: %s", __func__, block.GetHash().ToString(),
+            instate.toString());
+    }*/
+
     int height = 0;
     if (indexPrev != nullptr) {
         height = indexPrev->nHeight + 1;
@@ -272,20 +273,14 @@ bool addAllPayloadsToBlockImpl(altintegration::AltTree& tree, const CBlockIndex*
 
     auto containing = VeriBlock::blockToAltBlock(height, block.GetBlockHeader());
 
-    altintegration::ValidationState instate;
-
     if (!tree.acceptBlock(containing, instate)) {
         return error("[%s] block %s is not accepted by altTree: %s", __func__, block.GetHash().ToString(),
             instate.toString());
     }
 
     if (indexPrev != nullptr) {
-        std::vector<altintegration::AltPayloads> payloads;
-        if (!popDataToPayloads(block, *indexPrev, state, payloads)) {
-            return false;
-        }
-
-        if (!payloads.empty() && !tree.addPayloads(containing, payloads, instate)) {
+        if (!tree.addPayloads(containing, block.popData, instate)) {
+            state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, instate.toString(), "");
             return error("[%s] block %s failed stateful pop validation: %s", __func__, block.GetHash().ToString(),
                 instate.toString());
         }
