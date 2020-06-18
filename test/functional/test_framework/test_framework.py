@@ -23,6 +23,7 @@ import time
 
 from .authproxy import JSONRPCException
 from . import coverage
+from .pop import sync_pop_mempools
 from .test_node import TestNode
 from .mininode import NetworkThread
 from .util import (
@@ -598,6 +599,19 @@ class PexaTestFramework(metaclass=PexaTestMetaClass):
     def sync_all(self, nodes=None):
         self.sync_blocks(nodes)
         self.sync_mempools(nodes)
+    def sync_blocks(self, nodes=None, **kwargs):
+        sync_blocks(nodes or self.nodes, **kwargs)
+
+    def sync_mempools(self, nodes=None, **kwargs):
+        sync_mempools(nodes or self.nodes, **kwargs)
+
+    def sync_pop_mempools(self, nodes=None, **kwargs):
+        sync_pop_mempools(nodes or self.nodes, **kwargs)
+
+    def sync_all(self, nodes=None, **kwargs):
+        self.sync_blocks(nodes, **kwargs)
+        self.sync_mempools(nodes, **kwargs)
+        self.sync_pop_mempools(nodes, **kwargs)
 
     # Private helper methods. These should not be accessed by the subclass test scripts.
 

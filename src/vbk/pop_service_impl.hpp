@@ -18,6 +18,7 @@
 #include <veriblock/blockchain/alt_block_tree.hpp>
 #include <veriblock/config.hpp>
 #include <veriblock/mempool.hpp>
+#include <veriblock/storage/payloads_storage.hpp>
 
 namespace VeriBlock {
 
@@ -26,6 +27,7 @@ class PopServiceImpl : public PopService
 private:
     std::shared_ptr<altintegration::MemPool> mempool;
     std::shared_ptr<altintegration::AltTree> altTree;
+    std::shared_ptr<altintegration::PayloadsStorage> payloads_store;
 
 public:
     std::string toPrettyString() const override
@@ -67,6 +69,5 @@ public:
 
 bool popDataToPayloads(const CBlock& block, const CBlockIndex& indexPrev, BlockValidationState& state, std::vector<altintegration::AltPayloads>& payloads);
 bool addAllPayloadsToBlockImpl(altintegration::AltTree& tree, const CBlockIndex* indexPrev, const CBlock& block, BlockValidationState& state);
-
 } // namespace VeriBlock
 #endif //BITCOIN_SRC_VBK_POP_SERVICE_POP_SERVICE_IMPL_HPP

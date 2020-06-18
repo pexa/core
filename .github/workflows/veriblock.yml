@@ -136,7 +136,7 @@ jobs:
           restore-keys: |
             mingw32-ccache-
       - name: install build requirements
-        run: sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git g++-mingw-w64-x86-64 ccache nsis
+        run: sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git g++-mingw-w64-x86-64 ccache nsis libarchive-dev
       - name: set the default mingw32 g++ compiler option to posix
         run: sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
       - name: strip out problematic Windows %PATH% imported var
@@ -211,7 +211,7 @@ jobs:
           restore-keys: |
             darwin-ccache-
       - name: install build requirements
-        run: sudo apt-get install curl librsvg2-bin libtiff-tools bsdmainutils cmake imagemagick libcap-dev libz-dev libbz2-dev python3-setuptools ccache
+        run: sudo apt-get install curl librsvg2-bin libtiff-tools bsdmainutils cmake imagemagick libcap-dev libz-dev libbz2-dev python3-setuptools ccache libarchive-dev
       - name: download and extract macos sdk
         run: |
           wget -P depends/sdk-sources https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.14.sdk.tar.xz
@@ -285,7 +285,7 @@ jobs:
         run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
       - name: install dependencies
         run: |
-          brew install automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf python3 libevent librsvg ccache qrencode zeromq
+          brew install automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf python3 libevent librsvg ccache qrencode zeromq libarchive
           brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/d468bb8c4f5c34b18588e5d1b955021d58e1ff57/Formula/qt.rb
       - name: install veriblock-pop-cpp
         env:
@@ -351,7 +351,7 @@ jobs:
       - name: install build requirements
         run: sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils python3 ccache libasan4
       - name: install dependencies
-        run: sudo apt-get install libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev libminiupnpc-dev libzmq3-dev libdb4.8-dev libdb4.8++-dev el
+        run: sudo apt-get install libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev libminiupnpc-dev libzmq3-dev libdb4.8-dev libdb4.8++-dev libarchive-dev
       - name: install veriblock-pop-cpp
         env:
           BUILD_TYPE: Debug

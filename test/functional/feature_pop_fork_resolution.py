@@ -105,7 +105,7 @@ class PopFr(PexaTestFramework):
         self.sync_all(self.nodes[0:1])
         containingblock = self.nodes[0].getblock(containinghash[0])
 
-        assert_equal(self.nodes[1].getblock(containinghash[0]), containingblock)
+        assert_equal(self.nodes[1].getblock(containinghash[0])['hash'], containingblock['hash'])
 
         tip = self.get_best_block(self.nodes[0])
         ## TODO check that this pop data contains in the containing block
@@ -129,15 +129,21 @@ class PopFr(PexaTestFramework):
         # expected best block hash is fork A (has higher pop score)
         bestblocks = [self.get_best_block(x) for x in self.nodes]
         print(bestblocks[2]['height'])
-        assert_equal(bestblocks[0], bestblocks[1])
-        assert_equal(bestblocks[0], bestblocks[2])
-        assert_equal(bestblocks[0], bestblocks[3])
+        assert_equal(bestblocks[0]['hash'], bestblocks[1]['hash'])
+        assert_equal(bestblocks[0]['hash'], bestblocks[2]['hash'])
+        assert_equal(bestblocks[0]['hash'], bestblocks[3]['hash'])
         self.log.info("all nodes switched to common block")
 
         for i in range(len(bestblocks)):
             assert bestblocks[i]['height'] == tip['height'], \
                 "node[{}] expected to select shorter chain ({}) with higher pop score\n" \
                 "but selected longer chain ({})".format(i, tip['height'], bestblocks[i]['height'])
+
+        # get best headers view
+        blockchaininfo = [x.getblockchaininfo() for x in self.nodes]
+        for n in blockchaininfo:
+            assert_equal(n['blocks'], n['headers'])
+
 
         self.log.info("all nodes selected fork A as best chain")
         self.log.warning("_shorter_endorsed_chain_wins() succeeded!")

@@ -2728,6 +2728,7 @@ bool CChainState::ConnectTip(BlockValidationState& state, const CChainParams& ch
  */
 CBlockIndex* CChainState::FindBestChain()
 {
+    AssertLockHeld(cs_main);
     auto& pop_service = VeriBlock::getService<VeriBlock::PopService>();
     CBlockIndex* bestCandidate = m_chain.Tip();
 
@@ -2755,6 +2756,8 @@ CBlockIndex* CChainState::FindBestChain()
         }
     }
 
+    // update best header after POP FR
+    pindexBestHeader = bestCandidate;
     return bestCandidate;
 }
 

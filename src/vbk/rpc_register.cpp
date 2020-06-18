@@ -10,18 +10,20 @@
 #include "vbk/service_locator.hpp"
 #include <chainparams.h>
 #include <consensus/merkle.h>
-#include <key_io.h>
+#include <node/context.h>
+#include <rpc/blockchain.h>
 #include <rpc/server.h>
 #include <rpc/util.h>
 #include <validation.h>
+#include <vbk/p2p_sync.hpp>
 #include <wallet/rpcwallet.h>
-#include <wallet/rpcwallet.h> // for GetWalletForJSONRPCRequest
-#include <wallet/wallet.h>    // for CWallet
+#include <wallet/wallet.h> // for CWallet
 
 #include <fstream>
 #include <set>
 
 #include "pop_service_impl.hpp"
+#include "vbk/adaptors/univalue_json.hpp"
 #include "vbk/config.hpp"
 #include "veriblock/entities/test_case_entity.hpp"
 
@@ -219,16 +221,23 @@ UniValue submitpop(const JSONRPCRequest& request)
     auto& pop_service = VeriBlock::getService<VeriBlock::PopService>();
     auto& pop_mempool = pop_service.getMemPool();
 
-    LogPrintf("{submitpop} vtbs amount: %d \n", vtbs.size());
+    {
+        LOCK(cs_main);
+        altintegration::ValidationState state;
+        altintegration::ATV atv = altintegration::ATV::fromVbkEncoding(atv_bytes);
+        if (!pop_mempool.submitATV({atv}, state)) {
+            LogPrint(BCLog::POP, "VeriBlock-PoP: %s ", state.GetPath());
+            return "ivalid ATV";
+        }
+        if (!pop_mempool.submitVTB(vtbs, state)) {
+            LogPrint(BCLog::POP, "VeriBlock-PoP: %s ", state.GetPath());
+            return "invalid oone of the VTB";
+        }
 
-    altintegration::ValidationState state;
-    if (!pop_mempool.submitATV({ altintegration::ATV::fromVbkEncoding(atv_bytes) }, state)) {
-        LogPrint(BCLog::POP, "VeriBlock-PoP: %s ", state.GetPath());
-        return "ivalid ATV";
-    }
-    if (!pop_mempool.submitVTB(vtbs, state)) {
-        LogPrint(BCLog::POP, "VeriBlock-PoP: %s ", state.GetPath());
-        return "invalid oone of the VTB";
+        const CNetMsgMaker msgMaker(PROTOCOL_VERSION);
+        NodeContext& node = EnsureNodeContext(request.context);
+        VeriBlock::p2p::sendPopData<altintegration::ATV>(node.connman.get(), msgMaker, {atv});
+        VeriBlock::p2p::sendPopData<altintegration::VTB>(node.connman.get(), msgMaker, vtbs);
     }
 
     return "successful added";
@@ -269,11 +278,365 @@ UniValue savepopstate(const JSONRPCRequest& request)
     return UniValue();
 }
 
+using VbkTree = altintegration::VbkBlockTree;
+using BtcTree = altintegration::VbkBlockTree::BtcTree;
+
+static VbkTree& vbk()
+{
+    auto& pop = VeriBlock::getService<VeriBlock::PopService>();
+    return pop.getAltTree().vbk();
+}
+
+static BtcTree& btc()
+{
+    auto& pop = VeriBlock::getService<VeriBlock::PopService>();
+    return pop.getAltTree().btc();
+}
+
+// getblock
+namespace {
+
+void check_getblock(const JSONRPCRequest& request, const std::string& chain)
+{
+    auto cmdname = strprintf("get%sblock", chain);
+    RPCHelpMan{
+        cmdname,
+        "Get block data identified by block hash",
+        {
+            {"blockhash", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The block hash"},
+        },
+        {},
+        RPCExamples{
+            HelpExampleCli(cmdname, "\"00000000c937983704a73af28acdec37b049d214adbda81d7e2a3dd146f6ed09\"") +
+            HelpExampleRpc(cmdname, "\"00000000c937983704a73af28acdec37b049d214adbda81d7e2a3dd146f6ed09\"")},
+    }
+        .Check(request);
+}
+
+template <typename Tree>
+UniValue getblock(const JSONRPCRequest& req, Tree& tree, const std::string& chain)
+{
+    check_getblock(req, chain);
+    LOCK(cs_main);
+
+    using block_t = typename Tree::block_t;
+    using hash_t = typename block_t::hash_t;
+    std::string strhash = req.params[0].get_str();
+    hash_t hash;
+
+    try {
+        hash = hash_t::fromHex(strhash);
+    } catch (const std::exception& e) {
+        throw JSONRPCError(RPC_TYPE_ERROR, strprintf("Bad hash: %s", e.what()));
+    }
+
+    auto* index = tree.getBlockIndex(hash);
+    if (!index) {
+        // no block found
+        return UniValue(UniValue::VNULL);
+    }
+
+    return altintegration::ToJSON<UniValue>(*index);
+}
+
+UniValue getvbkblock(const JSONRPCRequest& req)
+{
+    return getblock(req, vbk(), "vbk");
+}
+UniValue getbtcblock(const JSONRPCRequest& req)
+{
+    return getblock(req, btc(), "btc");
+}
+
+} // namespace
+
+// getbestblockhash
+namespace {
+void check_getbestblockhash(const JSONRPCRequest& request, const std::string& chain)
+{
+    auto cmdname = strprintf("get%bestblockhash", chain);
+    RPCHelpMan{
+        cmdname,
+        "\nReturns the hash of the best (tip) block in the most-work fully-validated chain.\n",
+        {},
+        RPCResult{
+            RPCResult::Type::STR_HEX, "hex", "(string) the block hash, hex-encoded"
+        },
+        RPCExamples{
+            HelpExampleCli(cmdname, "") + HelpExampleRpc(cmdname, "")
+        },
+    }
+        .Check(request);
+}
+
+template <typename Tree>
+UniValue getbestblockhash(const JSONRPCRequest& request, Tree& tree, const std::string& chain)
+{
+    check_getbestblockhash(request, chain);
+
+    LOCK(cs_main);
+    auto* tip = tree.getBestChain().tip();
+    if (!tip) {
+        // tree is not bootstrapped
+        return UniValue(UniValue::VNULL);
+    }
+
+    return UniValue(tip->getHash().toHex());
+}
+
+UniValue getvbkbestblockhash(const JSONRPCRequest& request)
+{
+    return getbestblockhash(request, vbk(), "vbk");
+}
+
+UniValue getbtcbestblockhash(const JSONRPCRequest& request)
+{
+    return getbestblockhash(request, btc(), "btc");
+}
+} // namespace
+
+// getblockhash
+namespace {
+
+void check_getblockhash(const JSONRPCRequest& request, const std::string& chain)
+{
+    auto cmdname = strprintf("get%sblockhash", chain);
+
+    RPCHelpMan{
+        cmdname,
+        "\nReturns hash of block in best-block-chain at height provided.\n",
+        {
+            {"height", RPCArg::Type::NUM, RPCArg::Optional::NO, "The height index"},
+        },
+        RPCResult{
+            RPCResult::Type::STR_HEX, "hex", "(string) The block hash"
+        },
+        RPCExamples{
+            HelpExampleCli(cmdname, "1000") +
+            HelpExampleRpc(cmdname, "1000")
+        },
+    }
+        .Check(request);
+}
+
+template <typename Tree>
+UniValue getblockhash(const JSONRPCRequest& request, Tree& tree, const std::string& chain)
+{
+    check_getblockhash(request, chain);
+    LOCK(cs_main);
+    auto& best = tree.getBestChain();
+    if (best.blocksCount() == 0) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Chain %s is not bootstrapped", chain));
+    }
+
+    int height = request.params[0].get_int();
+    if (height < best.first()->height) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Chain %s starts at %d, provided %d", chain, best.first()->height, height));
+    }
+    if (height > best.tip()->height) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Chain %s tip is at %d, provided %d", chain, best.tip()->height, height));
+    }
+
+    auto* index = best[height];
+    assert(index);
+    return altintegration::ToJSON<UniValue>(*index);
+}
+
+UniValue getvbkblockhash(const JSONRPCRequest& request)
+{
+    return getblockhash(request, vbk(), "vbk");
+}
+UniValue getbtcblockhash(const JSONRPCRequest& request)
+{
+    return getblockhash(request, btc(), "btc");
+}
+
+} // namespace
+
+// getpoprawmempool
+namespace {
+
+UniValue getrawpopmempool(const JSONRPCRequest& request)
+{
+    auto cmdname = "getrawpopmempool";
+    RPCHelpMan{
+        cmdname,
+        "\nReturns the list of VBK blocks, ATVs and VTBs stored in POP mempool.\n",
+        {},
+        RPCResult{
+            RPCResult::Type::ARR, "TODO", "(string) List of VBK blocks, ATVs and VTBs stored in POP mempool."
+        },
+        RPCExamples{
+            HelpExampleCli(cmdname, "") +
+            HelpExampleRpc(cmdname, "")
+        },
+    }
+        .Check(request);
+
+    auto& pop = VeriBlock::getService<VeriBlock::PopService>();
+    auto& mp = pop.getMemPool();
+    return altintegration::ToJSON<UniValue>(mp);
+}
+
+} // namespace
+
+// getrawatv
+// getrawvtb
+// getrawvbkblock
+namespace {
+
+template <typename T>
+bool GetPayload(const typename T::id_t& hash, T& out, const Consensus::Params& consensusParams, uint256& hashBlock, const CBlockIndex* const block_index)
+{
+    LOCK(cs_main);
+    auto& pop = VeriBlock::getService<VeriBlock::PopService>();
+
+    if (!block_index) {
+        auto& mp = pop.getMemPool();
+        auto* pl = mp.get<T>(hash);
+        if (pl) {
+            out = *pl;
+            return true;
+        }
+
+        // TODO: when payload repository is implemented, search here for payload by ID
+        return false;
+    } else {
+        CBlock block;
+        if (ReadBlockFromDisk(block, block_index, consensusParams)) {
+            if (VeriBlock::FindPayloadInBlock<T>(block, hash, out)) {
+                hashBlock = block_index->GetBlockHash();
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+template <typename T>
+UniValue getrawpayload(const JSONRPCRequest& request, const std::string& name)
+{
+    auto cmdname = strprintf("getraw%s", name);
+    // clang-format off
+    RPCHelpMan{
+        cmdname,
+        "\nReturn the raw " + name + " data.\n"
+
+        "\nBy default this function only works for mempool " + name + ". When called with a blockhash\n"
+        "argument, " + cmdname + " will return the " +name+ " if the specified block is available and\n"
+        "the " + name + " is found in that block. When called without a blockhash argument, " + cmdname + "\n"
+        "will return the " + name + " if it is in the POP mempool, or in local payload repository.\n"
+
+        "\nIf verbose is 'true', returns an Object with information about 'id'.\n"
+        "If verbose is 'false' or omitted, returns a string that is serialized, hex-encoded data for 'id'.\n",
+        {
+            {"id", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The " + name + " id"},
+            {"verbose", RPCArg::Type::BOOL, /* default */ "false", "If false, return a string, otherwise return a json object"},
+            {"blockhash", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED_NAMED_ARG, "The block in which to look for the " + name + ""},
+        },
+        {
+            RPCResult{RPCResult::Type::BOOL, "if verbose is not set or set to true",
+                "\"data\"      (string) The serialized, hex-encoded data for 'id'\n"
+            },
+            RPCResult{RPCResult::Type::BOOL, "if verbose is not set or set to false", "TODO"},
+        },
+        RPCExamples{
+            HelpExampleCli(cmdname, "\"id\"") +
+            HelpExampleCli(cmdname, "\"id\" true") +
+            HelpExampleRpc(cmdname, "\"id\", true") +
+            HelpExampleCli(cmdname, "\"id\" false \"myblockhash\"") +
+            HelpExampleCli(cmdname, "\"id\" true \"myblockhash\"")},
+    }
+        .Check(request);
+    // clang-format on
+
+    bool in_active_chain = true;
+    using id_t = typename T::id_t;
+    id_t hash;
+    try {
+        hash = id_t::fromHex(request.params[0].get_str());
+    } catch (const std::exception& e) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Bad hash: %s", e.what()));
+    }
+
+    CBlockIndex* blockindex = nullptr;
+
+    // Accept either a bool (true) or a num (>=1) to indicate verbose output.
+    bool fVerbose = false;
+    if (!request.params[1].isNull()) {
+        fVerbose = request.params[1].isNum() ? (request.params[1].get_int() != 0) : request.params[1].get_bool();
+    }
+
+    if (!request.params[2].isNull()) {
+        LOCK(cs_main);
+
+        uint256 blockhash = ParseHashV(request.params[2], "parameter 3");
+        blockindex = LookupBlockIndex(blockhash);
+        if (!blockindex) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block hash not found");
+        }
+        in_active_chain = ::ChainActive().Contains(blockindex);
+    }
+
+    T out;
+    uint256 hash_block;
+    if (!GetPayload<T>(hash, out, Params().GetConsensus(), hash_block, blockindex)) {
+        std::string errmsg;
+        if (blockindex) {
+            if (!(blockindex->nStatus & BLOCK_HAVE_DATA)) {
+                throw JSONRPCError(RPC_MISC_ERROR, "Block not available");
+            }
+            errmsg = "No such " + name + " found in the provided block";
+        } else {
+            errmsg = "No such mempool or blockchain " + name;
+        }
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, errmsg);
+    }
+
+    if (!fVerbose) {
+        return altintegration::ToJSON<UniValue>(out.toHex());
+    }
+
+    UniValue result(UniValue::VOBJ);
+    if (blockindex) result.pushKV("in_active_chain", in_active_chain);
+
+    result.pushKV(name, altintegration::ToJSON<UniValue>(out));
+    result.pushKV("blockhash", hash_block.GetHex());
+
+    return result;
+}
+
+UniValue getrawatv(const JSONRPCRequest& req)
+{
+    return getrawpayload<altintegration::ATV>(req, "atv");
+}
+UniValue getrawvtb(const JSONRPCRequest& req)
+{
+    return getrawpayload<altintegration::VTB>(req, "vtb");
+}
+UniValue getrawvbkblock(const JSONRPCRequest& req)
+{
+    return getrawpayload<altintegration::VbkBlock>(req, "vbkblock");
+}
+
+} // namespace
+
 const CRPCCommand commands[] = {
     {"pop_mining", "submitpop", &submitpop, {"atv", "vtbs"}},
     {"pop_mining", "getpopdata", &getpopdata, {"blockheight"}},
     {"pop_mining", "debugpop", &debugpop, {}},
-};
+    {"pop_mining", "savepopstate", &savepopstate, {"path"}},
+    {"pop_mining", "getvbkblock", &getvbkblock, {"hash"}},
+    {"pop_mining", "getbtcblock", &getbtcblock, {"hash"}},
+    {"pop_mining", "getvbkbestblockhash", &getvbkbestblockhash, {}},
+    {"pop_mining", "getbtcbestblockhash", &getbtcbestblockhash, {}},
+    {"pop_mining", "getvbkblockhash", &getvbkblockhash, {"height"}},
+    {"pop_mining", "getbtcblockhash", &getbtcblockhash, {"height"}},
+    {"pop_mining", "getrawatv", &getrawatv, {"id"}},
+    {"pop_mining", "getrawvtb", &getrawvtb, {"id"}},
+    {"pop_mining", "getrawvbkblock", &getrawvbkblock, {"id"}},
+    {"pop_mining", "getrawpopmempool", &getrawpopmempool, {}}};
 
 void RegisterPOPMiningRPCCommands(CRPCTable& t)
 {

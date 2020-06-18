@@ -22,7 +22,7 @@ race:ThreadImport
 race:WalletBatch::WriteHDChain
 race:BerkeleyDatabase
 race:zmq::*
-race:bitcoin-qt
+race:pexa-qt
 # deadlock (TODO fix)
 deadlock:CConnman::ForNode
 deadlock:CConnman::GetNodeStats

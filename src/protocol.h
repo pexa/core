@@ -261,7 +261,9 @@ extern const char* GETCFCHECKPT;
  * evenly spaced filter headers for blocks on the requested chain.
  */
 extern const char* CFCHECKPT;
-}; // namespace NetMsgType
+
+extern const char *BLOCKTXN;
+};
 
 /* Get a vector of all valid message types (see above) */
 const std::vector<std::string>& getAllNetMessageTypes();

@@ -28,6 +28,7 @@
 #include <txmempool.h>
 #include <util/system.h>
 #include <util/strencodings.h>
+#include <vbk/p2p_sync.hpp>
 
 #include <memory>
 #include <typeinfo>
@@ -70,8 +71,6 @@ static constexpr int HISTORICAL_BLOCK_AGE = 7 * 24 * 60 * 60;
 static const int PING_INTERVAL = 2 * 60;
 /** The maximum number of entries in a locator */
 static const unsigned int MAX_LOCATOR_SZ = 101;
-/** The maximum number of entries in an 'inv' protocol message */
-static const unsigned int MAX_INV_SZ = 50000;
 /** Maximum number of in-flight transactions from a peer */
 static constexpr int32_t MAX_PEER_TX_IN_FLIGHT = 100;
 /** Maximum number of announced transactions from a peer */
@@ -145,9 +144,6 @@ RecursiveMutex g_cs_orphans;
 std::map<uint256, COrphanTx> mapOrphanTransactions GUARDED_BY(g_cs_orphans);
 
 void EraseOrphansFor(NodeId peer);
-
-/** Increase a node's misbehavior score. */
-void Misbehaving(NodeId nodeid, int howmuch, const std::string& message="") EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
 // Internal stuff
 namespace {
@@ -862,6 +858,8 @@ void PeerLogicValidation::FinalizeNode(NodeId nodeid, bool& fUpdateConnectionTim
     assert(g_outbound_peers_with_protect_from_disconnect >= 0);
 
     mapNodeState.erase(nodeid);
+    // VeriBlock
+    VeriBlock::p2p::mapPopDataNodeState.erase(nodeid);
 
     if (mapNodeState.empty()) {
         // Do a consistency check after the last peer is removed.
@@ -2233,6 +2231,11 @@ void ProcessMessage(
         return;
     }
 
+    int pop_res = VeriBlock::p2p::processPopData(&pfrom, msg_type, vRecv, connman);
+    if(pop_res != -1)
+    {
+        return pop_res;
+    }
 
     if (msg_type == NetMsgType::VERSION) {
         // Each connection can only send one version message
@@ -4245,6 +4248,13 @@ bool PeerLogicValidation::SendMessages(CNode* pto)
         if (!vInv.empty())
             connman->PushMessage(pto, msgMaker.Make(NetMsgType::INV, vInv));
 
+        // VeriBlock offer Pop Data
+        {
+            VeriBlock::p2p::offerPopData<altintegration::ATV>(pto, connman, msgMaker);
+            VeriBlock::p2p::offerPopData<altintegration::VTB>(pto, connman, msgMaker);
+            VeriBlock::p2p::offerPopData<altintegration::VbkBlock>(pto, connman, msgMaker);
+        }
+
         // Detect whether we're stalling
         current_time = GetTime<std::chrono::microseconds>();
         // nNow is the current system time (GetTimeMicros is not mockable) and
@@ -4423,6 +4433,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto)
             }
         }
     }
+
     return true;
 }
 

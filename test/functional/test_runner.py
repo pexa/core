@@ -126,6 +126,7 @@ BASE_SCRIPTS = [
     # 'feature_pop_init.py',
     'feature_pop_payout.py',
     'feature_pop_sync.py',
+    'feature_pop_mempool_sync.py',
     'wallet_keypool_topup.py',
     'wallet_keypool_topup.py --descriptors',
     'feature_fee_estimation.py',

@@ -304,7 +304,7 @@ jobs:
       - name: add bitcoin ppa
         run: sudo add-apt-repository ppa:bitcoin/bitcoin
       - name: install build requirements
-        run: sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils python3 ccache libasan4
+        run: sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils python3 ccache
       - name: install dependencies
         run: sudo apt-get install libevent-dev python3-zmq python3-dev libboost-python-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev libminiupnpc-dev libzmq3-dev libdb4.8-dev libdb4.8++-dev
       - name: autogen
