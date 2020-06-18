@@ -5,7 +5,7 @@ Introduction
 ---------------------
 Solution and project files to build the Pexa Core applications `msbuild` or Visual Studio can be found in the build_msvc directory. The build has been tested with Visual Studio 2017 and 2019.
 
-Building with Visual Studio is an alternative to the Linux based [cross-compiler build](https://github.com/pexa/pexa/blob/master/doc/build-windows.md).
+Building with Visual Studio is an alternative to the Linux based [cross-compiler build](https://github.com/pexa/core/blob/master/doc/build-windows.md).
 
 Quick Start
 ---------------------
@@ -20,7 +20,7 @@ msbuild /m build_msvc\pexa.sln /p:Platform=x64 /p:Configuration=Release /t:build
 
 Dependencies
 ---------------------
-A number of [open source libraries](https://github.com/pexa/pexa/blob/master/doc/dependencies.md) are required in order to be able to build Pexa Core.
+A number of [open source libraries](https://github.com/pexa/core/blob/master/doc/dependencies.md) are required in order to be able to build Pexa Core.
 
 Options for installing the dependencies in a Visual Studio compatible manner are:
 
@@ -28,7 +28,7 @@ Options for installing the dependencies in a Visual Studio compatible manner are
 - Download the source code, build each dependency, add the required include paths, link libraries and binary tools to the Visual Studio project files.
 - Use [nuget](https://www.nuget.org/) packages with the understanding that any binary files have been compiled by an untrusted third party.
 
-The [external dependencies](https://github.com/pexa/pexa/blob/master/doc/dependencies.md) required for building are:
+The [external dependencies](https://github.com/pexa/core/blob/master/doc/dependencies.md) required for building are:
 
 - Berkeley DB
 - Boost

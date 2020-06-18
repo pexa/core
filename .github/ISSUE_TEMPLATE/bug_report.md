@@ -11,7 +11,7 @@ assignees: ''
 
 General pexa questions and/or support requests are best directed to the Pexa StackExchange at https://pexa.stackexchange.com.
 
-For reporting security issues, please read instructions at https://pexacore.org/en/contact/.
+For reporting security issues, please read instructions at https://pexaproject.com/en/contact/.
 
 If the node is "stuck" during sync or giving "block checksum mismatch" errors, please ensure your hardware is stable by running memtest and observe CPU temperature with a load-test tool such as linpack before creating an issue! -->
 

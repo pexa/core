@@ -62,7 +62,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap resource="../merit.qrc">:/icons/merit</pixmap>
+       <pixmap resource="../pexa.qrc">:/icons/pexa</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -320,7 +320,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../merit.qrc">:/icons/community</pixmap>
+        <pixmap resource="../pexa.qrc">:/icons/community</pixmap>
        </property>
       </widget>
       <widget class="QLabel" name="communityLabel">
@@ -351,7 +351,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../merit.qrc">:/icons/safety</pixmap>
+        <pixmap resource="../pexa.qrc">:/icons/safety</pixmap>
        </property>
       </widget>
       <widget class="QLabel" name="safetyLabel">
@@ -364,7 +364,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#2067d1;&quot;&gt;SAFETY&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; color:#292929;&quot;&gt;Decentralized vaults, password-protected&lt;br/&gt; transactions, and cancellable transactions.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#2067d1;&quot;&gt;SAFETY&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; color:#292929;&quot;&gt;Decentralized mining pools, and crypto cloud platform.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </widget>
@@ -382,7 +382,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../merit.qrc">:/icons/simplicity</pixmap>
+        <pixmap resource="../pexa.qrc">:/icons/simplicity</pixmap>
        </property>
       </widget>
       <widget class="QLabel" name="safetyLabel_2">
@@ -416,7 +416,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../merit.qrc">
+        <iconset resource="../pexa.qrc">
          <normaloff>:/icons/hourglass</normaloff>
          <disabledoff>:/icons/hourglass</disabledoff>:/icons/hourglass</iconset>
        </property>
@@ -457,7 +457,7 @@
   <zorder>layoutWidget</zorder>
  </widget>
  <resources>
-  <include location="../merit.qrc"/>
+  <include location="../pexa.qrc"/>
  </resources>
  <connections/>
 </ui>

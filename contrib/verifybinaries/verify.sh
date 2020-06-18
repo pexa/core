@@ -24,7 +24,7 @@ TMPFILE="hashes.tmp"
 
 SIGNATUREFILENAME="SHA256SUMS.asc"
 RCSUBDIR="test"
-HOST1="https://pexacore.org"
+HOST1="https://pexaproject.com"
 HOST2="https://pexaproject.com"
 BASEDIR="/bin/"
 VERSIONPREFIX="pexa-core-"

@@ -860,9 +860,9 @@ CWalletTx* CWallet::AddToWallet(CTransactionRef tx, const CWalletTx::Confirmatio
 #ifndef WIN32
         // Substituting the wallet name isn't currently supported on windows
         // because windows shell escaping has not been implemented yet:
-        // https://github.com/pexa/pexa/pull/13339#issuecomment-537384875
+        // https://github.com/pexa/core/pull/13339#issuecomment-537384875
         // A few ways it could be implemented in the future are described in:
-        // https://github.com/pexa/pexa/pull/13339#issuecomment-461288094
+        // https://github.com/pexa/core/pull/13339#issuecomment-461288094
         boost::replace_all(strCmd, "%w", ShellEscape(GetName()));
 #endif
         std::thread t(runCommand, strCmd);
@@ -1700,7 +1700,7 @@ CWallet::ScanResult CWallet::ScanForWalletTransactions(const uint256& start_bloc
                 // Abort scan if current block is no longer active, to prevent
                 // marking transactions as coming from the wrong block.
                 // TODO: This should return success instead of failure, see
-                // https://github.com/pexa/pexa/pull/14711#issuecomment-458342518
+                // https://github.com/pexa/core/pull/14711#issuecomment-458342518
                 result.last_failed_block = block_hash;
                 result.status = ScanResult::FAILURE;
                 break;
@@ -3598,7 +3598,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const {
  *
  * For more information see CWalletTx::nTimeSmart,
  * https://pexatalk.org/?topic=54527, or
- * https://github.com/pexa/pexa/pull/1393.
+ * https://github.com/pexa/core/pull/1393.
  */
 unsigned int CWallet::ComputeTimeSmart(const CWalletTx& wtx) const
 {

@@ -1,8 +1,10 @@
 Pexa Core integration/staging tree
 =====================================
-![.github/workflows/ci.yml](https://github.com/VeriBlock/pop-pexa/workflows/.github/workflows/ci.yml/badge.svg?branch=master)
+![CI](https://github.com/pexa/core/workflows/CI/badge.svg)
 
-https://pexacore.org
+Official Discord: https://discord.gg/TZRJ3xp
+
+https://pexaproject.com
 
 What is Pexa?
 ----------------
@@ -14,8 +16,8 @@ out collectively by the network. Pexa Core is the name of open source
 software which enables the use of this currency.
 
 For more information, as well as an immediately usable, binary version of
-the Pexa Core software, see https://pexacore.org/en/download/, or read the
-[original whitepaper](https://pexacore.org/pexa.pdf).
+the Pexa Core software, see https://pexaproject.com/en/download/, or read the
+[original whitepaper](https://pexaproject.com/pexa.pdf).
 
 License
 -------

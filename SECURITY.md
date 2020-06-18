@@ -3,7 +3,7 @@
 ## Supported Versions
 
 See our website for versions of Pexa Core that are currently supported with
-security updates: https://pexacore.org/en/lifecycle/#schedule
+security updates: https://pexaproject.com/en/lifecycle/#schedule
 
 ## Reporting a Vulnerability
 

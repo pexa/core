@@ -5,8 +5,8 @@ Release Process
 
 ### Before every release candidate
 
-* Update translations (ping wumpus on IRC) see [translation_process.md](https://github.com/pexa/pexa/blob/master/doc/translation_process.md#synchronising-translations).
-* Update manpages, see [gen-manpages.sh](https://github.com/pexa/pexa/blob/master/contrib/devtools/README.md#gen-manpagessh).
+* Update translations (ping wumpus on IRC) see [translation_process.md](https://github.com/pexa/core/blob/master/doc/translation_process.md#synchronising-translations).
+* Update manpages, see [gen-manpages.sh](https://github.com/pexa/core/blob/master/contrib/devtools/README.md#gen-manpagessh).
 * Update release candidate version in `configure.ac` (`CLIENT_VERSION_RC`).
 
 ### Before every major and minor release
@@ -20,16 +20,16 @@ Release Process
 * On both the master branch and the new release branch:
   - update `CLIENT_VERSION_MINOR` in [`configure.ac`](../configure.ac)
   - update `CLIENT_VERSION_MINOR`, `PACKAGE_VERSION`, and `PACKAGE_STRING` in [`build_msvc/pexa_config.h`](/build_msvc/pexa_config.h)
-* On the new release branch in [`configure.ac`](../configure.ac) and [`build_msvc/pexa_config.h`](/build_msvc/pexa_config.h) (see [this commit](https://github.com/pexa/pexa/commit/742f7dd)):
+* On the new release branch in [`configure.ac`](../configure.ac) and [`build_msvc/pexa_config.h`](/build_msvc/pexa_config.h) (see [this commit](https://github.com/pexa/core/commit/742f7dd)):
   - set `CLIENT_VERSION_REVISION` to `0`
   - set `CLIENT_VERSION_IS_RELEASE` to `true`
 
 #### Before branch-off
 
-* Update hardcoded [seeds](/contrib/seeds/README.md), see [this pull request](https://github.com/pexa/pexa/pull/7415) for an example.
+* Update hardcoded [seeds](/contrib/seeds/README.md), see [this pull request](https://github.com/pexa/core/pull/7415) for an example.
 * Update [`src/chainparams.cpp`](/src/chainparams.cpp) m_assumed_blockchain_size and m_assumed_chain_state_size with the current size plus some overhead (see [this](#how-to-calculate-m_assumed_blockchain_size-and-m_assumed_chain_state_size) for information on how to calculate them).
 * Update `src/chainparams.cpp` chainTxData with statistics about the transaction count and rate. Use the output of the RPC `getchaintxstats`, see
-  [this pull request](https://github.com/pexa/pexa/pull/17002) for an example. Reviewers can verify the results by running `getchaintxstats <window_block_count> <window_last_block_hash>` with the `window_block_count` and `window_last_block_hash` from your output.
+  [this pull request](https://github.com/pexa/core/pull/17002) for an example. Reviewers can verify the results by running `getchaintxstats <window_block_count> <window_last_block_hash>` with the `window_block_count` and `window_last_block_hash` from your output.
 * Update `src/chainparams.cpp` nMinimumChainWork with information from the getblockchaininfo rpc.
 * Update `src/chainparams.cpp` defaultAssumeValid with information from the getblockhash rpc.
   - The selected value must not be orphaned so it may be useful to set the value two blocks back from the tip.
@@ -45,7 +45,7 @@ Release Process
 #### After branch-off (on the major release branch)
 
 - Update the versions.
-- Create a pinned meta-issue for testing the release candidate (see [this issue](https://github.com/pexa/pexa/issues/17079) for an example) and provide a link to it in the release announcements where useful.
+- Create a pinned meta-issue for testing the release candidate (see [this issue](https://github.com/pexa/core/issues/17079) for an example) and provide a link to it in the release announcements where useful.
 
 #### Before final release
 
@@ -65,7 +65,7 @@ Check out the source code in the following directory hierarchy.
     git clone https://github.com/pexa-core/gitian.sigs.git
     git clone https://github.com/pexa-core/pexa-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
-    git clone https://github.com/pexa/pexa.git
+    git clone https://github.com/pexa/core.git
 
 ### Write the release notes
 
@@ -355,13 +355,13 @@ pexaproject.com (see below for pexaproject.com update instructions).
 
       - Archive the release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
 
-      - Create a [new GitHub release](https://github.com/pexa/pexa/releases/new) with a link to the archived release notes
+      - Create a [new GitHub release](https://github.com/pexa/core/releases/new) with a link to the archived release notes
 
 - Announce the release:
 
   - pexa-dev and pexa-core-dev mailing list
 
-  - Pexa Core announcements list https://pexacore.org/en/list/announcements/join/
+  - Pexa Core announcements list https://pexaproject.com/en/list/announcements/join/
 
   - Update title of #pexa on Freenode IRC
 

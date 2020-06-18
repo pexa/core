@@ -204,7 +204,7 @@ class ToolWalletTest(PexaTestFramework):
         self.log.debug('Wallet file shasum unchanged\n')
 
     def test_salvage(self):
-        # TODO: Check salvage actually salvages and doesn't break things. https://github.com/pexa/pexa/issues/7463
+        # TODO: Check salvage actually salvages and doesn't break things. https://github.com/pexa/core/issues/7463
         self.log.info('Check salvage')
         self.start_node(0, ['-wallet=salvage'])
         self.stop_node(0)

@@ -72,7 +72,7 @@ If you want to build the windows installer with `make deploy` you need [NSIS](ht
 
 Acquire the source in the usual way:
 
-    git clone https://github.com/pexa/pexa.git
+    git clone https://github.com/pexa/core.git
     cd pexa
 
 ## Building for 64-bit Windows

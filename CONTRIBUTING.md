@@ -30,7 +30,7 @@ Bitcoin Core and how to run the unit and functional tests.
 
 There are many open issues of varying difficulty waiting to be fixed.
 If you're looking for somewhere to start contributing, check out the
-[good first issue](https://github.com/pexa/pexa/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+[good first issue](https://github.com/pexa/core/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 list or participate in a weekly [Pexa Core PR Review Club](https://pexacore.reviews/) meeting.
 
 Communication Channels
@@ -147,7 +147,7 @@ discussions).
 ### Translation changes
 
 Note that translations should not be submitted as pull requests. Please see
-[Translation Process](https://github.com/pexa/pexa/blob/master/doc/translation_process.md)
+[Translation Process](https://github.com/pexa/core/blob/master/doc/translation_process.md)
 for more information on helping with translations.
 
 ### Work in Progress Changes and Requests for Comments
@@ -388,7 +388,7 @@ Rebased-From: <commit hash of the original commit>
 ```
 
 Have a look at [an example backport PR](
-https://github.com/pexa/pexa/pull/16189).
+https://github.com/pexa/core/pull/16189).
 
 Also see the [backport.py script](
 https://github.com/pexa-core/pexa-maintainer-tools#backport).

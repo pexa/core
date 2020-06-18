@@ -21,7 +21,7 @@ namespace util {
 //!       get_int64(), get_bool(), isNum(), isBool(), isFalse(), isTrue() and
 //!       isNull() methods can be substituted if there's a need to move away
 //!       from UniValue. (An implementation with boost::variant was posted at
-//!       https://github.com/pexa/pexa/pull/15934/files#r337691812)
+//!       https://github.com/pexa/core/pull/15934/files#r337691812)
 using SettingsValue = UniValue;
 
 //! Stored pexa settings. This struct combines settings from the command line

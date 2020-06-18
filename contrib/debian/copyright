@@ -2,10 +2,10 @@ Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Pexa
 Upstream-Contact: Satoshi Nakamoto <satoshin@gmx.com>
  irc://#pexa@freenode.net
-Source: https://github.com/pexa/pexa
+Source: https://github.com/pexa/core
 
 Files: *
-Copyright: 2009-2020, Pexa Core Developers
+Copyright: 2019-2020, Pexa Core Developers
 License: Expat
 Comment: The Pexa Core Developers encompasses the current developers listed on pexaproject.com,
          as well as the numerous contributors to the project.

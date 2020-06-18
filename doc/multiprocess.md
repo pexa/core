@@ -2,11 +2,11 @@
 
 On unix systems, the `--enable-multiprocess` build option can be passed to `./configure` to build new `pexa-node`, `pexa-wallet`, and `pexa-gui` executables alongside existing `pexad` and `pexa-qt` executables.
 
-`pexa-node` is a drop-in replacement for `pexad`, and `pexa-gui` is a drop-in replacement for `pexa-qt`, and there are no differences in use or external behavior between the new and old executables. But internally (after [#10102](https://github.com/pexa/pexa/pull/10102)), `pexa-gui` will spawn a `pexa-node` process to run P2P and RPC code, communicating with it across a socket pair, and `pexa-node` will spawn `pexa-wallet` to run wallet code, also communicating over a socket pair. This will let node, wallet, and GUI code run in separate address spaces for better isolation, and allow future improvements like being able to start and stop components independently on different machines and environments.
+`pexa-node` is a drop-in replacement for `pexad`, and `pexa-gui` is a drop-in replacement for `pexa-qt`, and there are no differences in use or external behavior between the new and old executables. But internally (after [#10102](https://github.com/pexa/core/pull/10102)), `pexa-gui` will spawn a `pexa-node` process to run P2P and RPC code, communicating with it across a socket pair, and `pexa-node` will spawn `pexa-wallet` to run wallet code, also communicating over a socket pair. This will let node, wallet, and GUI code run in separate address spaces for better isolation, and allow future improvements like being able to start and stop components independently on different machines and environments.
 
 ## Next steps
 
-Specific next steps after [#10102](https://github.com/pexa/pexa/pull/10102) will be:
+Specific next steps after [#10102](https://github.com/pexa/core/pull/10102) will be:
 
 - [ ] Adding `-ipcbind` and `-ipcconnect` options to `pexa-node`, `pexa-wallet`, and `pexa-gui` executables so they can listen and connect to TCP ports and unix socket paths. This will allow separate processes to be started and stopped any time and connect to each other.
 - [ ] Adding `-server` and `-rpcbind` options to the `pexa-wallet` executable so wallet processes can handle RPC requests directly without going through the node.
@@ -15,7 +15,7 @@ Specific next steps after [#10102](https://github.com/pexa/pexa/pull/10102) will
 
 ## Debugging
 
-After [#10102](https://github.com/pexa/pexa/pull/10102), the `-debug=ipc` command line option can be used to see requests and responses between processes.
+After [#10102](https://github.com/pexa/core/pull/10102), the `-debug=ipc` command line option can be used to see requests and responses between processes.
 
 ## Installation
 
