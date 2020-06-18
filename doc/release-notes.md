@@ -17,18 +17,18 @@ https://github.com/pexa-core/pexa-devwiki/wiki/
 
 Pexa Core version *version* is now available from:
 
-  <https://pexacore.org/bin/pexa-core-*version*/>
+  <https://pexaproject.com/bin/pexa-core-*version*/>
 
 This release includes new features, various bug fixes and performance
 improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/pexa/pexa/issues>
+  <https://github.com/pexa/core/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://pexacore.org/en/list/announcements/join/>
+  <https://pexaproject.com/en/list/announcements/join/>
 
 How to Upgrade
 ==============
