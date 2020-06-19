@@ -80,6 +80,7 @@ public:
     /** Return the network string */
     std::string NetworkIDString() const { return strNetworkID; }
     std::string SnapshotUrl() const { return snapshotUrl;}
+    std::string VersionInfoUrl() const { return versionInfoUrl;}
     /** Return the list of hostnames to look up for DNS seeds */
     const std::vector<std::string>& DNSSeeds() const { return vSeeds; }
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
@@ -123,6 +124,7 @@ protected:
     int nAssetsDeactivationBlock;
     uint32_t nMiningBlockStaleTime;
     std::string snapshotUrl;
+    std::string versionInfoUrl;
 
     /** PEXA End **/
 };

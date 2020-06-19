@@ -18,6 +18,9 @@
 #include <QMap>
 #include <QPoint>
 #include <QSystemTrayIcon>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QDesktopServices>
 
 #ifdef Q_OS_MAC
 #include <qt/macos_appnap.h>
@@ -100,6 +103,8 @@ public:
     void unsubscribeFromCoreSignals();
 
     bool isPrivacyModeActivated() const;
+
+    QNetworkAccessManager *managerCheckVersion;
 
 protected:
     void changeEvent(QEvent *e) override;
@@ -232,6 +237,8 @@ public Q_SLOTS:
     */
     void message(const QString& title, QString message, unsigned int style, bool* ret = nullptr, const QString& detailed_message = QString());
 
+    /** Reply with the the version check */
+    void replyFinishedCheckVersion(QNetworkReply *reply);
 #ifdef ENABLE_WALLET
     void setCurrentWallet(WalletModel* wallet_model);
     void setCurrentWalletBySelectorIndex(int index);

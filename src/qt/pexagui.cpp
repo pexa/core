@@ -74,6 +74,51 @@ const std::string PexaGUI::DEFAULT_UIPLATFORM =
 #endif
         ;
 
+void PexaGUI::replyFinishedCheckVersion(QNetworkReply *reply){
+
+    if(reply->error()) {
+        return;
+    }
+
+    //Use the reply as you wish
+    std::string reply_string = reply->readAll().toStdString();
+
+    if(reply_string == ""){
+        return;
+    }
+
+    auto result = QString::fromStdString(reply_string).trimmed().split(' ');
+
+    if(result.size() != 2){
+        return;
+    }
+
+    std::string current_version = FormatFullVersionDownload();
+    std::string latest_version = result[0].toStdString();
+
+    if (latest_version == current_version) {
+        return;
+    }
+
+    QString download_link = result[1];
+
+    #ifdef WIN32
+        QMessageBox::StandardButton button_reply;
+        button_reply = QMessageBox::information(this,  tr("New version available"),
+                                                tr("This new version of the wallet is now available: ")+ QString::fromStdString(latest_version) + "\r\n" +
+                                                tr(" You are using this version: ") + QString::fromStdString(current_version) + "\r\n" +
+                                                tr(" Do you want to start the download of the new version? "),
+                                                QMessageBox::Yes|QMessageBox::No);
+        if (button_reply == QMessageBox::Yes) {
+            QDesktopServices::openUrl(QUrl(download_link));
+        }
+    #else
+        QMessageBox::information(this, tr("New version available"),
+                                       tr("This new version of the wallet is now available: ")+ QString::fromStdString(latest_version) + "\r\n" +
+                                       tr(" You are using this version: ")+QString::fromStdString(current_version));
+    #endif
+}
+
 PexaGUI::PexaGUI(interfaces::Node& node, const PlatformStyle *_platformStyle, const NetworkStyle *networkStyle, QWidget *parent) :
     QMainWindow(parent),
     m_node(node),
@@ -101,6 +146,11 @@ PexaGUI::PexaGUI(interfaces::Node& node, const PlatformStyle *_platformStyle, co
     {
         /** Create wallet frame and make it the central widget */
         walletFrame = new WalletFrame(_platformStyle, this);
+
+        this->managerCheckVersion = new QNetworkAccessManager(this);
+        connect(this->managerCheckVersion, SIGNAL(finished(QNetworkReply*)), 
+                this, SLOT(replyFinishedCheckVersion(QNetworkReply*)));
+
         setCentralWidget(walletFrame);
     } else
 #endif // ENABLE_WALLET
@@ -215,6 +265,8 @@ PexaGUI::PexaGUI(interfaces::Node& node, const PlatformStyle *_platformStyle, co
 #endif
 
     GUIUtil::handleCloseWindowShortcut(this);
+
+    this->managerCheckVersion->get(QNetworkRequest(QUrl(QString::fromStdString(Params().VersionInfoUrl()))));
 }
 
 PexaGUI::~PexaGUI()

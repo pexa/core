@@ -41,7 +41,14 @@ const std::string CLIENT_NAME("Pexacoin");
     #endif
 #endif
 
+#define BUILD_VERSION(maj, min, rev, commit) \
+    "v" STRINGIZE(maj) "." STRINGIZE(min) "." STRINGIZE(rev) "-" commit
+
+#define BUILD_DESC_DOWNLOAD BUILD_VERSION(CLIENT_VERSION_MAJOR, CLIENT_VERSION_MINOR, CLIENT_VERSION_REVISION, BUILD_GIT_COMMIT)
+
 const std::string CLIENT_BUILD(BUILD_DESC BUILD_SUFFIX);
+
+const std::string CLIENT_BUILD_DOWNLOAD(BUILD_DESC_DOWNLOAD);
 
 static std::string FormatVersion(int nVersion)
 {
@@ -54,6 +61,11 @@ static std::string FormatVersion(int nVersion)
 std::string FormatFullVersion()
 {
     return CLIENT_BUILD;
+}
+
+std::string FormatFullVersionDownload()
+{
+    return CLIENT_BUILD_DOWNLOAD;
 }
 
 /**
