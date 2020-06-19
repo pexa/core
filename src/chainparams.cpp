@@ -167,8 +167,10 @@ public:
 
         #ifndef WIN32
         snapshotUrl = "https://snapshots.pexaproject.com/mainnet/current";
+        versionInfoUrl = "https://snapshots.pexaproject.com/mainnet/versioninfo";
         #else
         snapshotUrl = "http://snapshots.pexaproject.com/mainnet/current";
+        versionInfoUrl = "http://snapshots.pexaproject.com/mainnet/versioninfo";
         #endif // WIN 32
 
         /** PEXA End **/
