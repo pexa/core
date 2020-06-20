@@ -102,6 +102,23 @@ static void RunTest(const TestVector &test) {
         BOOST_CHECK(EncodeExtKey(key) == derive.prv);
         BOOST_CHECK(DecodeExtKey(derive.prv) == key); //ensure a base58 decoded key also matches
 
+        std::cout << "HSH_VAL_1: " << EncodeExtKey(key);
+        std::cout << "derive.prv: " << derive.prv;
+        std::cout << std::endl << std::endl;
+
+        //     for(int i=0; i < cfb.size(); i++){
+        //         std::cout << std::hex << (int) cfb.at(i);
+        //     }
+
+        //     std::cout << std::endl << std::endl;
+        //     std::cout << "OUT_VAL: ";
+        //     for(int i=0; i < out.size(); i++){
+        //         std::cout << (int) out.at(i);
+        //     }
+        //     std::cout << std::endl << std::endl;
+        //     std::cout << std::endl << std::endl;
+        // }
+
         // Test public key
         BOOST_CHECK(EncodeExtPubKey(pubkey) == derive.pub);
         BOOST_CHECK(DecodeExtPubKey(derive.pub) == pubkey); //ensure a base58 decoded pubkey also matches

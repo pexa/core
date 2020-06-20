@@ -5,14 +5,12 @@ on:
     branches:
       - master
       - develop
-      - tests
       - feature/*
 
   pull_request:
     branches:
       - master
       - develop
-      - tests
       - feature/*
 
 jobs:
@@ -198,6 +196,23 @@ jobs:
           --disable-bench
       - name: make
         run: make -j2
+     - name: create artifacts
+       if: success()
+         mv ./Pexa-Qt.app release/
+       run: |
+         mv ./Pexa-Core.dmg release/
+         mv ./release pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
+         zip -r9 pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-macos-qt.zip pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}
+     - name: upload artifacts
+       if: success()
+       uses: appleboy/scp-action@master
+       with:
+         host: ${{ secrets.ARTIFACT_HOST }}
+         username: ${{ secrets.ARTIFACT_USER }}
+         key: ${{ secrets.ARTIFACT_KEY }}
+         passphrase: ${{ secrets.ARTIFACT_KEY_PASSPHRASE }}
+         source: pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-macos-qt.zip
+         target: ${{ secrets.ARTIFACT_PATH }}
 
   macos-native:
     runs-on: macos-latest
