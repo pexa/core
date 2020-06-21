@@ -2234,7 +2234,7 @@ void ProcessMessage(
     int pop_res = VeriBlock::p2p::processPopData(&pfrom, msg_type, vRecv, connman);
     if(pop_res != -1)
     {
-        return pop_res;
+        return;
     }
 
     if (msg_type == NetMsgType::VERSION) {
