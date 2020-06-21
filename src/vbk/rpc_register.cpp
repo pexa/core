@@ -126,10 +126,8 @@ UniValue getpopdata(const JSONRPCRequest& request)
             "\nExamples:\n" +
             HelpExampleCli("getpopdata", "1000") + HelpExampleRpc("getpopdata", "1000"));
 
-    auto wallet = GetWalletForJSONRPCRequest(request);
-    if (!EnsureWalletIsAvailable(wallet.get(), request.fHelp)) {
-        return NullUniValue;
-    }
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return NullUniValue;
 
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
@@ -198,10 +196,8 @@ UniValue submitpop(const JSONRPCRequest& request)
 
     RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VARR});
 
-    auto wallet = GetWalletForJSONRPCRequest(request);
-    if (!EnsureWalletIsAvailable(wallet.get(), request.fHelp)) {
-        return NullUniValue;
-    }
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    if (!wallet) return NullUniValue;
     wallet->BlockUntilSyncedToCurrentChain();
 
     CScript script;
