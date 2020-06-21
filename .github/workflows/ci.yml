@@ -157,6 +157,7 @@ jobs:
           echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//\./g')"
           echo "::set-output name=commits_ahead::$(git rev-list $(git describe --tags $(git rev-list --tags --max-count=1)).. --count)"
           echo "::set-output name=last_tag::$(git describe --tags $(git rev-list --tags --max-count=1))"
+          echo "::set-output name=version::$(cat configure.ac | head -n4 | tail -n3 | sed 's/[^[:digit:]]//g;' | sed ':a;N;$!ba;s/\n/./g')"
       - name: Prepare ccache timestamp
         id: cache_timestamp
         run: |
@@ -195,9 +196,42 @@ jobs:
         run: ./autogen.sh
       - name: configure
         run: ./configure --prefix=${PWD}/depends/x86_64-apple-darwin16
+          --disable-shared
           --disable-bench
+          --without-qtdbus
       - name: make
-        run: make -j2
+        run: make -j2 deploy
+      - name: create artifacts
+        if: success()
+        run: |
+          mkdir -p ./release
+          mv ./src/pexad ./release/
+          mv ./src/pexa-cli ./release/
+          mv ./src/qt/pexa-qt ./release/
+          mv ./src/pexa-wallet ./release/
+          mv ./src/pexa-tx ./release/
+          chmod +x ./release/pexa*
+          mv ./release pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-osx64
+          mv ./Pexa-Qt.app Pexa-${{ steps.extract_branch.outputs.version }}-Qt.app
+          mv ./Pexa-Core.dmg ./pexa-${{ steps.extract_branch.outputs.version }}-osx.dmg
+      - name: upload artifacts
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-osx64.app
+          path: Pexa-${{ steps.extract_branch.outputs.version }}-Qt.app
+      - name: upload pexa-${{ steps.extract_branch.outputs.version }}-osx.dmg
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-osx.dmg
+          path: pexa-${{ steps.extract_branch.outputs.version }}-osx.dmg
+      - name: pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-osx64
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-osx64
+          path: pexa-${{ steps.extract_branch.outputs.last_tag }}-${{ steps.extract_branch.outputs.branch }}.${{ steps.extract_branch.outputs.commits_ahead }}-${{ steps.extract_branch.outputs.git_hash }}-osx64
 
   macos-native:
     runs-on: macos-latest
