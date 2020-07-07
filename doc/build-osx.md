@@ -30,14 +30,14 @@ If you want to build with Pexa-Qt GUI app, you need additional libraries:
 
 ```shell
 cd /tmp
-wget https://github.com/VeriBlock/alt-integration-cpp/archive/346557f8f8f4f4eec40f81c571ac5b9f819a02a8.tar.gz
-tar -xf 346557f8f8f4f4eec40f81c571ac5b9f819a02a8.tar.gz
-cd alt-integration-cpp-346557f8f8f4f4eec40f81c571ac5b9f819a02a8
+wget https://github.com/VeriBlock/alt-integration-cpp/archive/9170c2c1b62bafbff7262a4975235a01db0429ab.tar.gz
+tar -xf 9170c2c1b62bafbff7262a4975235a01db0429ab.tar.gz
+cd alt-integration-cpp-9170c2c1b62bafbff7262a4975235a01db0429ab
 mkdir build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DTESTING=OFF
 make -j12
-sudo make install
+sudo make -j12 install
 ```
 
 If you run into issues, check [Homebrew's troubleshooting page](https://docs.brew.sh/Troubleshooting).

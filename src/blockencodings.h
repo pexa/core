@@ -63,19 +63,6 @@ public:
     SERIALIZE_METHODS(BlockTransactions, obj)
     {
         READWRITE(obj.blockhash, Using<VectorFormatter<TransactionCompression>>(obj.txn));
-        uint64_t txn_size = (uint64_t)obj.txn.size();
-        READWRITE(COMPACTSIZE(txn_size));
-        if (ser_action.ForRead()) {
-            size_t i = 0;
-            while (obj.txn.size() < txn_size) {
-                obj.txn.resize(std::min((uint64_t)(1000 + obj.txn.size()), txn_size));
-                for (; i < obj.txn.size(); i++)
-                    READWRITE(TransactionCompressor(obj.txn[i]));
-            }
-        } else {
-            for (size_t i = 0; i < obj.txn.size(); i++)
-                READWRITE(TransactionCompressor(obj.txn[i]));
-        }
         // VeriBlock data
         READWRITE(obj.popData);
     }

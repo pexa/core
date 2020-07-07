@@ -229,8 +229,8 @@ UniValue submitpop(const JSONRPCRequest& request)
         const CNetMsgMaker msgMaker(PROTOCOL_VERSION);
 
         NodeContext& node = EnsureNodeContext(request.context);
-        VeriBlock::p2p::sendPopData<altintegration::ATV>(node->connman.get(), msgMaker, popData.atvs);
-        VeriBlock::p2p::sendPopData<altintegration::VTB>(node->connman.get(), msgMaker, popData.vtbs);
+        VeriBlock::p2p::sendPopData<altintegration::ATV>(node.connman.get(), msgMaker, popData.atvs);
+        VeriBlock::p2p::sendPopData<altintegration::VTB>(node.connman.get(), msgMaker, popData.vtbs);
 
         return altintegration::ToJSON<UniValue>(result);
     }
