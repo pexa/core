@@ -1,9 +1,7 @@
 # Build stage for BerkeleyDB
 FROM alpine as berkeleydb
 
-RUN apk --no-cache add autoconf
-RUN apk --no-cache add automake
-RUN apk --no-cache add build-base
+RUN apk --no-cache add autoconf automake build-base
 
 ENV BERKELEYDB_VERSION=db-4.8.30.NC
 ENV BERKELEYDB_PREFIX=/opt/${BERKELEYDB_VERSION}
@@ -25,19 +23,19 @@ FROM alpine as pexa-core
 
 COPY --from=berkeleydb /opt /opt
 
-RUN apk --no-cache add autoconf
-RUN apk --no-cache add automake
-RUN apk --no-cache add boost-dev
-RUN apk --no-cache add build-base
-RUN apk --no-cache add chrpath
-RUN apk --no-cache add file
-RUN apk --no-cache add gnupg
-RUN apk --no-cache add libevent-dev
-RUN apk --no-cache add libtool
-RUN apk --no-cache add linux-headers
-RUN apk --no-cache add protobuf-dev
-RUN apk --no-cache add zeromq-dev
-RUN apk --no-cache add cmake
+RUN apk --no-cache add autoconf \
+  automake \
+  boost-dev \
+  build-base \
+  chrpath \
+  file \
+  gnupg \
+  libevent-dev \
+  libtool \
+  linux-headers \
+  protobuf-dev \
+  zeromq-dev \
+  cmake
 
 RUN set -ex \
   && for key in \
@@ -92,7 +90,8 @@ RUN apk --no-cache add \
   libevent \
   libzmq \
   su-exec \
-  valgrind
+  valgrind \
+  curl
 
 ENV DATA_DIR=/home/pexa/.pexa
 ENV PEXA_PREFIX=/opt/pexa
