@@ -193,7 +193,7 @@ public:
         consensus.CSVHeight = 0;
         consensus.SegwitHeight = 0;
         consensus.MinBIP9WarningHeight = 0;
-        consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2016 * 60; // 1.4 days
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -219,10 +219,10 @@ public:
         m_assumed_blockchain_size = 40;
         m_assumed_chain_state_size = 2;
 
-        uint32_t nGenesisTime = 1524179366;  // Thursday, September 20, 2018 12:00:00 PM GMT-06:00
-        genesis = CreateGenesisBlock(nGenesisTime, 8889826, 0x1e00ffff, 2, 50 * COIN );
+        uint32_t nGenesisTime = 1594474411;  // Thursday, September 20, 2018 12:00:00 PM GMT-06:00
+        genesis = CreateGenesisBlock(nGenesisTime, 12961930, 0x1e00ffff, 2, 50 * COIN );
         consensus.hashGenesisBlock = genesis.GetX16RV2Hash();
-        assert(consensus.hashGenesisBlock == uint256S("0x000000e5c51eb049ef52013df58667cdcdf9fb6a34bc2fdd70a0ea576c207f2a"));
+        assert(consensus.hashGenesisBlock == uint256S("0x0000008e3a08473b612bc48da8bb6cfa2589456f35504ae7a33360fb6341f2ce"));
         assert(genesis.hashMerkleRoot == uint256S("4e5951cce11bbe8d10e3f9e8b584ee2ed3c80583311e06f40d7e6146f2087f9d"));
 
         vFixedSeeds.clear();
